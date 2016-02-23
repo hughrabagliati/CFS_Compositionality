@@ -1,0 +1,57 @@
+Stimulus,Semantics,MeanAffectivity
+The nurse injected the patient,Neutral sentence,-0.511627907
+Bobby ate the boar,Neutral sentence,-0.955555556
+The fireman killed the fire,Neutral sentence,3.545454545
+The toddler slapped dad,Neutral sentence,-2.585365854
+Harry caught the octopus,Neutral sentence,0.181818182
+Baby chased the dog,Neutral sentence,0.41463414600000004
+The elephant caught the poacher,Neutral sentence,1.2727272729999999
+The officer crushed the car,Neutral sentence,-3.222222222
+The baby hit the brick,Neutral sentence,-2.348837209
+The dog jumped on Steve,Neutral sentence,-0.9090909090000001
+Claire dragged the car,Neutral sentence,-1.414634146
+The baby kicked john,Neutral sentence,-1.75
+The baby hit Mum,Neutral sentence,-2.046511628
+The kitten chewed the lawnmower,Neutral sentence,-1.1590909090000001
+Sam hit the ball,Neutral sentence,1.9318181819999998
+Andy cut the paper,Neutral sentence,0.186046512
+The pig was a male,Neutral sentence,0.071428571
+The photographer shot the actor,Neutral sentence,-1.4883720930000002
+The bridge went over Claire,Neutral sentence,-1.113636364
+The journalist followed the attacker,Neutral sentence,0.045454545
+The bunny outwitted the hunter,Neutral sentence,2.6818181819999998
+The soldiers captured the terrorists,Neutral sentence,2.558139535
+The cat licked Sally,Neutral sentence,2.255813953
+The people ate the fish,Neutral sentence,1.404761905
+The child scared the dog,Neutral sentence,-1.136363636
+The child spun the washer,Neutral sentence,-0.06818181799999999
+The policeman tackled the criminal,Neutral sentence,2.022727273
+The man ate the snake,Neutral sentence,-1.219512195
+The patient injected the nurse,Negative sentence,-3.511627907
+The boar ate Bobby,Negative sentence,-4.658536585
+The fire killed the fireman,Negative sentence,-4.837209302
+Dad slapped the toddler,Negative sentence,-4.3636363639999995
+The octopus caught Harry,Negative sentence,-3.146341463
+The dog chased baby,Negative sentence,-2.833333333
+The poacher caught the elephant,Negative sentence,-4.048780488
+The car crushed the officer,Negative sentence,-4.581395349
+The brick hit the baby,Negative sentence,-4.243902439
+Steve jumped on the dog,Negative sentence,-2.3111111109999998
+The car dragged Claire,Negative sentence,-4.627906977
+John kicked the baby,Negative sentence,-4.522727273
+Mum hit the baby,Negative sentence,-4.195121951
+The lawnmower chewed the kitten,Negative sentence,-4.7441860469999995
+The ball hit Sam,Negative sentence,-2.644444444
+The paper cut Andy,Negative sentence,-2.022727273
+The male was a pig,Negative sentence,-2.23255814
+The actor shot the photographer,Negative sentence,-3.9111111110000003
+Claire went over the bridge,Negative sentence,-1.0
+The attacker followed the journalist,Negative sentence,-4.023255814
+The hunter outwitted the bunny,Negative sentence,-1.386363636
+The terrorists captured the soldiers,Negative sentence,-4.3170731710000005
+Sally licked the cat,Negative sentence,-1.048780488
+The fish ate the people,Negative sentence,-3.933333333
+The dog scared the child,Negative sentence,-2.80952381
+The washer spun the child,Negative sentence,-3.536585366
+The criminal tackled the policeman,Negative sentence,-3.8409090910000003
+The snake ate the man,Negative sentence,-4.511627907

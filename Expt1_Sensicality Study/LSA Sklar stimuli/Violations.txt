@@ -1,0 +1,273 @@
+Violations
+
+I broke the water
+broke, break, water
+
+		broke	break	water
+broke	1	0.24	0.01
+break	0.24	1	0.01
+water	0.01	0.01	1
+
+I drank the chair
+drank, drink, chair
+
+		drank	drink	chair
+drank	1	0.73	0.17
+drink	0.73	1	-0.02
+chair	0.17	-0.02	1
+
+I crumpled the river
+crumpled, crumple, river
+
+		crumpled	crumple	river
+crumpled	1	0.24	-0.05
+crumple	0.24	1	-0.01
+river	-0.05	-0.01	1
+
+I shampooed the key
+shampooed, shampoo, key
+
+		shampooed	shampoo	key
+shampooed	1	0.91	-0.02
+shampoo	0.91	1	-0.01
+key	-0.02	-0.01	1
+
+I laundered the refrigerator
+laundered, launder, refrigerator
+
+		laundered	launder	refrigerator
+laundered	1	0.16	0.05
+launder	0.16	1	-0.09
+refrigerator	0.05	-0.09	1
+
+I lit the rain
+lit, light, rain
+
+		lit	light	rain
+lit	1	0.30	0.02
+light	0.30	1	-0.01
+rain	0.02	-0.01	1
+
+I wore the way
+wore, wear, way
+
+		wore	wear	way
+wore	1	0.63	-0.03
+wear	0.63	1	-0.06
+way	-0.03	-0.06	1
+
+I built the rice
+built, build, rice
+
+		built	build	rice
+built	1	0.69	-0.03
+build	0.69	1	-0.14
+rice	-0.03	-0.14	1
+
+I smelled the melody
+smelled, smell, melody
+
+		smelled	smell	melody
+smelled	1	0.55	0.02
+smell	0.55	1	-0.02
+melody	0.02	-0.02	1
+
+I scrubbed the thunder
+scrubbed, scrub, thunder
+
+		scrubbed	scrub	thunder
+scrubbed	1	0.30	-0.03
+scrub	0.30	1	0.06
+thunder	-0.03	0.06	1
+
+I cut the sand
+cut, cut, sand
+
+		cut	cut	sand
+cut	1	1.00	-0.07
+cut	1.00	1	-0.07
+sand	-0.07	-0.07	1
+
+I spilled the moon
+spilled, spill, moon
+
+		spilled	spill	moon
+spilled	1	0.21	-0.01
+spill	0.21	1	-0.01
+moon	-0.01	-0.01	1
+
+I turned off the door
+turned, turn, the
+
+		turned	turn	the
+turned	1	0.31	0.12
+turn	0.31	1	0.12
+the	0.12	0.12	1
+
+I burnt the clouds
+burnt, burn, clouds
+
+		burnt	burn	clouds
+burnt	1	0.32	0.02
+burn	0.32	1	-0.14
+clouds	0.02	-0.14	1
+
+I locked the ground
+locked, lock, ground
+
+		locked	lock	ground
+locked	1	0.58	-0.02
+lock	0.58	1	-0.04
+ground	-0.02	-0.04	1
+
+I gathered the shower
+gathered, gather, shower
+
+		gathered	gather	shower
+gathered	1	0.48	0.03
+gather	0.48	1	0.04
+shower	0.03	0.04	1
+
+I swallowed the shed
+swallowed, swallow, shed
+
+		swallowed	swallow	shed
+swallowed	1	0.62	-0.01
+swallow	0.62	1	-0.05
+shed	-0.01	-0.05	1
+
+I cut the wine
+cut, cut, wine
+
+		cut	cut	wine
+cut	1	1.00	-0.03
+cut	1.00	1	-0.03
+wine	-0.03	-0.03	1
+
+I woke up the steam
+woke up, wake up, steam
+
+		woke up	wake up	steam
+woke up	1	0.81	-0.08
+wake up	0.81	1	-0.04
+steam	-0.08	-0.04	1
+
+I interviewed the vinegar
+interviewed, interview, vinegar
+
+		interviewed	interview	vinegar
+interviewed	1	0.85	-0.03
+interview	0.85	1	-0.03
+vinegar	-0.03	-0.03	1
+
+I solved the peas
+solved, solve, peas
+
+		solved	solve	peas
+solved	1	0.84	0.06
+solve	0.84	1	0.07
+peas	0.06	0.07	1
+
+I tied the chasm
+tied, tie, chasm
+
+		tied	tie	chasm
+tied	1	0.42	0.16
+tie	0.42	1	0.05
+chasm	0.16	0.05	1
+
+I tore the juice
+tore, tear, juice
+
+		tore	tear	juice
+tore	1	0.17	0.02
+tear	0.17	1	0.09
+juice	0.02	0.09	1
+
+I broke the hat
+broke, break, hat
+
+		broke	break	hat
+broke	1	0.24	0.01
+break	0.24	1	-0.02
+hat	0.01	-0.02	1
+
+I washed the dance
+washed, wash, dance
+
+		washed	wash	dance
+washed	1	0.60	-0.08
+wash	0.60	1	-0.06
+dance	-0.08	-0.06	1
+
+I planted the hammer
+planted, plant, hammer
+
+		planted	plant	hammer
+planted	1	0.23	0.04
+plant	0.23	1	-0.03
+hammer	0.04	-0.03	1
+
+I sewed the smoke
+sewed, sew, smoke
+
+		sewed	sew	smoke
+sewed	1	0.38	-0.01
+sew	0.38	1	-0.02
+smoke	-0.01	-0.02	1
+
+I fried the shirt
+fried, fry, shirt
+
+		fried	fry	shirt
+fried	1	0.27	0.00
+fry	0.27	1	0.05
+shirt	0.00	0.05	1
+
+I dug the paint
+dug, dig, paint
+
+		dug	dig	paint
+dug	1	0.75	-0.02
+dig	0.75	1	0.03
+paint	-0.02	0.03	1
+
+I cooked the stairs
+cooked, cook, stairs	
+
+		cooked	cook	stairs
+cooked	1	0.65	-0.10
+cook	0.65	1	-0.06
+stairs	-0.10	-0.06	1
+
+I turned up the bread
+turned, turn, the
+
+		turned	turn	the
+turned	1	0.31	0.12
+turn	0.31	1	0.12
+the	0.12	0.12	1
+
+I ironed the coffee
+ironed, iron, coffee
+
+		ironed	iron	coffee
+ironed	1	0.15	0.19
+iron	0.15	1	0.05
+coffee	0.19	0.05	1
+
+I folded the diamond
+folded, fold, diamond
+
+		folded	fold	diamond
+folded	1	0.51	0.03
+fold	0.51	1	0.07
+diamond	0.03	0.07	1
+
+I shaved the glue
+shaved, shave, glue
+
+		shaved	shave	glue
+shaved	1	0.25	-0.09
+shave	0.25	1	-0.06
+glue	-0.09	-0.06	1

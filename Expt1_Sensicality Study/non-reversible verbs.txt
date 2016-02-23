@@ -1,0 +1,203 @@
+eat
+The apple ate the woman
+The woman peeled the apple
+The woman ate the pie
+The woman baked the cake
+
+drink
+The beer drank the woman
+The woman poured the beer
+The woman drank the wine
+The woman cooked the meal
+
+chew
+The toffee chewed the woman
+The woman bit the toffee
+The woman chewed the food
+The woman saw the movie
+
+* lick
+The stamp licked the woman
+The woman bought the stamp
+The woman licked the icecream
+The woman lifted the box
+
+build
+The house built the woman
+The woman entered the house
+The woman built the furniture
+The woman heard the sound
+
+sell
+The book sold the woman
+The woman read the book
+The woman sold the computer
+The woman filed the papers
+
+* punch
+The wall punched the woman
+The woman painted the wall
+The woman punched the man
+The woman found the gloves
+
+swallow
+The pill swallowed the woman
+The woman examined the pill
+The woman took the pill
+The woman cleaned the floor
+
+* push
+The trolley pushed the woman
+The woman moved the trolley
+The woman pushed the button
+The woman fixed the chair
+
+* pull
+The handle pulled the woman
+The woman turned the handle
+The woman pulled the rope
+The woman spread the butter
+
+* kiss
+The mirror kissed the woman
+The woman polished the mirror
+The woman kissed the baby
+The woman spent the money
+
+* hug
+The tree hugged the woman
+The woman trimmed the tree
+The woman hugged the boy
+The woman fired the man
+
+* wash
+The car washed the woman
+The woman drove the car
+The woman washed the cup
+The woman typed the letter
+
+read
+The magazine read the woman
+The woman folded the magazine
+The woman read the sign
+The woman labeled the jars
+
+write
+The letter wrote the woman
+The woman posted the letter
+The woman wrote the song
+The woman solved the problem
+
+drive
+The bus drove the woman
+The woman heard the bus
+The woman drove the car
+The woman played the game
+
+* feed
+The cat fed the woman
+The woman stroked the cat
+The woman fed the dog
+The woman ironed the sheet
+
+water
+The plant watered the woman
+The woman moved the plant
+The woman watered the flowers
+The woman paid the bill
+
+grate
+The cheese grated the woman
+The woman melted the cheese
+The woman grated the carrots
+The woman drew the picture
+
+cut
+The thread cut the woman
+The woman measured the thread
+The woman cut the cloth
+The woman wiped the window
+
+slice
+The bread sliced the woman
+The woman toasted the bread
+The woman sliced the tomato
+The woman threw the ball
+
+boil
+The kettle boiled the woman
+The woman boiled the water
+The woman dropped the kettle
+The woman gathered the people
+
+wear
+The jumper wore the woman
+The woman dried the jumper
+The woman wore the hat
+The woman jumped the fence
+
+sniff
+The milk sniffed the woman
+The woman poured the milk
+The woman sniffed the cheese
+The woman climbed the wall
+
+taste
+The chocolate tasted the woman
+The woman melted the chocolate
+The woman tasted the soup
+The woman ran the race
+
+brush
+The hair brushed the woman
+The woman combed the hair
+The woman brushed the dog
+The woman polished the medal
+
+lock
+The chest locked the woman
+The woman dusted the chest
+The woman locked the door
+The woman watched the show
+
+cook
+The meal cooked the woman
+The woman served the meal
+The woman cooked the pizza
+The woman chopped the garlic
+
+peel
+The potatoes peeled the woman
+The woman mashed the potatoes
+The woman peeled the orange
+The woman met the boy
+
+open
+The window opened the woman
+The woman cleaned the window
+The woman opened the letter
+The woman visited the man
+
+close
+The cupboard closed the door
+The woman tidied the cupboard
+The woman closed the drawer
+The woman stirred the stew
+
+break
+The plate broke the woman
+The woman cleaned the plate
+The woman broke the television
+The woman grabbed the chair
+
+mail
+The parcel mailed the woman
+The woman opened the parcel
+The woman mailed the postcard
+The woman tore the paper
+
+empty
+The bucket emptied the woman
+The woman carried the bucket
+The woman emptied the bag
+The woman fried the bacon

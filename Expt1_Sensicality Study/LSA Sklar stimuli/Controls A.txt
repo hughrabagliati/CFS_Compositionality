@@ -1,0 +1,273 @@
+Controls A
+
+I heated the water
+heated, heat, water
+
+		heated	heat	water
+heated	1		0.81	0.32
+heat	0.81	1		0.26
+water	0.32	0.26	1
+
+I moved the chair
+moved, move, chair
+
+		moved	move	chair
+moved	1		0.60	0.28
+move	0.60	1		0.16
+chair	0.28	0.16	1
+
+I photographed the  river
+photographed, photograph, river
+
+				photographed	photograph	river
+photographed	1		0.54		0.03
+photograph		0.54	1			0.04
+river			0.03	0.04		1
+
+I found the key
+found, find, key
+
+		found	find	key
+found	1		0.51	0.16
+find	0.51	1		0.37
+key		0.16	0.37	1
+
+I opened the refrigerator
+opened, open, refrigerator
+
+				opened	open	refrigerator
+opened			1		0.72	0.23
+open			0.72	1		0.24
+refrigerator	0.23	0.24	1
+
+I drew the rain
+drew, draw, rain
+
+		drew	draw	rain
+drew	1		0.39	0.08
+draw	0.39	1		0.11
+rain	0.08	0.11	1
+
+I looked  for the way
+looked for, look for, way
+
+			looked for	look for	way
+looked for	1			0.58		0.53
+look for	0.58		1			0.63
+way			0.53		0.63		1
+
+I cooked the rice
+cooked, cook, rice
+
+		cooked	cook	rice
+cooked	1		0.70	0.43
+cook	0.70	1		0.25
+rice	0.43	0.25	1
+
+I played the melody
+played, play, melody
+
+		played	play	melody
+played	1		0.73	0.42
+play	0.73	1		0.30
+melody	0.42	0.30	1
+
+I heard the thunder
+heard, hear, thunder
+
+		heard	hear	thunder
+heard	1		0.65	0.43
+hear	0.65	1		0.37
+thunder	0.43	0.37	1
+
+I sprinkled the sand
+sprinkled, sprinkle, sand
+
+			sprinkled	sprinkle	sand
+sprinkled	1			0.44		0.06
+sprinkle	0.44		1			0.36
+sand		0.06		0.36		1
+
+I photographed the moon
+photographed, photograph, moon
+
+				photographed	photograph	moon
+photographed	1				0.54		0.21
+photograph		0.54			1			0.14
+moon			0.21			0.14		1
+
+I closed  the door
+closed, close, door
+
+		closed	close	door
+closed	1		0.51	0.67
+close	0.51	1		0.31
+door	0.67	0.31	1
+
+I saw the clouds
+saw, see, clouds
+
+		saw		see		clouds
+saw		1		0.54	0.17
+see		0.54	1		0.25
+clouds	0.17	0.25	1
+
+I watered the ground
+watered, water, ground
+
+		watered	water	ground
+watered	1		0.20	0.15
+water	0.20	1		0.31
+ground	0.15	0.31	1
+
+I fixed up the shower
+fixed up, fix up, showe
+
+			fixed up	fix up	shower
+fixed up	1			0.74	0.36
+fix up		0.74		1		0.39
+shower		0.36		0.39	1
+
+I fixed up the shed
+fixed up, fix up, shed
+
+			fixed up	fix up	shed
+fixed up	1			0.74	0.40
+fix up		0.74		1		0.43
+shed		0.40		0.43	1
+
+I tasted the wine
+tasted, taste, wine
+
+		tasted	taste	wine
+tasted	1		0.57	0.44
+taste	0.57	1		0.26
+wine	0.44	0.26	1
+
+I wiped the steam 
+wiped, wipe, steam
+
+		wiped	wipe	steam
+wiped	1		0.55	0.07
+wipe	0.55	1		0.18
+steam	0.07	0.18	1
+
+I tasted the vinegar
+tasted, taste, vinegar
+
+		tasted	taste	vinegar
+tasted	1		0.57	0.36
+taste	0.57	1		0.44
+vinegar	0.36	0.44	1
+
+I threw the peas
+threw, throw, peas
+
+		threw	throw	peas
+threw	1		0.69	0.10
+throw	0.69	1		0.07
+peas	0.10	0.07	1
+
+I found the chasm
+found, find, chasm
+
+		found	find	chasm
+found	1		0.51	0.20
+find	0.51	1		0.11
+chasm	0.20	0.11	1
+
+I wiped the juice
+wiped, wipe, juice
+
+		wiped	wipe	juice
+wiped	1		0.55	0.18
+wipe	0.55	1		0.08
+juice	0.18	0.08	1
+
+I moved the hat
+moved, move, hat
+
+		moved	move	hat
+moved	1		0.60	0.18
+move	0.60	1		0.04
+hat		0.18	0.04	1
+
+I liked the dance
+liked, like, dance
+
+		liked	like	dance
+liked	1		0.53	0.24
+like	0.53	1		0.31
+dance	0.24	0.31	1
+
+I lifted the hammer
+lifted, lift, hammer
+
+		lifted	lift	hammer
+lifted	1		0.46	0.27
+lift	0.46	1		0.33
+hammer	0.27	0.33	1
+
+I smelled the smoke
+smelled, smell, smoke
+
+		smelled	smell	smoke
+smelled	1		0.61	0.42
+smell	0.61	1		0.34
+smoke	0.42	0.34	1
+
+I wore the shirt
+wore, wear, shirt
+
+		wore	wear	shirt
+wore	1		0.60	0.72
+wear	0.60	1		0.54
+shirt	0.72	0.54	1
+
+I looked for the paint
+looked for, look for, paint
+
+			looked for	look for	paint
+looked for	1			0.58		0.20
+look for	0.58		1			0.25
+paint		0.20		0.25		1
+
+I fixed  the stairs
+fixed, fix, stairs
+
+		fixed	fix		stairs
+fixed	1		0.32	0.11
+fix		0.32	1		0.13
+stairs	0.11	0.13	1
+
+I baked the bread
+baked, bake, bread
+
+		baked	bake	bread
+baked	1		0.39	0.70
+bake	0.39	1		0.28
+bread	0.70	0.28	1
+
+I made the coffee
+made, make, coffee
+
+		made	make	coffee
+made	1		0.72	0.23
+make	0.72	1		0.23
+coffee	0.23	0.23	1
+
+I sold the diamond
+sold, sell, diamond
+
+		sold	sell	diamond
+sold	1		0.75	0.16
+sell	0.75	1		0.13
+diamond	0.16	0.13	1
+
+I spread the glue
+spread, spread, glue
+
+		spread	spread	glue
+spread	1		1.00	0.13
+spread	1.00	1		0.13
+glue	0.13	0.13	1

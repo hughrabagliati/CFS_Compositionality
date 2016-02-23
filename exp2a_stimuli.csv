@@ -1,0 +1,51 @@
+Stimulus,Condition,Source,MeanAffectivity
+black head,Negative phrase,New,-1.952380952
+computer bug,Negative phrase,New,-2.731707317
+cow pat,Negative phrase,New,-1.090909091
+dentist drill,Negative phrase,New,-2.545454545
+frost bite,Negative phrase,New,-3.534883721
+kidnap,Negative phrase,New,-4.302325581
+missing teeth,Negative phrase,New,-2.790697674
+runny nose,Negative phrase,New,-2.325581395
+spotty face,Negative phrase,New,-1.840909091
+water boarding,Negative phrase,New,-3.139534884
+bad breath,Negative phrase,Sklar,-2.933333333
+black eye,Negative phrase,Sklar,-2.860465116
+concentration camp,Negative phrase,Sklar,-4.395348837
+electric chair,Negative phrase,Sklar,-3.813953488
+facial hair,Negative phrase,Sklar,-0.136363636
+foot fungus,Negative phrase,Sklar,-3.488372093
+human trafficking,Negative phrase,Sklar,-4.658536585
+overdose,Negative phrase,Sklar,-3.833333333
+root canal,Negative phrase,Sklar,-3.511111111
+skinhead,Negative phrase,Sklar,-3.285714286
+stomach pump,Negative phrase,Sklar,-3
+upside-down car,Negative phrase,Sklar,-2.840909091
+vegetative state,Negative phrase,Sklar,-3.465116279
+weak knees,Negative phrase,Sklar,-2.255813953
+cardboard box,Neutral phrase,New,0.090909091
+desk lamp,Neutral phrase,New,0.772727273
+dining table,Neutral phrase,New,1.302325581
+letterbox,Neutral phrase,New,0.522727273
+tin opener,Neutral phrase,New,0.555555556
+traffic light,Neutral phrase,New,0.363636364
+apartment building,Neutral phrase,Sklar,0.522727273
+backpack,Neutral phrase,Sklar,0.744186047
+body wash,Neutral phrase,Sklar,1.697674419
+carpark,Neutral phrase,Sklar,0.181818182
+clothes closet,Neutral phrase,Sklar,0.636363636
+cogwheel,Neutral phrase,Sklar,0.214285714
+computer screen,Neutral phrase,Sklar,0.886363636
+front door,Neutral phrase,Sklar,0.88372093
+gear shift,Neutral phrase,Sklar,0.325581395
+hand rail,Neutral phrase,Sklar,0.681818182
+helicopter pad,Neutral phrase,Sklar,0.674418605
+high ceiling,Neutral phrase,Sklar,0.813953488
+ironed shirt,Neutral phrase,Sklar,2.11627907
+lined paper,Neutral phrase,Sklar,0.533333333
+paper clip,Neutral phrase,Sklar,0.431818182
+pedestrian crossing,Neutral phrase,Sklar,0.613636364
+speed bumps,Neutral phrase,Sklar,-0.666666667
+tile roof,Neutral phrase,Sklar,0.511111111
+windshield,Neutral phrase,Sklar,0.454545455
+wooden stool,Neutral phrase,Sklar,0.292682927

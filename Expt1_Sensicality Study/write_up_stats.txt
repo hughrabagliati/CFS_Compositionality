@@ -1,0 +1,49 @@
+
+write up a paragraph with stats 
+
+a couple of graphs 
+	to summarize what you found in these analyses
+
+ok, if you could quickly write these stats up then that would be awesome -- you should include some inferential comparisons between the critical conditions (ie violations versus each control group)
+
+-----
+
+Whole phrase frequency
+
+Querying Google Ngrams for that phrase returned a time series showing the proportion of the entire Google corpus comprised of that query at times between 1800 and 2012. The area under the graph of the time series represents the sum of those discrete proportions and was used as a frequency score.
+
+For each of the four conditions, the mean phrase score is shown in IMAGE1. Unsurprisingly, the Violation phrases (e.g. 'I crumpled the river', 'I shampooed the key') are highly infrequent. Only "I broke the water" is attested, with a score of 0.000000012.
+
+The magnitude of the mean score of the Violation stimuli (3.551405e-10) in comparison with the ControlA, ControlB and Filler conditions, is approximately 1000, 100 and 2000 times smaller respectively.
+
+
+Permuted bigram frequency
+
+Each phrase was split into words and all bigram permutations were scored using the same method as for whole phrases.
+
+Of the four conditions, only the Control A stimuli stands out, with bigrams being on average almost three times as frequent. This may be accounted for by particular elements being overly frequent: analysis of the verbal elements showed a mean score of 4.616471 for Control A, compared to 4.120000, 4.409412 and 4.120000 for Control B, Filler and Violation respectively.
+
+
+Word frequency per condition
+
+Log Frequency scores per word were obtained from the British National Corpus. The words used in the Violation stimuli were less frequent than those in Control A and Filler conditions, whilst approximately as frequent as Control B. 
+
+
+
+
+
+
+ngram_data.loc[ngram_data['condition'].loc['cont_a']].describe()
+
+ngram_data.loc[ngram_data['condition'] == 'cont_a'].describe()
+
+
+filler_verbs = [i.split()[3] for i in fill if len(i.split()) == 4]
+viol_verbs = [i.split()[3] for i in viol if len(i.split()) == 4]
+cont_a_verbs = [i.split()[3] for i in cont_a if len(i.split()) == 4]
+cont_b_verbs = [i.split()[3] for i in cont_b if len(i.split()) == 4]
+
+x1 = data.loc[filler_verbs,:]['LogFreqBNC(Zipf)']
+x2 = data.loc[viol_verbs,:]['LogFreqBNC(Zipf)']
+x3 = data.loc[cont_a_verbs,:]['LogFreqBNC(Zipf)']
+x4 = data.loc[cont_b_verbs,:]['LogFreqBNC(Zipf)']

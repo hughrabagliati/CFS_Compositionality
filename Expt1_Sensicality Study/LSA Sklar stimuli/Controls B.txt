@@ -1,0 +1,316 @@
+Controls B
+
+I broke the glass
+I drank the chocolate milk
+I crumpled the paper
+I shampooed the hair
+I laundered the scarf
+I lit the lamp
+I wore the gloves
+I built the building
+I smelled the pie
+I scrubbed the house
+I cut the string
+I spilled the juice
+I turned off the computer
+I burnt the stew
+I locked the cabinet
+I gathered the dice
+I swallowed the food
+I cut the bread
+I woke up the child
+I interviewed the woman
+I solved  the exercise
+I tied the shoelace
+I tore the map
+I broke the border
+I washed the floor
+I planted the plant
+I sewed the sock
+I fried the squash
+I dug the well
+I cooked the tomatoes
+I turned up the volume
+I ironed the clothes
+I folded the vest
+I shaved the head
+
+I broke the glass
+broke, break, glass
+
+		broke	break	glass
+broke	1		0.37	0.19
+break	0.37	1		0.20
+glass	0.19	0.20	1
+
+I drank the chocolate milk
+drank, drink, chocolate milk
+
+				drank	drink	chocolate milk
+drank			1		0.74	0.38
+drink			0.74	1		0.33
+chocolate milk	0.38	0.33	1
+
+I crumpled the paper
+crumpled, crumple, paper
+
+			crumpled	crumple	paper
+crumpled	1			0.30	0.39
+crumple		0.30		1		0.39
+paper		0.39		0.39	1
+
+I shampooed the hair
+shampooed, shampoo, hair
+
+			shampooed	shampoo	hair
+shampooed	1			0.90	0.82
+shampoo		0.90		1		0.83
+hair		0.82		0.83	1
+
+I laundered the scarf
+laundered, launder, scarf
+
+			laundered	launder	scarf
+laundered	1			0.16	0.04
+launder		0.16		1		0.10
+scarf		0.04		0.10	1
+
+I lit the lamp
+lit, light, lamp
+
+		lit		light	lamp
+lit		1		0.41	0.52
+light	0.41	1		0.61
+lamp	0.52	0.61	1
+
+I wore the gloves
+wore, wear, gloves
+
+		wore	wear	gloves
+wore	1		0.60	0.62
+wear	0.60	1		0.62
+gloves	0.62	0.62	1
+
+I built the building
+built, build, building
+
+			built	build	building
+built		1		0.75	0.64
+build		0.75	1		0.67
+building	0.64	0.67	1
+
+I smelled the pie
+smelled, smell, pie
+
+		smelled	smell	pie
+smelled	1		0.61	0.32
+smell	0.61	1		0.23
+pie		0.32	0.23	1
+
+I scrubbed the house
+scrubbed, scrub, house
+
+			scrubbed	scrub	house
+scrubbed	1			0.44	0.19
+scrub		0.44		1		0.21
+house		0.19		0.21	1
+
+I cut the string
+cut, cut, string
+
+		cut		cut		string
+cut		1		1.00	0.22
+cut		1.00	1		0.22
+string	0.22	0.22	1
+
+I spilled the juice
+spilled, spill, juice
+
+		spilled		spill	juice
+spilled	1			0.36	0.19
+spill	0.36		1		0.17
+juice	0.19		0.17	1
+
+I turned off the computer
+turned off, turn of, computer
+
+			turned off	turn off	computer
+turned off	1			0.86		0.03
+turn off	0.86		1			0.05
+computer	0.03		0.05		1
+
+I burnt the stew
+burnt, burn, stew
+
+		burnt	burn	stew
+burnt	1		0.40	0.27
+burn	0.40	1		0.21
+stew	0.27	0.21	1
+
+I locked the cabinet
+locked, lock, cabinet
+
+		locked	lock	cabinet
+locked	1		0.67	0.10
+lock	0.67	1		0.09
+cabinet	0.10	0.09	1
+
+I gathered the dice
+gathered, gather, dice
+
+
+			gathered	gather	dice
+gathered	1			0.62	0.09
+gather		0.62		1		0.07
+dice		0.09		0.07	1
+
+I swallowed the food
+swallowed, swallow, food
+
+
+			swallowed	swallow	food
+swallowed	1			0.71	0.35
+swallow		0.71		1		0.44
+food		0.35		0.44	1
+
+I cut the bread
+cut, cut, bread
+
+
+			cut		cut		bread
+cut			1		1.00	0.10
+cut			1.00	1		0.10
+bread		0.10	0.10	1
+
+I woke up the child
+woke up, wake up, child
+
+			woke up	wake up	child
+woke up		1	0.94	0.11
+wake up		0.94	1	0.15
+child		0.11	0.15	1
+
+I interviewed the woman
+interviewed, interview, woman
+
+				interviewed	interview	woman
+interviewed		1			0.86		0.07
+interview		0.86		1			0.02
+woman			0.07		0.02		1
+
+I solved  the exercise
+solved, solve, exercise
+
+			solved	solve	exercise
+solved		1		0.85	-0.03
+solve		0.85	1		-0.02
+exercise	-0.03	-0.02	1
+
+I tied the shoelace
+tied, tie, shoelace
+
+
+			tied	tie		shoelace
+tied		1		0.57	0.15
+tie			0.57	1		0.47
+shoelace	0.15	0.47	1
+
+I tore the map
+tore, tear, map
+
+
+		tore	tear	map
+tore	1		0.38	0.02
+tear	0.38	1		0.06
+map		0.02	0.06	1
+
+I broke the border
+broke, break, border
+
+		broke	break	border
+broke	1		0.37	0.27
+break	0.37	1		0.09
+border	0.27	0.09	1
+
+I washed the floor
+washed, wash, floor
+
+
+		washed	wash	floor
+washed	1		0.68	0.24
+wash	0.68	1		0.21
+floor	0.24	0.21	1
+
+I planted the plant
+planted, plant, plant
+
+		planted		plant	plant
+planted	1			0.44	0.44
+plant	0.44		1		1.00
+plant	0.44		1.00	1
+
+I sewed the sock
+sewed, sew, sock
+
+
+		sewed	sew		sock
+sewed	1		0.46	0.16
+sew		0.46	1		0.24
+sock	0.16	0.24	1
+
+I fried the squash
+fried, fry, squash
+
+		fried	fry		squash
+fried	1		0.36	0.22
+fry		0.36	1		0.07
+squash	0.22	0.07	1
+
+I dug the well
+dug, dig, well
+
+		dug		dig		well
+dug		1		0.78	0.22
+dig		0.78	1		0.28
+well	0.22	0.28	1
+
+I cooked the tomatoes
+cooked, cook, tomatoes
+
+
+			cooked	cook	tomatoes
+cooked		1		0.70	0.58
+cook		0.70	1		0.34
+tomatoes	0.58	0.34	1
+
+I turned up the volume
+turned up, turn up, volume
+
+			turned up	turn up		volume
+turned up	1			0.79		0.08
+turn up		0.79		1			0.12
+volume		0.08		0.12		1
+
+I ironed the clothes
+ironed, iron, clothes
+
+		ironed	iron	clothes
+ironed	1		0.16	0.41
+iron	0.16	1		0.03
+clothes	0.41	0.03	1
+
+I folded the vest
+folded, fold, vest
+
+		folded	fold	vest
+folded	1		0.59	0.35
+fold	0.59	1		0.15
+vest	0.35	0.15	1
+
+I shaved the head
+shaved, shave, head
+
+		shaved	shave	head
+shaved	1		0.36	0.36
+shave	0.36	1		0.24
+head	0.36	0.24	1

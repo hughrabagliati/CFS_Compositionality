@@ -1,0 +1,197 @@
+Prime,Semantics,Contrast,Condition,MeanAffectivity
+The nurse injected the patient,Neutral sentence,50,New,-0.511627907
+Bobby ate the boar,Neutral sentence,50,New,-0.955555556
+The fireman killed the fire,Neutral sentence,50,New,3.545454545
+The toddler slapped dad,Neutral sentence,50,New,-2.585365854
+Harry caught the octopus,Neutral sentence,50,New,0.181818182
+Baby chased the dog,Neutral sentence,50,New,0.414634146
+The elephant caught the poacher,Neutral sentence,50,New,1.272727273
+The officer crushed the car,Neutral sentence,50,New,-3.222222222
+The baby hit the brick,Neutral sentence,50,New,-2.348837209
+The dog jumped on Steve,Neutral sentence,50,New,-0.909090909
+Claire dragged the car,Neutral sentence,50,New,-1.414634146
+The baby kicked john,Neutral sentence,50,New,-1.75
+The baby hit Mum,Neutral sentence,50,New,-2.046511628
+The kitten chewed the lawnmower,Neutral sentence,50,New,-1.159090909
+Sam hit the ball,Neutral sentence,50,New,1.931818182
+Andy cut the paper,Neutral sentence,50,New,0.186046512
+The pig was a male,Neutral sentence,50,New,0.071428571
+The photographer shot the actor,Neutral sentence,50,New,-1.488372093
+The bridge went over Claire,Neutral sentence,50,New,-1.113636364
+The journalist followed the attacker,Neutral sentence,50,New,0.045454545
+The bunny outwitted the hunter,Neutral sentence,50,New,2.681818182
+The soldiers captured the terrorists,Neutral sentence,50,New,2.558139535
+The cat licked Sally,Neutral sentence,50,New,2.255813953
+The people ate the fish,Neutral sentence,50,New,1.404761905
+The child scared the dog,Neutral sentence,50,New,-1.136363636
+The child spun the washer,Neutral sentence,50,New,-0.068181818
+The policeman tackled the criminal,Neutral sentence,50,New,2.022727273
+The man ate the snake,Neutral sentence,50,New,-1.219512195
+clothes closet,Neutral phrase,50,Sklar,0.636363636
+apartment building,Neutral phrase,50,Sklar,0.522727273
+tile roof,Neutral phrase,50,Sklar,0.511111111
+cogwheel,Neutral phrase,50,Sklar,0.214285714
+front door,Neutral phrase,50,Sklar,0.88372093
+lined paper,Neutral phrase,50,Sklar,0.533333333
+ironed shirt,Neutral phrase,50,Sklar,2.11627907
+hand rail,Neutral phrase,50,Sklar,0.681818182
+carpark,Neutral phrase,50,Sklar,0.181818182
+paper clip,Neutral phrase,50,Sklar,0.431818182
+gear shift,Neutral phrase,50,Sklar,0.325581395
+helicopter pad,Neutral phrase,50,Sklar,0.674418605
+computer screen,Neutral phrase,50,Sklar,0.886363636
+pedestrian crossing,Neutral phrase,50,Sklar,0.613636364
+body wash,Neutral phrase,50,Sklar,1.697674419
+speed bumps,Neutral phrase,50,Sklar,-0.666666667
+windshield,Neutral phrase,50,Sklar,0.454545455
+wooden stool,Neutral phrase,50,Sklar,0.292682927
+letterbox,Neutral phrase,50,New,0.522727273
+backpack,Neutral phrase,50,Sklar,0.744186047
+high ceiling,Neutral phrase,50,Sklar,0.813953488
+tin opener,Neutral phrase,50,New,0.555555556
+desk lamp,Neutral phrase,50,New,0.772727273
+dining table,Neutral phrase,50,New,1.302325581
+cardboard box,Neutral phrase,50,New,0.090909091
+traffic light,Neutral phrase,50,New,0.363636364
+The patient injected the nurse,Negative sentence,50,New,-3.511627907
+The boar ate Bobby,Negative sentence,50,New,-4.658536585
+The fire killed the fireman,Negative sentence,50,New,-4.837209302
+Dad slapped the toddler,Negative sentence,50,New,-4.363636364
+The octopus caught Harry,Negative sentence,50,New,-3.146341463
+The dog chased baby,Negative sentence,50,New,-2.833333333
+The poacher caught the elephant,Negative sentence,50,New,-4.048780488
+The car crushed the officer,Negative sentence,50,New,-4.581395349
+The brick hit the baby,Negative sentence,50,New,-4.243902439
+Steve jumped on the dog,Negative sentence,50,New,-2.311111111
+The car dragged Claire,Negative sentence,50,New,-4.627906977
+John kicked the baby,Negative sentence,50,New,-4.522727273
+Mum hit the baby,Negative sentence,50,New,-4.195121951
+The lawnmower chewed the kitten,Negative sentence,50,New,-4.744186047
+The ball hit Sam,Negative sentence,50,New,-2.644444444
+The paper cut Andy,Negative sentence,50,New,-2.022727273
+The male was a pig,Negative sentence,50,New,-2.23255814
+The actor shot the photographer,Negative sentence,50,New,-3.911111111
+Claire went over the bridge,Negative sentence,50,New,-1
+The attacker followed the journalist,Negative sentence,50,New,-4.023255814
+The hunter outwitted the bunny,Negative sentence,50,New,-1.386363636
+The terrorists captured the soldiers,Negative sentence,50,New,-4.317073171
+Sally licked the cat,Negative sentence,50,New,-1.048780488
+The fish ate the people,Negative sentence,50,New,-3.933333333
+The dog scared the child,Negative sentence,50,New,-2.80952381
+The washer spun the child,Negative sentence,50,New,-3.536585366
+The criminal tackled the policeman,Negative sentence,50,New,-3.840909091
+The snake ate the man,Negative sentence,50,New,-4.511627907
+root canal,Negative phrase,50,Sklar,-3.511111111
+skinhead,Negative phrase,50,Sklar,-3.285714286
+concentration camp,Negative phrase,50,Sklar,-4.395348837
+overdose,Negative phrase,50,Sklar,-3.833333333
+vegetative state,Negative phrase,50,Sklar,-3.465116279
+foot fungus,Negative phrase,50,Sklar,-3.488372093
+weak knees,Negative phrase,50,Sklar,-2.255813953
+black eye,Negative phrase,50,Sklar,-2.860465116
+bad breath,Negative phrase,50,Sklar,-2.933333333
+stomach pump,Negative phrase,50,Sklar,-3
+water boarding,Negative phrase,50,New,-3.139534884
+runny nose,Negative phrase,50,New,-2.325581395
+cow pat,Negative phrase,50,New,-1.090909091
+missing teeth,Negative phrase,50,New,-2.790697674
+spotty face,Negative phrase,50,New,-1.840909091
+computer bug,Negative phrase,50,New,-2.731707317
+kidnap,Negative phrase,50,New,-4.302325581
+frost bite,Negative phrase,50,New,-3.534883721
+black head,Negative phrase,50,New,-1.952380952
+upside-down car,Negative phrase,50,Sklar,-2.840909091
+dentist drill,Negative phrase,50,New,-2.545454545
+electric chair,Negative phrase,50,Sklar,-3.813953488
+facial hair,Negative phrase,50,Sklar,-0.136363636
+human trafficking,Negative phrase,50,Sklar,-4.658536585
+ארגז חול,Hebrew,50,Sklar_Hebrew_neutral,1.65
+ארון בגדים,Hebrew,50,Sklar_Hebrew_neutral,2.05
+בן-כלבה,Hebrew,50,Sklar_Hebrew_negative,-2
+בניין דירות,Hebrew,50,Sklar_Hebrew_neutral,0.2
+גג-רעפים,Hebrew,50,Sklar_Hebrew_neutral,1.15
+גלגל שיניים,Hebrew,50,Sklar_Hebrew_neutral,-0.2
+דלת כניסה,Hebrew,50,Sklar_Hebrew_neutral,1.05
+דף שורות,Hebrew,50,Sklar_Hebrew_neutral,0.85
+חולצה מגוהצת,Hebrew,50,Sklar_Hebrew_neutral,1.9
+טיפול שורש,Hebrew,50,Sklar_Hebrew_negative,-2.68
+ידית אחיזה,Hebrew,50,Sklar_Hebrew_neutral,0.4
+יתד בעין,Hebrew,50,Sklar_Hebrew_negative,-4.15
+כיסא חשמלי,Hebrew,50,Sklar_Hebrew_negative,-3.75
+ליל הבדולח,Hebrew,50,Sklar_Hebrew_negative,-3.11
+לקפוץ מהגג,Hebrew,50,Sklar_Hebrew_negative,-2.7
+מגולח ראש,Hebrew,50,Sklar_Hebrew_negative,-2.15
+מגרש חנייה,Hebrew,50,Sklar_Hebrew_neutral,0.2
+מהדק נייר,Hebrew,50,Sklar_Hebrew_neutral,0.95
+מוט הילוכים,Hebrew,50,Sklar_Hebrew_neutral,-0.1
+מחנה ריכוז,Hebrew,50,Sklar_Hebrew_negative,-4.35
+מנוחת עולמים,Hebrew,50,Sklar_Hebrew_negative,-3.1
+מנחת מסוקים,Hebrew,50,Sklar_Hebrew_neutral,0.35
+מנת יתר,Hebrew,50,Sklar_Hebrew_negative,-3.54
+מסך מחשב,Hebrew,50,Sklar_Hebrew_neutral,0.75
+מעבר חצייה,Hebrew,50,Sklar_Hebrew_neutral,0.65
+מצב צמח,Hebrew,50,Sklar_Hebrew_negative,-3.85
+נרדם בנהיגה,Hebrew,50,Sklar_Hebrew_negative,-3.85
+סבון גוף,Hebrew,50,Sklar_Hebrew_neutral,1.95
+סוף העולם,Hebrew,50,Sklar_Hebrew_negative,-2.25
+סחר בנשים,Hebrew,50,Sklar_Hebrew_negative,-4.1
+פיטריות ברגליים,Hebrew,50,Sklar_Hebrew_negative,-3.35
+פיק ברכיים,Hebrew,50,Sklar_Hebrew_negative,-1.74
+פנס בעין,Hebrew,50,Sklar_Hebrew_negative,2.25
+פסי האטה,Hebrew,50,Sklar_Hebrew_neutral,0.1
+ריח מהפה,Hebrew,50,Sklar_Hebrew_negative,-3.45
+רכב הפוך,Hebrew,50,Sklar_Hebrew_negative,-3.55
+שטיפת קיבה,Hebrew,50,Sklar_Hebrew_negative,-2.55
+שיער פנים,Hebrew,50,Sklar_Hebrew_negative,-2.05
+שמשה קדמית,Hebrew,50,Sklar_Hebrew_neutral,-0.3
+שרפרף מעץ,Hebrew,50,Sklar_Hebrew_neutral,0.35
+תיבת דואר,Hebrew,50,Sklar_Hebrew_neutral,0.3
+תינוק בתנור,Hebrew,50,Sklar_Hebrew_negative,-4.7
+תיק גב,Hebrew,50,Sklar_Hebrew_neutral,0.85
+תיקרה גבוהה,Hebrew,50,Sklar_Hebrew_neutral,1.45
+תשעה באב,Hebrew,50,Sklar_Hebrew_negative,-2.15
+ארגז חול,Hebrew,80,Sklar_Hebrew_neutral,1.65
+ארון בגדים,Hebrew,80,Sklar_Hebrew_neutral,2.05
+בן-כלבה,Hebrew,80,Sklar_Hebrew_negative,-2
+בניין דירות,Hebrew,80,Sklar_Hebrew_neutral,0.2
+גג-רעפים,Hebrew,80,Sklar_Hebrew_neutral,1.15
+גלגל שיניים,Hebrew,80,Sklar_Hebrew_neutral,-0.2
+דלת כניסה,Hebrew,80,Sklar_Hebrew_neutral,1.05
+דף שורות,Hebrew,80,Sklar_Hebrew_neutral,0.85
+חולצה מגוהצת,Hebrew,80,Sklar_Hebrew_neutral,1.9
+טיפול שורש,Hebrew,80,Sklar_Hebrew_negative,-2.68
+ידית אחיזה,Hebrew,80,Sklar_Hebrew_neutral,0.4
+יתד בעין,Hebrew,80,Sklar_Hebrew_negative,-4.15
+כיסא חשמלי,Hebrew,80,Sklar_Hebrew_negative,-3.75
+ליל הבדולח,Hebrew,80,Sklar_Hebrew_negative,-3.11
+לקפוץ מהגג,Hebrew,80,Sklar_Hebrew_negative,-2.7
+מגולח ראש,Hebrew,80,Sklar_Hebrew_negative,-2.15
+מגרש חנייה,Hebrew,80,Sklar_Hebrew_neutral,0.2
+מהדק נייר,Hebrew,80,Sklar_Hebrew_neutral,0.95
+מוט הילוכים,Hebrew,80,Sklar_Hebrew_neutral,-0.1
+מחנה ריכוז,Hebrew,80,Sklar_Hebrew_negative,-4.35
+מנוחת עולמים,Hebrew,80,Sklar_Hebrew_negative,-3.1
+מנחת מסוקים,Hebrew,80,Sklar_Hebrew_neutral,0.35
+מנת יתר,Hebrew,80,Sklar_Hebrew_negative,-3.54
+מסך מחשב,Hebrew,80,Sklar_Hebrew_neutral,0.75
+מעבר חצייה,Hebrew,80,Sklar_Hebrew_neutral,0.65
+מצב צמח,Hebrew,80,Sklar_Hebrew_negative,-3.85
+נרדם בנהיגה,Hebrew,80,Sklar_Hebrew_negative,-3.85
+סבון גוף,Hebrew,80,Sklar_Hebrew_neutral,1.95
+סוף העולם,Hebrew,80,Sklar_Hebrew_negative,-2.25
+סחר בנשים,Hebrew,80,Sklar_Hebrew_negative,-4.1
+פיטריות ברגליים,Hebrew,80,Sklar_Hebrew_negative,-3.35
+פיק ברכיים,Hebrew,80,Sklar_Hebrew_negative,-1.74
+פנס בעין,Hebrew,80,Sklar_Hebrew_negative,2.25
+פסי האטה,Hebrew,80,Sklar_Hebrew_neutral,0.1
+ריח מהפה,Hebrew,80,Sklar_Hebrew_negative,-3.45
+רכב הפוך,Hebrew,80,Sklar_Hebrew_negative,-3.55
+שטיפת קיבה,Hebrew,80,Sklar_Hebrew_negative,-2.55
+שיער פנים,Hebrew,80,Sklar_Hebrew_negative,-2.05
+שמשה קדמית,Hebrew,80,Sklar_Hebrew_neutral,-0.3
+שרפרף מעץ,Hebrew,80,Sklar_Hebrew_neutral,0.35
+תיבת דואר,Hebrew,80,Sklar_Hebrew_neutral,0.3
+תינוק בתנור,Hebrew,80,Sklar_Hebrew_negative,-4.7
+תיק גב,Hebrew,80,Sklar_Hebrew_neutral,0.85
+תיקרה גבוהה,Hebrew,80,Sklar_Hebrew_neutral,1.45
+תשעה באב,Hebrew,80,Sklar_Hebrew_negative,-2.15

@@ -1,0 +1,215 @@
+Source,Stimuli,Condition
+New,car,Neutral phrase W1
+New,letter,Neutral phrase W1
+New,traffic,Neutral phrase W1
+New,tin,Neutral phrase W1
+New,cardboard ,Neutral phrase W1
+New,desk,Neutral phrase W1
+New,dining ,Neutral phrase W1
+New,box,Neutral phrase W2
+New,light,Neutral phrase W2
+New,opener,Neutral phrase W2
+New,box,Neutral phrase W2
+New,lamp,Neutral phrase W2
+New,table,Neutral phrase W2
+New,letterbox,Neutral phrase
+New,traffic light ,Neutral phrase
+New,tin opener,Neutral phrase
+New,cardboard box,Neutral phrase
+New,desk lamp,Neutral phrase
+New,dining table,Neutral phrase
+New,water,Negative W1
+New,runny,Negative W1
+New,cow,Negative W1
+New,missing,Negative W1
+New,spotty,Negative W1
+New,computer,Negative W1
+New,kid,Negative W1
+New,knife,Negative W1
+New,frost,Negative W1
+New,black,Negative W1
+New,pole,Negative W1
+New,dentist,Negative W1
+New,boarding,Negative W2
+New,nose,Negative W2
+New,pat,Negative W2
+New,teeth,Negative W2
+New,face,Negative W2
+New,bug,Negative W2
+New,nap,Negative W2
+New,attack,Negative W2
+New,bite,Negative W2
+New,head,Negative W2
+New,dance,Negative W2
+New,drill,Negative W2
+New,water boarding ,Negative phrase
+New,runny nose ,Negative phrase
+New,cow pat,Negative phrase
+New,missing teeth ,Negative phrase
+New,spotty face,Negative phrase
+New,computer bug,Negative phrase
+New,kidnap,Negative phrase
+New,knife attack,Negative phrase
+New,frost bite ,Negative phrase
+New,black head ,Negative phrase
+New,pole dance ,Negative phrase
+New,dentist drill,Negative phrase
+New,John kicked the baby,Negative sentence 1
+New,Mum hit the baby,Negative sentence 2
+New,Steve jumped on the dog,Negative sentence 3
+New,Sally licked the cat,Negative sentence 4
+New,The patient injected the nurse,Negative sentence 5
+New,The criminal tackled the policeman,Negative sentence 6
+New,The fire killed the fireman,Negative sentence 7
+New,The terrorists captured the soldiers,Negative sentence 8
+New,The octopus caught Harry,Negative sentence 9
+New,The teacher loved the girl,Negative sentence 10
+New,The dog chased baby,Negative sentence 11
+New,The boar ate Bobby ,Negative sentence 12
+New,Dad slapped the toddler,Negative sentence 13
+New,The brick hit the baby,Negative sentence 14
+New,The dog scared the child,Negative sentence 15
+New,The car dragged Claire,Negative sentence 16
+New,The poacher caught the elephant ,Negative sentence 17
+New,The actor shot the photographer ,Negative sentence 18
+New,The attacker followed the journalist ,Negative sentence 19
+New,The snake ate the man,Negative sentence 20
+New,The fish ate the people,Negative sentence 21
+New,The lawnmower chewed the kitten,Negative sentence 22
+New,The car crushed the officer,Negative sentence 23
+New,The male was a pig,Negative sentence 24
+New,The hunter outwitted the bunny,Negative sentence 25
+New,Claire went over the bridge,Negative sentence 26
+New,The paper cut Andy,Negative sentence 27
+New,The baby kicked john,Neutral sentence 1
+New,The baby hit Mum,Neutral sentence 2
+New,The dog jumped on Steve,Neutral sentence 3
+New,The cat licked Sally,Neutral sentence 4
+New,The nurse injected the patient,Neutral sentence 5
+New,The policeman tackled the criminal,Neutral sentence 6
+New,The fireman killed the fire,Neutral sentence 7
+New,The soldiers captured the terrorists,Neutral sentence 8
+New,Harry caught the octopus,Neutral sentence 9
+New,The girl loved the teacher,Neutral sentence 10
+New,Baby chased the dog,Neutral sentence 11
+New,Bobby ate the boar,Neutral sentence 12
+New,The toddler slapped dad,Neutral sentence 13
+New,The baby hit the brick,Neutral sentence 14
+New,The child scared the dog,Neutral sentence 15
+New,Claire dragged the car,Neutral sentence 16
+New,The elephant caught the poacher,Neutral sentence 17
+New,The photographer shot the actor,Neutral sentence 18
+New,The journalist followed the attacker,Neutral sentence 19
+New,The man ate the snake,Neutral sentence 20
+New,The people ate the fish,Neutral sentence 21
+New,The kitten chewed the lawnmower,Neutral sentence 22
+New,The officer crushed the car,Neutral sentence 23
+New,The pig was a male,Neutral sentence 24
+New,The bunny outwitted the hunter,Neutral sentence 25
+New,The bridge went over Claire,Neutral sentence 26
+New,Andy cut the paper ,Neutral sentence 27
+New ,The ball hit Sam ,Negative sentence 28 
+New ,The washer spun the child ,Negative sentence 29 
+New ,Sam hit the ball ,Neutral sentence 28 
+New ,The child spun the washer ,Neutral sentence 29 
+Sklar,clothes,Neutral phrase W1
+Sklar,apartment ,Neutral phrase W1
+Sklar,tile,Neutral phrase W1
+Sklar,cog,Neutral phrase W1
+Sklar,front ,Neutral phrase W1
+Sklar,lined,Neutral phrase W1
+Sklar,ironed,Neutral phrase W1
+Sklar,hand ,Neutral phrase W1
+Sklar,paper,Neutral phrase W1
+Sklar,gear ,Neutral phrase W1
+Sklar,helicopter,Neutral phrase W1
+Sklar,computer ,Neutral phrase W1
+Sklar,pedestrian ,Neutral phrase W1
+Sklar,body,Neutral phrase W1
+Sklar,speed,Neutral phrase W1
+Sklar,wind,Neutral phrase W1
+Sklar,wooden,Neutral phrase W1
+Sklar,back,Neutral phrase W1
+Sklar,high,Neutral phrase W1
+Sklar,closet,Neutral phrase W2
+Sklar,building ,Neutral phrase W2
+Sklar,roof,Neutral phrase W2
+Sklar,wheel,Neutral phrase W2
+Sklar,door,Neutral phrase W2
+Sklar,paper,Neutral phrase W2
+Sklar,shirt,Neutral phrase W2
+Sklar,rail,Neutral phrase W2
+Sklar,park,Neutral phrase W2
+Sklar,clip,Neutral phrase W2
+Sklar,shift,Neutral phrase W2
+Sklar,pad,Neutral phrase W2
+Sklar,screen,Neutral phrase W2
+Sklar,crossing,Neutral phrase W2
+Sklar,wash,Neutral phrase W2
+Sklar,bumps,Neutral phrase W2
+Sklar,shield,Neutral phrase W2
+Sklar,stool,Neutral phrase W2
+Sklar,pack,Neutral phrase W2
+Sklar,ceiling,Neutral phrase W2
+Sklar,clothes closet,Neutral phrase
+Sklar,apartment building ,Neutral phrase
+Sklar,tile roof ,Neutral phrase
+Sklar,cogwheel,Neutral phrase
+Sklar,front door,Neutral phrase
+Sklar,lined paper,Neutral phrase
+Sklar,ironed shirt,Neutral phrase
+Sklar,hand rail ,Neutral phrase
+Sklar,carpark,Neutral phrase
+Sklar,paper clip,Neutral phrase
+Sklar,gear shift ,Neutral phrase
+Sklar,helicopter pad,Neutral phrase
+Sklar,computer screen,Neutral phrase
+Sklar,pedestrian crossing,Neutral phrase
+Sklar,body wash,Neutral phrase
+Sklar,speed bumps,Neutral phrase
+Sklar,windshield,Neutral phrase
+Sklar,wooden stool,Neutral phrase
+Sklar,backpack ,Neutral phrase
+Sklar,high ceiling ,Neutral phrase
+Sklar,root,Negative W1
+Sklar,electric,Negative W1
+Sklar,skin,Negative W1
+Sklar,concentration,Negative W1
+Sklar,over,Negative W1
+Sklar,vegetative,Negative W1
+Sklar,human,Negative W1
+Sklar,foot,Negative W1
+Sklar,weak,Negative W1
+Sklar,black,Negative W1
+Sklar,bad,Negative W1
+Sklar,stomach,Negative W1
+Sklar,facial,Negative W1
+Sklar,upside-down,Negative W1
+Sklar,canal,Negative W2
+Sklar,chair,Negative W2
+Sklar,head,Negative W2
+Sklar,camp,Negative W2
+Sklar,dose,Negative W2
+Sklar,state,Negative W2
+Sklar,trafficking,Negative W2
+Sklar,fungas,Negative W2
+Sklar,knees,Negative W2
+Sklar,eye,Negative W2
+Sklar,breath,Negative W2
+Sklar,pump,Negative W2
+Sklar,hair,Negative W2
+Sklar,car,Negative W2
+Sklar,root canal,Negative phrase
+Sklar,electric chair,Negative phrase
+Sklar,skinhead,Negative phrase
+Sklar,concentration camp ,Negative phrase
+Sklar,overdose,Negative phrase
+Sklar,vegetative state,Negative phrase
+Sklar,human trafficking ,Negative phrase
+Sklar,foot fungus,Negative phrase
+Sklar,weak knees,Negative phrase
+Sklar,black eye,Negative phrase
+Sklar,bad breath,Negative phrase
+Sklar,stomach pump,Negative phrase
+Sklar,facial hair,Negative phrase
+Sklar,upside-down car,Negative phrase

@@ -1,0 +1,197 @@
+Prime,Semantics,Contrast
+The nurse injected the patient,Neutral sentence,50
+Bobby ate the boar,Neutral sentence,50
+The fireman killed the fire,Neutral sentence,50
+The toddler slapped dad,Neutral sentence,50
+Harry caught the octopus,Neutral sentence,50
+Baby chased the dog,Neutral sentence,50
+The elephant caught the poacher,Neutral sentence,50
+The officer crushed the car,Neutral sentence,50
+The baby hit the brick,Neutral sentence,50
+The dog jumped on Steve,Neutral sentence,50
+Claire dragged the car,Neutral sentence,50
+The baby kicked john,Neutral sentence,50
+The baby hit Mum,Neutral sentence,50
+The kitten chewed the lawnmower,Neutral sentence,50
+Sam hit the ball,Neutral sentence,50
+Andy cut the paper,Neutral sentence,50
+The pig was a male,Neutral sentence,50
+The photographer shot the actor,Neutral sentence,50
+The bridge went over Claire,Neutral sentence,50
+The journalist followed the attacker,Neutral sentence,50
+The bunny outwitted the hunter,Neutral sentence,50
+The soldiers captured the terrorists,Neutral sentence,50
+The cat licked Sally,Neutral sentence,50
+The people ate the fish,Neutral sentence,50
+The child scared the dog,Neutral sentence,50
+The child spun the washer,Neutral sentence,50
+The policeman tackled the criminal,Neutral sentence,50
+The man ate the snake,Neutral sentence,50
+clothes closet,Neutral phrase,50
+apartment building,Neutral phrase,50
+tile roof,Neutral phrase,50
+cogwheel,Neutral phrase,50
+front door,Neutral phrase,50
+lined paper,Neutral phrase,50
+ironed shirt,Neutral phrase,50
+hand rail,Neutral phrase,50
+carpark,Neutral phrase,50
+paper clip,Neutral phrase,50
+gear shift,Neutral phrase,50
+helicopter pad,Neutral phrase,50
+computer screen,Neutral phrase,50
+pedestrian crossing,Neutral phrase,50
+body wash,Neutral phrase,50
+speed bumps,Neutral phrase,50
+windshield,Neutral phrase,50
+wooden stool,Neutral phrase,50
+letterbox,Neutral phrase,50
+backpack,Neutral phrase,50
+high ceiling,Neutral phrase,50
+tin opener,Neutral phrase,50
+desk lamp,Neutral phrase,50
+dining table,Neutral phrase,50
+cardboard box,Neutral phrase,50
+traffic light,Neutral phrase,50
+The patient injected the nurse,Negative sentence,50
+The boar ate Bobby,Negative sentence,50
+The fire killed the fireman,Negative sentence,50
+Dad slapped the toddler,Negative sentence,50
+The octopus caught Harry,Negative sentence,50
+The dog chased baby,Negative sentence,50
+The poacher caught the elephant,Negative sentence,50
+The car crushed the officer,Negative sentence,50
+The brick hit the baby,Negative sentence,50
+Steve jumped on the dog,Negative sentence,50
+The car dragged Claire,Negative sentence,50
+John kicked the baby,Negative sentence,50
+Mum hit the baby,Negative sentence,50
+The lawnmower chewed the kitten,Negative sentence,50
+The ball hit Sam,Negative sentence,50
+The paper cut Andy,Negative sentence,50
+The male was a pig,Negative sentence,50
+The actor shot the photographer,Negative sentence,50
+Claire went over the bridge,Negative sentence,50
+The attacker followed the journalist,Negative sentence,50
+The hunter outwitted the bunny,Negative sentence,50
+The terrorists captured the soldiers,Negative sentence,50
+Sally licked the cat,Negative sentence,50
+The fish ate the people,Negative sentence,50
+The dog scared the child,Negative sentence,50
+The washer spun the child,Negative sentence,50
+The criminal tackled the policeman,Negative sentence,50
+The snake ate the man,Negative sentence,50
+root canal,Negative phrase,50
+skinhead,Negative phrase,50
+concentration camp,Negative phrase,50
+overdose,Negative phrase,50
+vegetative state,Negative phrase,50
+foot fungus,Negative phrase,50
+weak knees,Negative phrase,50
+black eye,Negative phrase,50
+bad breath,Negative phrase,50
+stomach pump,Negative phrase,50
+water boarding,Negative phrase,50
+runny nose,Negative phrase,50
+cow pat,Negative phrase,50
+missing teeth,Negative phrase,50
+spotty face,Negative phrase,50
+computer bug,Negative phrase,50
+kidnap,Negative phrase,50
+frost bite,Negative phrase,50
+black head,Negative phrase,50
+upside-down car,Negative phrase,50
+dentist drill,Negative phrase,50
+electric chair,Negative phrase,50
+facial hair,Negative phrase,50
+human trafficking,Negative phrase,50
+ארגז חול,Hebrew,50
+ארון בגדים,Hebrew,50
+בן-כלבה,Hebrew,50
+בניין דירות,Hebrew,50
+גג-רעפים,Hebrew,50
+גלגל שיניים,Hebrew,50
+דלת כניסה,Hebrew,50
+דף שורות,Hebrew,50
+חולצה מגוהצת,Hebrew,50
+טיפול שורש,Hebrew,50
+ידית אחיזה,Hebrew,50
+יתד בעין,Hebrew,50
+כיסא חשמלי,Hebrew,50
+ליל הבדולח,Hebrew,50
+לקפוץ מהגג,Hebrew,50
+מגולח ראש,Hebrew,50
+מגרש חנייה,Hebrew,50
+מהדק נייר,Hebrew,50
+מוט הילוכים,Hebrew,50
+מחנה ריכוז,Hebrew,50
+מנוחת עולמים,Hebrew,50
+מנחת מסוקים,Hebrew,50
+מנת יתר,Hebrew,50
+מסך מחשב,Hebrew,50
+מעבר חצייה,Hebrew,50
+מצב צמח,Hebrew,50
+נרדם בנהיגה,Hebrew,50
+סבון גוף,Hebrew,50
+סוף העולם,Hebrew,50
+סחר בנשים,Hebrew,50
+פיטריות ברגליים,Hebrew,50
+פיק ברכיים,Hebrew,50
+פנס בעין,Hebrew,50
+פסי האטה,Hebrew,50
+ריח מהפה,Hebrew,50
+רכב הפוך,Hebrew,50
+שטיפת קיבה,Hebrew,50
+שיער פנים,Hebrew,50
+שמשה קדמית,Hebrew,50
+שרפרף מעץ,Hebrew,50
+תיבת דואר,Hebrew,50
+תינוק בתנור,Hebrew,50
+תיק גב,Hebrew,50
+תיקרה גבוהה,Hebrew,50
+תשעה באב,Hebrew,50
+ארגז חול,Hebrew,80
+ארון בגדים,Hebrew,80
+בן-כלבה,Hebrew,80
+בניין דירות,Hebrew,80
+גג-רעפים,Hebrew,80
+גלגל שיניים,Hebrew,80
+דלת כניסה,Hebrew,80
+דף שורות,Hebrew,80
+חולצה מגוהצת,Hebrew,80
+טיפול שורש,Hebrew,80
+ידית אחיזה,Hebrew,80
+יתד בעין,Hebrew,80
+כיסא חשמלי,Hebrew,80
+ליל הבדולח,Hebrew,80
+לקפוץ מהגג,Hebrew,80
+מגולח ראש,Hebrew,80
+מגרש חנייה,Hebrew,80
+מהדק נייר,Hebrew,80
+מוט הילוכים,Hebrew,80
+מחנה ריכוז,Hebrew,80
+מנוחת עולמים,Hebrew,80
+מנחת מסוקים,Hebrew,80
+מנת יתר,Hebrew,80
+מסך מחשב,Hebrew,80
+מעבר חצייה,Hebrew,80
+מצב צמח,Hebrew,80
+נרדם בנהיגה,Hebrew,80
+סבון גוף,Hebrew,80
+סוף העולם,Hebrew,80
+סחר בנשים,Hebrew,80
+פיטריות ברגליים,Hebrew,80
+פיק ברכיים,Hebrew,80
+פנס בעין,Hebrew,80
+פסי האטה,Hebrew,80
+ריח מהפה,Hebrew,80
+רכב הפוך,Hebrew,80
+שטיפת קיבה,Hebrew,80
+שיער פנים,Hebrew,80
+שמשה קדמית,Hebrew,80
+שרפרף מעץ,Hebrew,80
+תיבת דואר,Hebrew,80
+תינוק בתנור,Hebrew,80
+תיק גב,Hebrew,80
+תיקרה גבוהה,Hebrew,80
+תשעה באב,Hebrew,80

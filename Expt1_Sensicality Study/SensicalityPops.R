@@ -84,7 +84,7 @@ print(paste("p value = ", 2*pnorm(-abs(coef(sense.pop.sklar.log)[,3]))))
 # Let's now analyze for the new trials
 sense.pop.new <- subset(sense.pop, Condition %in% c("Sensible", "Non-sensible")) 
 
-# Remove outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be > (!!, see by trial exclusion below) 3sd from group mean)
+# Remove outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be < (!!, see by trial exclusion below) 3sd from group mean)
 Acc <- summaryBy(match. + rt ~ SubjNo, data = subset(sense.pop.new), keep.names = T)
 sense.pop.new <- subset(sense.pop.new, SubjNo %in% Acc[Acc$match. > 0.9,]$SubjNo)
 sense.pop.new <- subset(sense.pop.new, SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo)
@@ -129,7 +129,7 @@ print(paste("p value = ", 2*pnorm(-abs(coef(sense.pop.new.log)[,3]))))
 
 sense.pop.length <- sense.pop
 
-# Remove outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be > (!!, see by trial exclusion below) 3sd from group mean)
+# Remove outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be < (!!, see by trial exclusion below) 3sd from group mean)
 Acc <- summaryBy(match. + rt ~ SubjNo, data = subset(sense.pop.length), keep.names = T)
 sense.pop.length <- subset(sense.pop.length, SubjNo %in% Acc[Acc$match. > 0.9,]$SubjNo)
 sense.pop.length <- subset(sense.pop.length, SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo)

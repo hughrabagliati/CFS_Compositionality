@@ -63,9 +63,10 @@ sense.pop.sklar <- ddply(sense.pop.sklar, .(Condition), function(d){
 sense.pop.sklar <- subset(sense.pop.sklar, rt > 0.2)
 
 # T test (Sklar style)
-sense.pop.sklar.summary <- summaryBy(rt ~ SubjNo + Condition, data = subset(sense.pop.sklar,  Condition %in% c("Sklar_violation", "Sklar_control")), keep.names = T)
+sense.pop.sklar$log.rt <- log(sense.pop.sklar$rt)
+sense.pop.sklar.summary <- summaryBy(rt + log.rt~ SubjNo + Condition, data = subset(sense.pop.sklar,  Condition %in% c("Sklar_violation", "Sklar_control")), keep.names = T)
 t.test(rt ~ Condition, data = sense.pop.sklar.summary, paired = T)
-t.test(log(rt) ~ Condition, data = sense.pop.sklar.summary, paired = T)
+t.test(log.rt ~ Condition, data = sense.pop.sklar.summary, paired = T)
 
 # Bayes factor -- minimum effect of 0.01, maximum of 0.06, our effect = -0.03519684 and our SE = -0.03/-1.7874=  0.01678416
 
@@ -74,7 +75,7 @@ sense.pop.sklar.raw <- summary(lmer(rt ~ Condition + (1+Condition|SubjNo)+ (1|pr
 print(sense.pop.sklar.raw)
 print(paste("p value = ", 2*pnorm(-abs(coef(sense.pop.sklar.raw)[,3]))))
 
-sense.pop.sklar.log <- summary(lmer(log(rt) ~ Condition + (1+Condition|SubjNo)+ (1|prime), data = subset(sense.pop.sklar,  Condition %in% c("Sklar_violation", "Sklar_control"))))
+sense.pop.sklar.log <- summary(lmer(log.rt ~ Condition + (1+Condition|SubjNo)+ (1|prime), data = subset(sense.pop.sklar,  Condition %in% c("Sklar_violation", "Sklar_control"))))
 print(sense.pop.sklar.log)
 print(paste("p value = ", 2*pnorm(-abs(coef(sense.pop.sklar.log)[,3]))))
 
@@ -107,9 +108,10 @@ sense.pop.new <- ddply(sense.pop.new, .(Condition), function(d){
 sense.pop.new <- subset(sense.pop.new, rt > 0.2)
 
 # T test (Sklar style)
-sense.pop.new.summary <- summaryBy(rt ~ SubjNo + Condition, data = subset(sense.pop.new,  Condition %in% c("Non-sensible","Sensible")), keep.names = T)
+sense.pop.new$log.rt <- log(sense.pop.new$rt)
+sense.pop.new.summary <- summaryBy(rt + log.rt~ SubjNo + Condition, data = subset(sense.pop.new,  Condition %in% c("Non-sensible","Sensible")), keep.names = T)
 t.test(rt ~ Condition, data = sense.pop.new.summary, paired = T)
-t.test(log(rt) ~ Condition, data = sense.pop.new.summary, paired = T)
+t.test(log.rt ~ Condition, data = sense.pop.new.summary, paired = T)
 
 # Bayes factor -- minimum effect of 0.01, maximum of 0.06, our effect = -0.0002327283 and our SE = -0.03/-0.02217=  0.01049744
 
@@ -119,7 +121,7 @@ sense.pop.new.raw <-summary(lmer(rt ~ Condition + (1+Condition|SubjNo)+ (1|prime
 print(sense.pop.new.raw)
 print(paste("p value = ", 2*pnorm(-abs(coef(sense.pop.new.raw)[,3]))))
 
-sense.pop.new.log <- summary(lmer(log(rt) ~ Condition + (1+Condition|SubjNo)+ (1|prime), data = subset(sense.pop.new,  Condition %in% c("Non-sensible","Sensible"))))
+sense.pop.new.log <- summary(lmer(log.rt ~ Condition + (1+Condition|SubjNo)+ (1|prime), data = subset(sense.pop.new,  Condition %in% c("Non-sensible","Sensible"))))
 print(sense.pop.new.log)
 print(paste("p value = ", 2*pnorm(-abs(coef(sense.pop.new.log)[,3]))))
 
@@ -176,4 +178,12 @@ sense.graph$rt.mean <- sense.graph$rt.mean * 1000
 sense.graph$SE <- sense.graph$SE * 1000
 
 dodge <- position_dodge(width=0.9)
-qplot(sense.graph$Experiment, sense.graph$rt.mean, geom = "bar", stat = "identity", fill = sense.graph$Cond_Graph, ylab = "Reaction Time (ms)", xlab = "", position = dodge, ylim = c(0,2000)) +  geom_errorbar(aes(ymax = sense.graph$rt.mean + sense.graph$SE, ymin = sense.graph$rt.mean - sense.graph$SE), width=0.25, position = dodge) + labs(fill = "Sentence Type") + theme(axis.text.x = element_text(colour = "black", size = 12))
+ggplot(sense.graph, aes(Experiment,rt.mean, fill = Cond_Graph)) +
+  geom_bar(stat = "identity",  position = dodge) +
+  geom_errorbar(aes(ymax = sense.graph$rt.mean +
+                      sense.graph$SE, ymin = sense.graph$rt.mean - sense.graph$SE), width=0.25, position = dodge) +
+  labs(fill = "Sentence Type") + 
+  theme(axis.text.x = element_text(colour = "black", size = 12)) +
+  ylab("Reaction Time (ms)") +
+  xlab("") + 
+  ylim(c(0,2000))

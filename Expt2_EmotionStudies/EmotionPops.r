@@ -26,6 +26,7 @@ emo.pop.sklar <- subset(emo.pop.sklar, SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + 
 # Remove incorrect trials
 emo.pop.sklar <- subset(emo.pop.sklar, match. == 1)
 
+# Remove RTs +/-3sd from each subject's mean 
 emo.pop.sklar <- ddply(emo.pop.sklar, .(SubjNo), function(d){ 
 	include = mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
 	d = subset(d, rt > include[1] & rt < include[2])
@@ -38,9 +39,10 @@ emo.pop.sklar <- subset(emo.pop.sklar, rt > 0.2)
 emo.pop.sklar$MeanAffectivity <- (emo.pop.sklar$MeanAffectivity - mean(emo.pop.sklar$MeanAffectivity, na.rm = T))/sd(emo.pop.sklar$MeanAffectivity, na.rm = T)
 
 # Lin Reg (sklar style)
-emo.pop.sklar.sum <- summaryBy(rt ~ prime + MeanAffectivity, data = emo.pop.sklar, keep.names = T)
+emo.pop.sklar$log.rt <- log(emo.pop.sklar$rt)
+emo.pop.sklar.sum <- summaryBy(rt + log.rt~ prime + MeanAffectivity, data = emo.pop.sklar, keep.names = T)
 summary(lm(rt ~ MeanAffectivity, data = emo.pop.sklar.sum))
-summary(lm(log(rt) ~ MeanAffectivity, data = emo.pop.sklar.sum))
+summary(lm(log.rt ~ MeanAffectivity, data = emo.pop.sklar.sum))
 
 
 # note that you can calculate BF by estimating the sample SE from Sklar's 
@@ -49,8 +51,11 @@ summary(lm(log(rt) ~ MeanAffectivity, data = emo.pop.sklar.sum))
 # We know the original coef and the t, and we are testing against a 0 effect. If Sklar is right, we should get data
 # that falls within the normal distribution around his effect [ie don't use uniform option].
 # Note that Sklar's original coef appears to be a Beta, i.e., a standardized coefficient, so first
-emo.pop.sklar.sum$rt_stand <- (emo.pop.sklar.sum$rt - mean(emo.pop.sklar.sum$rt, na.rm = T))/sd(emo.pop.sklar.sum$rt, na.rm = T)
-summary(lm(rt_stand ~ MeanAffectivity, data = emo.pop.sklar.sum))
+# NOTE THAT YOU HAVE TO UNCOMMENT OUT THE LINES BELOW TO RUN THIS CODE. 
+#
+# <-- UNCOMMENT emo.pop.sklar.sum$rt_stand <- (emo.pop.sklar.sum$rt - mean(emo.pop.sklar.sum$rt, na.rm = T))/sd(emo.pop.sklar.sum$rt, na.rm = T)
+# <-- UNCOMMENT summary(lm(rt_stand ~ MeanAffectivity, data = emo.pop.sklar.sum))
+#
 # Sample estimate is -0.03966 and sample SE is 0.02627 [from regression above], Theory M = 0.356, Theory SD = 0.9495262
 # BF is therefore 0.08
 
@@ -58,7 +63,7 @@ summary(lm(rt_stand ~ MeanAffectivity, data = emo.pop.sklar.sum))
 emo.sklar.lmer.raw <- summary(lmer(rt ~ MeanAffectivity + (1+MeanAffectivity|SubjNo)+ (1|prime), data = subset(emo.pop.sklar, prime_semantics %in% c("Negative phrase","Neutral phrase"))))
 print(emo.sklar.lmer.raw)
 print(paste("p value = ", 2*pnorm(-abs(coef(emo.sklar.lmer.raw)[2,3]))))
-emo.sklar.lmer.log <- summary(lmer(log(rt) ~ MeanAffectivity + (1+MeanAffectivity|SubjNo)+ (1|prime), data = subset(emo.pop.sklar, prime_semantics %in% c("Negative phrase","Neutral phrase"))))
+emo.sklar.lmer.log <- summary(lmer(log.rt ~ MeanAffectivity + (1+MeanAffectivity|SubjNo)+ (1|prime), data = subset(emo.pop.sklar, prime_semantics %in% c("Negative phrase","Neutral phrase"))))
 print(emo.sklar.lmer.log)
 print(paste("p value = ", 2*pnorm(-abs(coef(emo.sklar.lmer.log)[2,3]))))
 
@@ -85,10 +90,10 @@ emo.pop.new <- subset(emo.pop.new, rt > 0.2)
 
 #  standardize the MeanAffectivity score
 emo.pop.new$MeanAffectivity <- (emo.pop.new$MeanAffectivity - mean(emo.pop.new$MeanAffectivity, na.rm = T))/sd(emo.pop.new$MeanAffectivity, na.rm = T)
-
-emo.pop.new.sum <- summaryBy(rt ~ prime + MeanAffectivity, data = emo.pop.new, keep.names = T)
+emo.pop.new$log.rt <- log(emo.pop.new$rt)
+emo.pop.new.sum <- summaryBy(rt + log.rt ~ prime + MeanAffectivity, data = emo.pop.new, keep.names = T)
 summary(lm(rt ~ MeanAffectivity, data = emo.pop.new.sum))
-summary(lm(log(rt) ~ MeanAffectivity, data = emo.pop.new.sum))
+summary(lm(log.rt ~ MeanAffectivity, data = emo.pop.new.sum))
 
 # note that you can calculate BF by estimating the sample SE from Sklar's 
 # regression coefficient (0.356) and his t stat 2.523. t = b/se therefore se = b/t = 0.1411019. Therefore SD = SE * sqrt(N = 46) = 0.9495262
@@ -96,8 +101,11 @@ summary(lm(log(rt) ~ MeanAffectivity, data = emo.pop.new.sum))
 # We know the original coef and the t, and we are testing against a 0 effect. If Sklar is right, we should get data
 # that falls within the normal distribution around his effect [ie don't use uniform option].
 # Note that Sklar's original coef appears to be a Beta, i.e., a standardized coefficient, so first
-emo.pop.new.sum$rt_stand <- (emo.pop.new.sum$rt - mean(emo.pop.new.sum$rt, na.rm = T))/sd(emo.pop.new.sum$rt, na.rm = T)
-summary(lm(rt_stand ~ MeanAffectivity, data = emo.pop.new.sum))
+# NOTE THAT YOU HAVE TO UNCOMMENT OUT THE LINES BELOW TO RUN THIS CODE. 
+#
+# <-- UNCOMMENT emo.pop.new.sum$rt_stand <- (emo.pop.new.sum$rt - mean(emo.pop.new.sum$rt, na.rm = T))/sd(emo.pop.new.sum$rt, na.rm = T)
+# <-- UNCOMMENT summary(lm(rt_stand ~ MeanAffectivity, data = emo.pop.new.sum))
+#
 # Sample estimate is -0.01737 and sample SE is 0.03435 [from regression above], Theory M = 0.356, Theory SD = 0.9495262
 # BF is therefore 0.08
 
@@ -105,7 +113,7 @@ summary(lm(rt_stand ~ MeanAffectivity, data = emo.pop.new.sum))
 emo.new.lmer.raw <- summary(lmer(rt ~ MeanAffectivity + (1+MeanAffectivity|SubjNo)+ (1+MeanAffectivity|PairID), data = subset(emo.pop.new, prime_semantics %in% c("Negative sentence","Neutral sentence"))))
 print(emo.new.lmer.raw)
 print(paste("p value = ", 2*pnorm(-abs(coef(emo.new.lmer.raw)[2,3]))))
-emo.new.lmer.log <- summary(lmer(log(rt) ~ MeanAffectivity + (1+MeanAffectivity|SubjNo)+ (1+MeanAffectivity|PairID), data = subset(emo.pop.new, prime_semantics %in% c("Negative sentence","Neutral sentence"))))
+emo.new.lmer.log <- summary(lmer(log.rt ~ MeanAffectivity + (1+MeanAffectivity|SubjNo)+ (1+MeanAffectivity|PairID), data = subset(emo.pop.new, prime_semantics %in% c("Negative sentence","Neutral sentence"))))
 print(emo.new.lmer.log)
 print(paste("p value = ", 2*pnorm(-abs(coef(emo.new.lmer.log)[2,3]))))
 
@@ -131,15 +139,14 @@ emo.pop.hebr <- ddply(emo.pop.hebr, .(SubjNo), function(d){
 # Remove RTs < 200ms
 emo.pop.hebr <- subset(emo.pop.hebr, rt > 0.2)
 
-# Can't do a by-items analysis until Hebrew is properly recoded.
 #  standardize the MeanAffectivity score
 emo.pop.hebr$MeanAffectivity <- (emo.pop.hebr$MeanAffectivity - mean(emo.pop.hebr$MeanAffectivity, na.rm = T))/sd(emo.pop.hebr$MeanAffectivity, na.rm = T)
-
-emo.pop.hebr.sum <- summaryBy(rt ~ prime + MeanAffectivity + Contrast, data = emo.pop.hebr, keep.names = T)
+emo.pop.hebr$log.rt <- log(emo.pop.hebr$rt)
+emo.pop.hebr.sum <- summaryBy(rt + log.rt~ prime + MeanAffectivity + Contrast, data = emo.pop.hebr, keep.names = T)
 emo.pop.hebr.sum$Contrast <- as.factor(emo.pop.hebr.sum$Contrast)
 contrasts(emo.pop.hebr.sum$Contrast)[1] <- -1
 summary(lm(rt ~ MeanAffectivity*Contrast, data = emo.pop.hebr.sum))
-summary(lm(log(rt) ~ MeanAffectivity*Contrast, data = emo.pop.hebr.sum))
+summary(lm(log.rt ~ MeanAffectivity*Contrast, data = emo.pop.hebr.sum))
 
 
 
@@ -149,7 +156,7 @@ contrasts(emo.pop.hebr$Contrast2)[1] <- -1
 emo.contr.lmer.raw <- summary(lmer(rt ~ Contrast2*MeanAffectivity + (1+Contrast2*MeanAffectivity|SubjNo)+ (1+Contrast2|prime), data = subset(emo.pop.hebr, prime_semantics %in% c("Hebrew"))))
 print(emo.contr.lmer.raw)
 print(paste("p value = ", 2*pnorm(-abs(coef(emo.contr.lmer.raw)[,3]))))
-emo.contr.lmer.log <- summary(lmer(log(rt) ~ Contrast2*MeanAffectivity + (1+Contrast2*MeanAffectivity|SubjNo)+ (1+Contrast2|prime), data = subset(emo.pop.hebr, prime_semantics %in% c("Hebrew"))))
+emo.contr.lmer.log <- summary(lmer(log.rt ~ Contrast2*MeanAffectivity + (1+Contrast2*MeanAffectivity|SubjNo)+ (1+Contrast2|prime), data = subset(emo.pop.hebr, prime_semantics %in% c("Hebrew"))))
 print(emo.contr.lmer.log)
 print(paste("p value = ", 2*pnorm(-abs(coef(emo.contr.lmer.log)[,3]))))
 
@@ -165,7 +172,7 @@ print(paste("p value = ", 2*pnorm(-abs(coef(emo.contr.lmer.log)[,3]))))
 # tho note that there are length confounds here
 emo.pop$Lang <- "English"
 emo.pop[emo.pop$prime_semantics %in% c("Hebrew"),]$Lang <- "Hebrew"
-lang <- summaryBy(rt ~ Lang + SubjNo, data = subset(emo.pop, Contrast == 50),keep.names = T)
+lang <- summaryBy(rt  ~ Lang + SubjNo, data = subset(emo.pop, Contrast == 50),keep.names = T)
 summaryBy(rt ~ Lang , data = subset(emo.pop, Contrast == 50),keep.names = T, FUN = c(mean,sd))
 emo.pop.lang <- summary(lmer(rt ~ Lang +Length+ (1+Lang+Length|SubjNo), data = subset(emo.pop, Contrast == 50)))
 print(summary(emo.pop.lang))
@@ -176,7 +183,7 @@ print(paste("p value = ", 2*pnorm(-abs(coef(emo.pop.lang)[,3]))))
 #
 # Graphs
 
-emo.pop.hebr.sum <- summaryBy(rt ~ prime + MeanAffectivity + Contrast, data = emo.pop.hebr, keep.names = T)
+emo.pop.hebr.sum <- summaryBy(rt + log.rt ~ prime + MeanAffectivity + Contrast, data = emo.pop.hebr, keep.names = T)
 emo.pop.hebr.sum$Experiment <- "Experiment 2c"
 
 emo.pop.sklar.sum$Experiment <- "Experiment 2a"

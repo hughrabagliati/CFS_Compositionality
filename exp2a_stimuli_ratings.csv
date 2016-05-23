@@ -1,0 +1,51 @@
+Condition,prime,prime_se,mantics,MeanAffectivity,W1.score,W2.score
+New,black head,Negative,phrase,-1.95238095,-0.29761905,0.77011494
+New,cardboard box,Neutral,phrase,0.09090909,0.15555556,0.24418605
+New,computer bug,Negative,phrase,-2.73170732,1.72727273,-1.11627907
+New,cow pat,Negative,phrase,-1.09090909,0.97727273,0.95454545
+New,dentist drill,Negative,phrase,-2.54545455,-0.97777778,-0.09302326
+New,desk lamp,Neutral,phrase,0.77272727,0.52380952,0.90697674
+New,dining table,Neutral,phrase,1.30232558,1.93181818,0.82222222
+New,frost bite,Negative,phrase,-3.53488372,-0.81395349,-1.77777778
+New,kidnap,Negative,phrase,-4.30232558,1.85365854,2.11363636
+New,letterbox,Neutral,phrase,0.52272727,0.84444444,0.24418605
+New,missing teeth,Negative,phrase,-2.79069767,-2.52272727,0.65116279
+New,runny nose,Negative,phrase,-2.32558139,-1.11627907,0.44186046
+New,spotty face,Negative,phrase,-1.84090909,-1.23255814,1.11111111
+New,tin opener,Neutral,phrase,0.55555556,0.02325581,0.65909091
+New,traffic light,Neutral,phrase,0.36363636,-2.08888889,2.29268293
+New,water boarding,Negative,phrase,-3.13953488,1.30232558,0.15909091
+Sklar,apartment building,Neutral,phrase,0.52272727,0.79545455,1.11363636
+Sklar,backpack,Neutral,phrase,0.74418605,0.1627907,0.23255814
+Sklar,bad breath,Negative,phrase,-2.93333333,-2.93181818,1.31707317
+Sklar,black eye,Negative,phrase,-2.86046512,-0.29761905,1
+Sklar,body wash,Neutral,phrase,1.69767442,0.36585366,1.07317073
+Sklar,carpark,Neutral,phrase,0.18181818,1.07865169,1.95348837
+Sklar,clothes closet,Neutral,phrase,0.63636364,1.41860465,0.5
+Sklar,cogwheel,Neutral,phrase,0.21428571,-0.02325581,0.80952381
+Sklar,computer screen,Neutral,phrase,0.88636364,1.72727273,0.31111111
+Sklar,concentration camp,Negative,phrase,-4.39534884,1.53488372,1.15909091
+Sklar,electric chair,Negative,phrase,-3.81395349,0.76744186,0.47727273
+Sklar,facial hair,Negative,phrase,-0.13636364,0.78048781,0.95348837
+Sklar,foot fungus,Negative,phrase,-3.48837209,0.37209302,-1.72727273
+Sklar,front door,Neutral,phrase,0.88372093,0.8,0.51111111
+Sklar,gear shift,Neutral,phrase,0.32558139,0.42857143,0.33333333
+Sklar,hand rail,Neutral,phrase,0.68181818,0.70454545,0.34883721
+Sklar,helicopter pad,Neutral,phrase,0.6744186,0.71428571,0.27906977
+Sklar,high ceiling,Neutral,phrase,0.81395349,0.56818182,0.31707317
+Sklar,human trafficking,Negative,phrase,-4.65853659,1.65116279,-3.24444444
+Sklar,ironed shirt,Neutral,phrase,2.11627907,0.8372093,0.71111111
+Sklar,lined paper,Neutral,phrase,0.53333333,0.275,0.56976744
+Sklar,overdose,Negative,phrase,-3.83333333,0.07317073,-0.38636364
+Sklar,paper clip,Neutral,phrase,0.43181818,0.56976744,0.22222222
+Sklar,pedestrian crossing,Neutral,phrase,0.61363636,0.46666667,0.26829268
+Sklar,root canal,Negative,phrase,-3.51111111,0.59090909,0.42857143
+Sklar,skinhead,Negative,phrase,-3.28571429,0.56097561,0.77011494
+Sklar,speed bumps,Neutral,phrase,-0.66666667,0.16666667,-0.73333333
+Sklar,stomach pump,Negative,phrase,-3,0.31818182,0.4
+Sklar,tile roof,Neutral,phrase,0.51111111,0.41860465,0.79069767
+Sklar,upside-down car,Negative,phrase,-2.84090909,-1.11627907,1.07865169
+Sklar,vegetative state,Negative,phrase,-3.46511628,-1.95454546,0.43181818
+Sklar,weak knees,Negative,phrase,-2.25581395,-1.88095238,0.41860465
+Sklar,windshield,Neutral,phrase,0.45454545,0.47727273,1.56818182
+Sklar,wooden stool,Neutral,phrase,0.29268293,0.29545455,-0.14285714

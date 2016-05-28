@@ -2,7 +2,7 @@ library(plyr)
 library(lme4)
 library(doBy)
 
-emo.pop <- read.csv("all_data_with_pairIDs.csv")
+emo.pop <- read.csv("all_data_with_w1w2_ratings.csv")
 
 # Make RTs numeric
 emo.pop <- subset(emo.pop, rt != "None")

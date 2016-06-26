@@ -67,6 +67,10 @@ emo.sklar.lmer.log <- summary(lmer(log.rt ~ MeanAffectivity + (1+MeanAffectivity
 print(emo.sklar.lmer.log)
 print(paste("p value = ", 2*pnorm(-abs(coef(emo.sklar.lmer.log)[2,3]))))
 
+emo.pop.sklar$Length <- (emo.pop.sklar$Length - mean(emo.pop.sklar$Length))/sd(emo.pop.sklar$Length)
+summary(glmer(rt ~ MeanAffectivity+Length + (1+MeanAffectivity|SubjNo)+ (1|prime), data = emo.pop.sklar, family = "inverse.gaussian"(link="log")))
+
+
 ##########################################################################################################################
 #
 # New reversed sentences Experiment next 
@@ -91,7 +95,13 @@ emo.pop.new <- subset(emo.pop.new, rt > 0.2)
 #  standardize the MeanAffectivity score
 emo.pop.new$MeanAffectivity <- (emo.pop.new$MeanAffectivity - mean(emo.pop.new$MeanAffectivity, na.rm = T))/sd(emo.pop.new$MeanAffectivity, na.rm = T)
 emo.pop.new$log.rt <- log(emo.pop.new$rt)
-emo.pop.new.sum <- summaryBy(rt + log.rt ~ prime + MeanAffectivity, data = emo.pop.new, keep.names = T)
+emo.pop.new$Length <- (emo.pop.new$Length - mean(emo.pop.new$Length))/sd(emo.pop.new$Length)
+emo.pop.new$Cond <- "Violation"
+emo.pop.new[emo.pop.new$prime_semantics == "Neutral sentence",]$Cond <- "Control"
+emo.pop.new$Cond <- as.factor(emo.pop.new$Cond)
+contrasts(emo.pop.new$Cond)[1] <- -1
+
+emo.pop.new.sum <- summaryBy(rt + log.rt ~ prime + MeanAffectivity+Cond, data = emo.pop.new, keep.names = T)
 summary(lm(rt ~ MeanAffectivity, data = emo.pop.new.sum))
 summary(lm(log.rt ~ MeanAffectivity, data = emo.pop.new.sum))
 
@@ -117,6 +127,7 @@ emo.new.lmer.log <- summary(lmer(log.rt ~ MeanAffectivity + (1+MeanAffectivity|S
 print(emo.new.lmer.log)
 print(paste("p value = ", 2*pnorm(-abs(coef(emo.new.lmer.log)[2,3]))))
 
+summary(glmer(rt ~ Cond+Length + (1+Cond|SubjNo)+ (1|prime), data = emo.pop.new, family = "inverse.gaussian"(link="log")))
 
 ###########################################################################################################################
 #
@@ -204,3 +215,21 @@ ggplot(graph, aes(x=MeanAffectivity, y=rt, shape = Contrast)) +
     geom_point() +    # Use hollow circles
     geom_smooth(method=lm,   # Add linear regression line
                 se=FALSE) + facet_grid(.~Experiment) + labs(y = "Reaction Time (ms)", x = "Standardized Valence Rating")
+
+
+sense.graph <- summaryBy(rt ~ Cond + SubjNo, data = emo.pop.new, keep.names = T)
+sense.graph <- summaryBy(rt ~ Cond, data = sense.graph, FUN = c(mean,sd))
+sense.graph$SE <- sense.graph$rt.sd/sqrt(length(unique(emo.pop.new$SubjNo)))
+sense.graph$rt.mean <- sense.graph$rt.mean * 1000
+sense.graph$SE <- sense.graph$SE * 1000
+sense.graph$Cond <- ordered(sense.graph$Cond, levels =c("Violation","Control"))
+dodge <- position_dodge(width=0.9)
+ggplot(sense.graph, aes(Cond,rt.mean, fill = Cond)) +
+  geom_bar(stat = "identity",  position = dodge) +
+  geom_errorbar(aes(ymax = sense.graph$rt.mean +
+                      sense.graph$SE, ymin = sense.graph$rt.mean - sense.graph$SE), width=0.25, position = dodge) +
+  labs(fill = "Sentence Type") + 
+  theme(axis.text.x = element_text(colour = "black", size = 12)) +
+  ylab("Reaction Time (ms)") +
+  xlab("") + 
+  ylim(c(0,2000))

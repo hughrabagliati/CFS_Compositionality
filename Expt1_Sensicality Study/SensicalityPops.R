@@ -71,6 +71,7 @@ t.test(log.rt ~ Condition, data = sense.pop.sklar.summary, paired = T)
 # Bayes factor -- minimum effect of 0.01, maximum of 0.06, our effect = -0.03519684 and our SE = -0.03/-1.7874=  0.01678416
 
 # lmer (Rabag style)
+
 sense.pop.sklar.raw <- summary(lmer(rt ~ Condition + (1+Condition|SubjNo)+ (1|prime), data = subset(sense.pop.sklar,  Condition %in% c("Sklar_violation", "Sklar_control"))))
 print(sense.pop.sklar.raw)
 print(paste("p value = ", 2*pnorm(-abs(coef(sense.pop.sklar.raw)[,3]))))
@@ -78,6 +79,13 @@ print(paste("p value = ", 2*pnorm(-abs(coef(sense.pop.sklar.raw)[,3]))))
 sense.pop.sklar.log <- summary(lmer(log.rt ~ Condition + (1+Condition|SubjNo)+ (1|prime), data = subset(sense.pop.sklar,  Condition %in% c("Sklar_violation", "Sklar_control"))))
 print(sense.pop.sklar.log)
 print(paste("p value = ", 2*pnorm(-abs(coef(sense.pop.sklar.log)[,3]))))
+
+sense.pop.sklar$Length <- (sense.pop.sklar$Length - mean(sense.pop.sklar$Length))/sd(sense.pop.sklar$Length)
+sense.pop.sklar$Cond <- "Violation"
+sense.pop.sklar[sense.pop.sklar$Condition == "Sklar_control",]$Cond <- "Control"
+sense.pop.sklar$Cond <- as.factor(sense.pop.sklar$Cond)
+contrasts(sense.pop.sklar$Cond)[1] <- -1
+summary(glmer(rt ~ Cond+Length + (1+Cond|SubjNo)+ (1|prime), data = sense.pop.sklar, family = "inverse.gaussian"(link="log")))
 
 
 ##########################################################################################################################
@@ -124,6 +132,14 @@ print(paste("p value = ", 2*pnorm(-abs(coef(sense.pop.new.raw)[,3]))))
 sense.pop.new.log <- summary(lmer(log.rt ~ Condition + (1+Condition|SubjNo)+ (1|prime), data = subset(sense.pop.new,  Condition %in% c("Non-sensible","Sensible"))))
 print(sense.pop.new.log)
 print(paste("p value = ", 2*pnorm(-abs(coef(sense.pop.new.log)[,3]))))
+
+sense.pop.new$Length <- (sense.pop.new$Length - mean(sense.pop.new$Length))/sd(sense.pop.new$Length)
+sense.pop.new$Cond <- "Violation"
+sense.pop.new[sense.pop.new$Condition == "Sensible",]$Cond <- "Control"
+sense.pop.new$Cond <- as.factor(sense.pop.new$Cond)
+contrasts(sense.pop.new$Cond)[1] <- -1
+summary(glmer(rt ~ Cond+Length + (1+Cond|SubjNo)+ (1|prime), data = sense.pop.new, family = "inverse.gaussian"(link="log")))
+
 
 ###########################################################################################################################
 #

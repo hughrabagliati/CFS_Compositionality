@@ -1,389 +1,287 @@
-p <- rep(NA,1000)#
-for (j in 1:length(p)){ #
-subj_c1 = rep(NA,30)#
-subj_c2 = rep(NA,30)#
-for (i in 1:30){#
-	subj_c1[i] <- mean(rlnorm(30,2,2))#
-	subj_c2[i] <- mean(rlnorm(30,2,2))#
-}#
-p[j] <- t.test(subj_c1,subj_c2, paired = T, var.equal = T)$statistic#
-}
-length(p[abs(p) > 1.96])
-p <- rep(NA,1000)#
-for (j in 1:length(p)){ #
-subj_c1 = rep(NA,30)#
-subj_c2 = rep(NA,30)#
-for (i in 1:30){#
-	subj_c1[i] <- mean(rlnorm(30,2,3))#
-	subj_c2[i] <- mean(rlnorm(30,2,3))#
-}#
-p[j] <- t.test(subj_c1,subj_c2, paired = T, var.equal = T)$statistic#
-}
-length(p[abs(p) > 1.96])
-p <- rep(NA,1000)#
-for (j in 1:length(p)){ #
-subj_c1 = rep(NA,30)#
-subj_c2 = rep(NA,30)#
-for (i in 1:30){#
-	subj_c1[i] <- mean(rlnorm(30,2,0.5))#
-	subj_c2[i] <- mean(rlnorm(30,2,0.5))#
-}#
-p[j] <- t.test(subj_c1,subj_c2, paired = T, var.equal = T)$statistic#
-}
-length(p[abs(p) > 1.96])
-50/1000
-rlnorm(20,2,0.5)
-(rlnorm(20,2,0.5))
-mean(rlnorm(20,2,0.5))
-median(rlnorm(20,2,0.5))
-hist(rlnorm(1000,2,0.5))
-hist(rlnorm(1000,0.3,0.5))
-p <- rep(NA,1000)#
-for (j in 1:length(p)){ #
-subj_c1 = rep(NA,30)#
-subj_c2 = rep(NA,30)#
-for (i in 1:30){#
-	subj_c1[i] <- mean(rlnorm(30,0.3,0.5))#
-	subj_c2[i] <- mean(rlnorm(30,0.3,0.5))#
-}#
-p[j] <- t.test(subj_c1,subj_c2, paired = T, var.equal = T)$statistic#
-}
-length(p[abs(p) > 1.96])
-p <- rep(NA,1000)#
-for (j in 1:length(p)){ #
-subj_c1 = rep(NA,12)#
-subj_c2 = rep(NA,12)#
-for (i in 1:12){#
-	subj_c1[i] <- mean(rlnorm(30,0.3,0.5))#
-	subj_c2[i] <- mean(rlnorm(30,0.3,0.5))#
-}#
-p[j] <- t.test(subj_c1,subj_c2, paired = T, var.equal = T)$statistic#
-}
-length(p[abs(p) > 1.96])
-p <- rep(NA,1000)#
-for (j in 1:length(p)){ #
-subj_c1 = rep(NA,20)#
-subj_c2 = rep(NA,20)#
+<<<<<<< HEAD
+?Control
+y = 1
+while(y <5){ print( y<-y+1) }
+?t.test
+Marginal <- matrix(NA, nrow = 10000, ncol = 1)#
+perm = list(OneSample = OneSample,LargeSample = LargeSample, Marginal = Marginal)
+h = 1#
+while (h < 11){#
+a <- cbind(matrix(rnorm(24,0,2),12,2),1)#
+if (t.test(a[,1],a[,2])$statistic < 1.96 & a[,1],a[,2])$statistic > 1.4) {#
+h <- h + 1#
 for (i in 1:20){#
-	subj_c1[i] <- mean(rlnorm(30,0.3,0.5))#
-	subj_c2[i] <- mean(rlnorm(30,0.3,0.5))#
+a <- rbind(a, cbind(matrix(rnorm(24,0,2),12,2),1))#
+t <- t.test(a[,1],a[,2])$p.value#
+if(t < 0.05){#
+	break#
+	}#
 }#
-p[j] <- t.test(subj_c1,subj_c2, paired = T, var.equal = T)$statistic#
-}
-length(p[abs(p) > 1.96])
-p <- rep(NA,1000)#
-for (j in 1:length(p)){ #
-subj_c1 = rep(NA,10)#
-subj_c2 = rep(NA,10)#
-for (i in 1:10){#
-	subj_c1[i] <- mean(rlnorm(30,0.3,0.5))#
-	subj_c2[i] <- mean(rlnorm(60,0.3,0.5))#
 }#
-p[j] <- t.test(subj_c1,subj_c2, paired = T, var.equal = T)$statistic#
+perm$Marginal[h] <- i#
 }
-length(p[abs(p) > 1.96])
-p <- rep(NA,1000)#
-for (j in 1:length(p)){ #
-subj_c1 = rep(NA,10)#
-subj_c2 = rep(NA,10)#
-for (i in 1:10){#
-	subj_c1[i] <- mean(rlnorm(30,0.3,0.5))#
-	subj_c2[i] <- mean(rlnorm(60,0.3,0.5))#
-}#
-p[j] <- t.test(subj_c1,subj_c2, paired = T, var.equal = T)$statistic#
-}
-length(p[abs(p) > 1.96])
-p <- rep(NA,1000)#
-for (j in 1:length(p)){ #
-subj_c1 = rep(NA,20)#
-subj_c2 = rep(NA,20)#
+h = 1#
+while (h < 11){#
+a <- cbind(matrix(rnorm(24,0,2),12,2),1)#
+if (t.test(a[,1],a[,2])$statistic < 1.96 & t.test(a[,1],a[,2])$statistic > 1.4) {#
+h <- h + 1#
 for (i in 1:20){#
-	subj_c1[i] <- mean(rlnorm(30,0.3,0.5))#
-	subj_c2[i] <- mean(rlnorm(60,0.3,0.5))#
+a <- rbind(a, cbind(matrix(rnorm(24,0,2),12,2),1))#
+t <- t.test(a[,1],a[,2])$p.value#
+if(t < 0.05){#
+	break#
+	}#
 }#
-p[j] <- t.test(subj_c1,subj_c2, paired = T, var.equal = T)$statistic#
+}#
+perm$Marginal[h] <- i#
 }
-length(p[abs(p) > 1.96])
-p <- rep(NA,1000)#
-for (j in 1:length(p)){ #
-subj_c1 = rep(NA,20)#
-subj_c2 = rep(NA,20)#
+perm$Marginal[1:13]
+h = 1#
+while (h < 11){#
+a <- cbind(matrix(rnorm(24,0,2),12,2),1)#
+if (t.test(a[,1],a[,2])$statistic < 1.96 & t.test(a[,1],a[,2])$statistic > 1.4) {#
+h <- h + 1#
 for (i in 1:20){#
-	subj_c1[i] <- mean(rlnorm(30,0.3,0.5))#
-	subj_c2[i] <- mean(rlnorm(60,0.3,0.5))#
+a <- rbind(a, cbind(matrix(rnorm(24,0,2),12,2),1))#
+t <- t.test(a[,1],a[,2])$p.value#
+if(t < 0.05){#
+	break#
+	}#
 }#
-p[j] <- t.test(subj_c1,subj_c2, paired = T, var.equal = T)$statistic#
+#
+perm$Marginal[h] <- i#
+}#
 }
-length(p[abs(p) > 1.96])
-p <- rep(NA,1000)#
-for (j in 1:length(p)){ #
-subj_c1 = rep(NA,20)#
-subj_c2 = rep(NA,20)#
+perm$Marginal[1:13]
+h = 1#
+while (h < 11){print("j")#
+a <- cbind(matrix(rnorm(24,0,2),12,2),1)#
+if (t.test(a[,1],a[,2])$statistic < 1.96 & t.test(a[,1],a[,2])$statistic > 1.4) {#
+h <- h + 1#
 for (i in 1:20){#
-	subj_c1[i] <- mean(rlnorm(30,0.3,0.5))#
-	subj_c2[i] <- mean(rlnorm(60,0.3,0.5))#
+a <- rbind(a, cbind(matrix(rnorm(24,0,2),12,2),1))#
+t <- t.test(a[,1],a[,2])$p.value#
+if(t < 0.05){#
+	break#
+	}#
 }#
-p[j] <- t.test(subj_c1,subj_c2, paired = T, var.equal = T)$statistic#
+#
+perm$Marginal[h] <- i#
+}#
 }
-length(p[abs(p) > 1.96])
-a <- rlnorm(1000,0.3,0.5)
-?qqplot
-qqnorm(a)
-a <- rlnorm(100000,0.3,0.5)
-qqnorm(a)
-p <- rep(NA,1000)#
-for (j in 1:length(p)){ #
-subj_c1 = rep(NA,20)#
-subj_c2 = rep(NA,20)#
+h = 1#
+while (h < 10001){#
+a <- cbind(matrix(rnorm(24,0,2),12,2),1)#
+if (t.test(a[,1],a[,2])$statistic < 1.96 & t.test(a[,1],a[,2])$statistic > 1.4) {#
+h <- h + 1#
 for (i in 1:20){#
-	subj_c1[i] <- mean(rlnorm(30,0,1))#
-	subj_c2[i] <- mean(rlnorm(30,0,1))#
+a <- rbind(a, cbind(matrix(rnorm(24,0,2),12,2),1))#
+t <- t.test(a[,1],a[,2])$p.value#
+if(t < 0.05){#
+	break#
+	}#
 }#
-p[j] <- t.test(subj_c1,subj_c2, paired = T, var.equal = T)$statistic#
+#
+perm$Marginal[h] <- i#
+}#
 }
-length(p[abs(p) > 1.96])
-p <- rep(NA,1000)#
-for (j in 1:length(p)){ #
-subj_c1 = rep(NA,20)#
-subj_c2 = rep(NA,20)#
+seq(1,3,1)
+seq(100,10000,100)
+h = 1#
+while (h < 10001){#
+a <- cbind(matrix(rnorm(24,0,2),12,2),1)#
+if (t.test(a[,1],a[,2])$statistic < 1.96 & t.test(a[,1],a[,2])$statistic > 1.4) {#
+h <- h + 1#
+if ( h %in% seq(100,10000,100)){print(h)}#
 for (i in 1:20){#
-	subj_c1[i] <- mean(rlnorm(30,0.1,1))#
-	subj_c2[i] <- mean(rlnorm(30,0,1))#
+a <- rbind(a, cbind(matrix(rnorm(24,0,2),12,2),1))#
+t <- t.test(a[,1],a[,2])$p.value#
+if(t < 0.05){#
+	break#
+	}#
 }#
-p[j] <- t.test(subj_c1,subj_c2, paired = T, var.equal = T)$statistic#
+#
+perm$Marginal[h] <- i#
+}#
 }
-length(p[abs(p) > 1.96])
-p <- rep(NA,1000)#
-for (j in 1:length(p)){ #
-subj_c1 = rep(NA,20)#
-subj_c2 = rep(NA,20)#
+ls()
+hist(perm)
+summary(perm)
+hist(perm$Marginal)
+h = 1#
+while (h < 10001){#
+a <- cbind(matrix(rnorm(48,0,2),24,2),1)#
+if (t.test(a[,1],a[,2])$statistic < 1.96 & t.test(a[,1],a[,2])$statistic > 1.4) {#
+h <- h + 1#
+if ( h %in% seq(100,10000,100)){print(h)}#
 for (i in 1:20){#
-	subj_c1[i] <- mean(rlnorm(30,0.01,1))#
-	subj_c2[i] <- mean(rlnorm(30,0,1))#
+a <- rbind(a, cbind(matrix(rnorm(48,0,2),24,2),1))#
+t <- t.test(a[,1],a[,2])$p.value#
+if(t < 0.05){#
+	break#
+	}#
 }#
-p[j] <- t.test(subj_c1,subj_c2, paired = T, var.equal = T)$statistic#
+#
+perm$Marginal[h] <- i#
+}#
 }
-length(p[abs(p) > 1.96])
-length(p[abs(p) > 2])
-p <- rep(NA,1000)#
-for (j in 1:length(p)){ #
-subj_c1 = rep(NA,20)#
-subj_c2 = rep(NA,20)#
+hist(perm$Marginal)
+h = 1#
+while (h < 10001){#
+a <- cbind(matrix(rnorm(100,0,2),50,2),1)#
+if (t.test(a[,1],a[,2])$statistic < 1.96 & t.test(a[,1],a[,2])$statistic > 1.4) {#
+h <- h + 1#
+if ( h %in% seq(100,10000,100)){print(h)}#
 for (i in 1:20){#
-	subj_c1[i] <- mean(rlnorm(30,0.01,1))#
-	subj_c2[i] <- mean(rlnorm(30,0,1))#
+a <- rbind(a, cbind(matrix(rnorm(100,0,2),50,2),1))#
+t <- t.test(a[,1],a[,2])$p.value#
+if(t < 0.05){#
+	break#
+	}#
 }#
-p[j] <- t.test(subj_c1,subj_c2, paired = T, var.equal = T)$statistic#
-}
-length(p[abs(p) > 2])
-length(p[abs(p) >= 1.96])
-p <- rep(NA,1000)#
-for (j in 1:length(p)){ #
-subj_c1 = rep(NA,20)#
-subj_c2 = rep(NA,20)#
-for (i in 1:20){#
-	subj_c1[i] <- mean(rlnorm(30,0.01,1))#
-	subj_c2[i] <- mean(rlnorm(30,0,1))#
+#
+perm$Marginal[h] <- i#
 }#
-p[j] <- t.test(subj_c1,subj_c2, paired = T, var.equal = T)$statistic#
 }
-length(p[abs(p) >= 1.96])
-p <- rep(NA,1000)#
-for (j in 1:length(p)){ #
-subj_c1 = rep(NA,20)#
-subj_c2 = rep(NA,20)#
-for (i in 1:20){#
-	subj_c1[i] <- mean(rlnorm(30,0.01,1))#
-	subj_c2[i] <- mean(rlnorm(30,0,1))#
-}#
-p[j] <- t.test(subj_c1,subj_c2, paired = T, var.equal = T)$statistic#
-}
-length(p[abs(p) >= 1.96])
-p <- rep(NA,1000)#
-for (j in 1:length(p)){ #
-subj_c1 = rep(NA,20)#
-subj_c2 = rep(NA,20)#
-for (i in 1:20){#
-	subj_c1[i] <- mean(rlnorm(30,0.01,1))#
-	subj_c2[i] <- mean(rlnorm(30,0,1))#
-}#
-p[j] <- t.test(subj_c1,subj_c2, paired = T, var.equal = T)$statistic#
-}
-length(p[abs(p) >= 1.96])
-p <- rep(NA,1000)#
-for (j in 1:length(p)){ #
-subj_c1 = rep(NA,20)#
-subj_c2 = rep(NA,20)#
-for (i in 1:20){#
-	subj_c1[i] <- mean(rlnorm(30,0,1))#
-	subj_c2[i] <- mean(rlnorm(30,0,1))#
-}#
-p[j] <- t.test(subj_c1,subj_c2, paired = T, var.equal = T)$statistic#
-}
-length(p[abs(p) >= 1.96])
-p <- rep(NA,1000)#
-for (j in 1:length(p)){ #
-subj_c1 = rep(NA,20)#
-subj_c2 = rep(NA,20)#
-for (i in 1:20){#
-	subj_c1[i] <- mean(rlnorm(30,0,1))#
-	subj_c2[i] <- mean(rlnorm(30,0,1))#
-}#
-p[j] <- t.test(subj_c1,subj_c2, paired = T, var.equal = T)$statistic#
-}
-length(p[abs(p) >= 1.96])
-p <- rep(NA,1000)#
-for (j in 1:length(p)){ #
-subj_c1 = rep(NA,20)#
-subj_c2 = rep(NA,20)#
-for (i in 1:20){#
-	subj_c1[i] <- mean(rlnorm(30,0,1))#
-	subj_c2[i] <- mean(rlnorm(30,0,1))#
-}#
-p[j] <- t.test(subj_c1,subj_c2, paired = T, var.equal = T)$statistic#
-}
-length(p[abs(p) >= 1.96])
-p <- rep(NA,1000)#
-for (j in 1:length(p)){ #
-subj_c1 = rep(NA,20)#
-subj_c2 = rep(NA,20)#
-for (i in 1:20){#
-	subj_c1[i] <- median(rlnorm(30,0,1))#
-	subj_c2[i] <- media(rlnorm(30,0,1))#
-}#
-p[j] <- t.test(subj_c1,subj_c2, paired = T, var.equal = T)$statistic#
-}
-p <- rep(NA,1000)#
-for (j in 1:length(p)){ #
-subj_c1 = rep(NA,20)#
-subj_c2 = rep(NA,20)#
-for (i in 1:20){#
-	subj_c1[i] <- median(rlnorm(30,0,1))#
-	subj_c2[i] <- median(rlnorm(30,0,1))#
-}#
-p[j] <- t.test(subj_c1,subj_c2, paired = T, var.equal = T)$statistic#
-}
-length(p[abs(p) >= 1.96])
-p <- rep(NA,1000)#
-for (j in 1:length(p)){ #
-subj_c1 = rep(NA,20)#
-subj_c2 = rep(NA,20)#
-for (i in 1:20){#
-	subj_c1[i] <- median(rlnorm(30,0,1))#
-	subj_c2[i] <- median(rlnorm(30,0,1))#
-}#
-p[j] <- t.test(subj_c1,subj_c2, paired = T, var.equal = T)$statistic#
-}
-length(p[abs(p) >= 1.96])
-p <- rep(NA,1000)#
-for (j in 1:length(p)){ #
-subj_c1 = rep(NA,20)#
-subj_c2 = rep(NA,20)#
-for (i in 1:20){#
-	subj_c1[i] <- median(rlnorm(30,0,1))#
-	subj_c2[i] <- median(rlnorm(30,0,1))#
-}#
-p[j] <- t.test(subj_c1,subj_c2, paired = T, var.equal = T)$statistic#
-}
-length(p[abs(p) >= 1.96])
-p <- rep(NA,1000)#
-for (j in 1:length(p)){ #
-subj_c1 = rep(NA,20)#
-subj_c2 = rep(NA,20)#
-for (i in 1:20){#
-	subj_c1[i] <- median(rlnorm(30,0,1))#
-	subj_c2[i] <- median(rlnorm(30,0,1))#
-}#
-p[j] <- t.test(subj_c1,subj_c2, paired = T, var.equal = T)$statistic#
-}
-length(p[abs(p) >= 1.96])
-p <- rep(NA,1000)#
-for (j in 1:length(p)){ #
-subj_c1 = rep(NA,20)#
-subj_c2 = rep(NA,20)#
-for (i in 1:20){#
-	subj_c1[i] <- median(rlnorm(30,0,1))#
-	subj_c2[i] <- median(rlnorm(30,0,1))#
-}#
-p[j] <- t.test(subj_c1,subj_c2, paired = T, var.equal = T)$statistic#
-}
-length(p[abs(p) >= 1.96])
-p <- rep(NA,1000)#
-for (j in 1:length(p)){ #
-subj_c1 = rep(NA,20)#
-subj_c2 = rep(NA,20)#
-for (i in 1:20){#
-	subj_c1[i] <- mean(rlnorm(30,0,1))#
-	subj_c2[i] <- mean(rlnorm(30,0,1))#
-}#
-p[j] <- t.test(subj_c1,subj_c2, paired = T, var.equal = T)$statistic#
-}
-length(p[abs(p) >= 1.96])
-p <- rep(NA,1000)#
-for (j in 1:length(p)){ #
-subj_c1 = rep(NA,20)#
-subj_c2 = rep(NA,20)#
-for (i in 1:20){#
-	subj_c1[i] <- mean(rlnorm(30,0,1))#
-	subj_c2[i] <- mean(rlnorm(30,0,1))#
-}#
-p[j] <- t.test(subj_c1,subj_c2, paired = T, var.equal = T)$statistic#
-}
-length(p[abs(p) >= 1.96])
-p <- rep(NA,1000)#
-for (j in 1:length(p)){ #
-subj_c1 = rep(NA,20)#
-subj_c2 = rep(NA,20)#
-for (i in 1:20){#
-	subj_c1[i] <- mean(rlnorm(30,0,1))#
-	subj_c2[i] <- mean(rlnorm(30,0,1))#
-}#
-p[j] <- t.test(subj_c1,subj_c2, paired = T, var.equal = T)$statistic#
-}
-length(p[abs(p) >= 1.96])
-p <- rep(NA,1000)#
-for (j in 1:length(p)){ #
-subj_c1 = rep(NA,20)#
-subj_c2 = rep(NA,20)#
-for (i in 1:20){#
-	subj_c1[i] <- mean(rlnorm(30,0,1))#
-	subj_c2[i] <- mean(rlnorm(30,0,1))#
-}#
-p[j] <- t.test(subj_c1,subj_c2, paired = T, var.equal = T)$statistic#
-}
-length(p[abs(p) >= 1.96])
-p <- rep(NA,1000)#
-for (j in 1:length(p)){ #
-subj_c1 = rep(NA,20)#
-subj_c2 = rep(NA,20)#
-for (i in 1:20){#
-	subj_c1[i] <- mean(rlnorm(30,0,1))#
-	subj_c2[i] <- mean(rlnorm(30,0,1))#
-}#
-p[j] <- t.test(subj_c1,subj_c2, paired = T, var.equal = T)$statistic#
-}
-length(p[abs(p) >= 1.96])
-p <- rep(NA,1000)#
-for (j in 1:length(p)){ #
-subj_c1 = rep(NA,20)#
-subj_c2 = rep(NA,20)#
-for (i in 1:20){#
-	subj_c1[i] <- mean(log(rlnorm(30,0,1)))#
-	subj_c2[i] <- mean(log(rlnorm(30,0,1)))#
-}#
-p[j] <- t.test(subj_c1,subj_c2, paired = T, var.equal = T)$statistic#
-}
-length(p[abs(p) >= 1.96])
-p <- rep(NA,1000)#
-for (j in 1:length(p)){ #
-subj_c1 = rep(NA,20)#
-subj_c2 = rep(NA,20)#
-for (i in 1:20){#
-	subj_c1[i] <- mean(log(rlnorm(30,0,1)))#
-	subj_c2[i] <- mean(log(rlnorm(30,0,1)))#
-}#
-p[j] <- t.test(subj_c1,subj_c2, paired = T, var.equal = T)$statistic#
-}
+hist(perm$Marginal)
+lines(density(perm$Marginal), col = "red", lwd = 2)
+density(perm$Marginal)[1:10]
+hist(perm$Marginal) -> k
+summary(k)
+line(k$breaks, k$counts)
+line(k$breaks -1, k$counts)
+line(k$breaks[1:19], k$counts)
+k$counts[1:10]
+lines(k$breaks[1:19], k$counts)
+hist(perm$Marginal, xlim = c(1:20)) -> k
+?hist
+hist(perm$Marginal, xlim = c(0:20)) -> k
+hist(perm$Marginal, xlim = c(20))
+hist(perm$Marginal, xlim = c(0,20))
+hist(perm$Marginal, xlim = c(1,20))
+hist(perm$Marginal, xlim = c(1,20), bty = "t")
+hist(perm$Marginal, xlim = c(1,20), bty = "o")
+hist(perm$Marginal, xlim = c(1,20), bty = "n")
+?barplot
+?plot
+hist(perm$Marginal, xlim = c(1,20), bty = "y")
+hist(perm$Marginal, xlim = c(1,20), bty = "]")
+plot(perm$Marginal, xlim = c(1,20), bty = "]")
+lines(k$breaks[1:19], k$counts)
+hist(perm$Marginal, xlim = c(1,20), bty = "]", border = NA)
+plot(1:20, k$counts)
+plot(1:19, k$counts)
+hist(perm$Marginal, xlim = c(1,20), breaks = 20,bty = "]", border = NA)
+hist(perm$Marginal, xlim = c(1,20), breaks = 20,bty = "]")
+summary(perm$Marginal)
+table(perm$Marginal)
+plot(table(perm$Marginal))
+lines(table(perm$Marginal))
+lines(1:20,table(perm$Marginal))
+plot(1:20,table(perm$Marginal))
+?plot
+plot(1:20,table(perm$Marginal), type = "n")
+plot(1:20,table(perm$Marginal))
+plot(table(perm$Marginal), type = "n")
+a = data.frame(c("a","b","c"),2,2)
+a
+a = data.frame(rep(c("a","b","c",2),2,3)
+a
+a = data.frame(rep(c("a","b","c",2),2,3))
+a
+a = matrix(rep(c("a","b","c",2),2,3))
+a
+?matrix
+a = matrix(rep(c("a","b","c"),2),2,3)
+a
+a = matrix(rep(c("a","b","c"),2),3,2)
+a
+a = matrix(rep(c("a","b","c","a","b"),2),5,2)
+a
+a[a[1,] == a,]
+a[a[1,] == a]
+a[,a[1,] == a]
+a[,a[,1] == a]
+a[a[,1] == a,]
+a[,1] == a
+?Data.frame
+?data.frame
+a = data.frame(a)
+a
+a[a$X1 == "a",]
+a[a$X1 == "a",1]
+a[a$X1 == "b",1]
+a = data.frame(rep(c("a","b","c","a","b"),2),5,2)
+a
+a = data.frame(matrix(rep(c("a","b","c","a","b"),2),5,2))
+a
+a$Test = 0
+a[a$X1 == "b",1]
+a
+a[a$X1 == "b",]
+a[a$X1 == "b",1]
+a[a$X1 == "b",1]$Test
+a[a$X1 == "b",][1,]
+print(a)
+a[a$X1 == "b",][1,]$Test
+a[a$X1 == "b",][1,]$Test <- a[a$X1 == "b",][1,]$X2
+a
+a[a$X1 == "b",][1,]$Test <- as.character(a[a$X1 == "b",][1,]$X2)
+a
+library(pwer)
+library(pwr)
+pwr.t.test(d = 0.3, sig.level = 0.01, power = 0.8)
+pwr.t.test(d = 0.3, sig.level = 0.05, power = 0.8)
+pwr.t.test(d = 0.5, sig.level = 0.05, power = 0.8)
+5.357543e+300
+2^999
+a = data.frame(c(a,b,a,a))
+a = data.frame(c(1,2,1,1))
+a
+a = data.frame(d1 = c(1,2,1),d2 = c(2,1,1),d3 = c(1,1,1))
+a
+which(a==2)
+a[which(a==2)]
+a[which(a==2),]
+which(a==2, arr.ind = T)
+a[which(a==2, arr.ind = T),]
+a[arrayInd(a==2),]
+a[arrayInd(a==2)]
+arrayInd(a==2)
+arrayInd(a,2)
+which(a==2, arr.ind = T)
+which(a>2, arr.ind = T)
+which(a12, arr.ind = T)
+which(a>1, arr.ind = T)
+which(a>1, arr.ind = T) -> k
+a[k]
+a[!k]
+Data Analysis Scripts for analysis of population alone#
+			calculate.statistics.within = function(data_file,StartTime,EndTime,StepSize){#
+			#Load the relevant libraries#
+			#Load the relevant libraries#
+			require("lme4") #
+			require(multicore)#
+			require(doMC)#
+			require(foreach)#
+			require(plyr)#
+			#Start the multicore machine!#
+#
+			#Split the data frame into a list for each timepoint#
+			a = split(data_file[data_file$Time >= StartTime & data_file$Time <= EndTime,],data_file[data_file$Time >= StartTime & data_file$Time <= EndTime,]$Time)#
+			#Parallel application of lmer and coefficient extraction, outputs another list as above#
+			mclapply(a,function(x) coef(summary(lmer(Score~Cond*Strength + (1+Cond*Strength|Subj) , data = x)))[2:4,1:3]) -> a.co#
+			# Evaluate the list to see whether t value meets a threshold (hard coded)#
+			lapply(a.co,function(x) data.frame(x,pv = ifelse(abs(x[,3]) > 1.6,0.04,0.06), co = rownames(x))) -> k#
+			# plyr that list into a dataframe#
+			k.df = ldply(k)#
+			k.df$.id = as.numeric(k.df$.id)#
+			colnames(k.df) <- c("Time", "Estimate","SE", "Stat", "pval","Coef")#
+			k.df$Coef = ordered(k.df$Coef,levels = c("CondU","Strengthweak","CondU:Strengthweak"))#
+			#Split that dataframe into a list based on the regression coefficients#
+			stats.sample = split(k.df,k.df$Coef)#
+			return(stats.sample)#
+=======
 length(p[abs(p) >= 1.96])
 p <- rep(NA,1000)#
 for (j in 1:length(p)){ #
@@ -807,178 +705,1429 @@ for (i in 1:30){#
 p[j] <- t.test(subj_c1,subj_c2, paired = T, var.equal = T)$p.value#
 }
 length(p[abs(p) <= 0.05])/1000
-a <- c()"boats", "houses", "lamps", "stars", "discs", "planes" , "bags", "locks", "canes", "hands", "shoes", "bones", "squares", "bells", "bows", "cars", "crosses", "cups", "flags", "forks" "hearts", "leaves", "trees","bikes","chairs","toys","coin","keys","clocks","pumps","shells","houses","hats","planes","dolls","spoons","forks","beds","beetles","cups","bowls","bags","buckets","dogs","geese","cats","cans","hammers","bricks","bottles","pens","pencils","ribbons","cards","buttons","rings","dice","shirts","socks","shoes","belts","bells","flowers","pots","eagles","frogs")
-a <- c("boats", "houses", "lamps", "stars", "discs", "planes" , "bags", "locks", "canes", "hands", "shoes", "bones", "squares", "bells", "bows", "cars", "crosses", "cups", "flags", "forks" "hearts", "leaves", "trees","bikes","chairs","toys","coin","keys","clocks","pumps","shells","houses","hats","planes","dolls","spoons","forks","beds","beetles","cups","bowls","bags","buckets","dogs","geese","cats","cans","hammers","bricks","bottles","pens","pencils","ribbons","cards","buttons","rings","dice","shirts","socks","shoes","belts","bells","flowers","pots","eagles","frogs")
-a <- c("boats", "houses", "lamps", "stars", "discs", "planes" , "bags", "locks", "canes", "hands", "shoes", "bones", "squares", "bells", "bows", "cars", "crosses", "cups", "flags", "forks" "hearts", "leaves","trees","bikes","chairs","toys","coin","keys","clocks","pumps","shells","houses","hats","planes","dolls","spoons","forks","beds","beetles","cups","bowls","bags","buckets","dogs","geese","cats","cans","hammers","bricks","bottles","pens","pencils","ribbons","cards","buttons","rings","dice","shirts","socks","shoes","belts","bells","flowers","pots","eagles","frogs")
-a <- c("boats", "houses", "lamps", "stars", "discs", "planes" , "bags", "locks", "canes", "hands", "shoes", "bones", "squares", "bells", "bows", "cars", "crosses", "cups", "flags", "forks",leaves","trees","bikes","chairs","toys","coin","keys","clocks","pumps","shells","houses","hats","planes","dolls","spoons","forks","beds","beetles","cups","bowls","bags","buckets","dogs","geese","cats","cans","hammers","bricks","bottles","pens","pencils","ribbons","cards","buttons","rings","dice","shirts","socks","shoes","belts","bells","flowers","pots","eagles","frogs")
-a = c("boats", "houses", "lamps", "stars", "discs", "planes" , "bags", "locks", "canes", "hands", "shoes", "bones", "squares", "bells", "bows", "cars", "crosses", "cups", "flags", "forks" ,"hearts", "leaves", "trees","bikes","chairs","toys","coin","keys","clocks","pumps","shells","houses","hats","planes","dolls","spoons","forks","beds","beetles","cups","bowls","bags","buckets","dogs","geese","cats","cans","hammers","bricks","bottles","pens","pencils","ribbons","cards","buttons","rings","dice","shirts","socks","shoes","belts","bells","flowers","pots","eagles","frogs")
-length(a)
-unique(a)
-length(unique(a))
-summary(a)
-summary(as.factor(a))
-?aspell
-aspell(a)
-a = c("boats", "houses", "lamps", "stars", "discs", "planes" , "bags", "locks", "canes", "hands", "shoes", "bones", "squares", "bells", "bows", "cars", "crosses", "flags", "hearts", "leaves", "trees","bikes","chairs","toys","coin","keys","clocks","pumps","shells","houses","hats","planes","dolls","spoons","forks","beds","beetles","cups","bowls","bags","buckets","dogs","geese","cats","cans","hammers","bricks","bottles","pens","pencils","ribbons","cards","buttons","rings","dice","shirts","socks","belts","flowers","pots","eagles","frogs","combs","candies","trays","pipes","baskets","cushions","blankets","towels","cans","tubes","monkeys","napkins","crates","pills","rocks","ropes","sticks","wheels","boots","cones","squares","triangle","puppets")
-length(a)
-a <- c("boats", "houses", "lamps", "stars", "discs", "planes" , "bags", "locks", "canes", "hands", "shoes", "bones", "squares", "bells", "bows", "cars", "crosses", "flags", "hearts", "leaves", "trees","bikes","chairs","toys","coin","keys","clocks","pumps","shells","houses","hats","planes","dolls","spoons","forks","beds","beetles","cups","bowls","bags","buckets","dogs","geese","cats","cans","hammers","bricks","bottles","pens","pencils","ribbons","cards","buttons","rings","dice","shirts","socks","belts","flowers","pots","eagles","frogs","combs","candies","trays","pipes","baskets","cushions","blankets","towels","cans","tubes","monkeys","napkins","crates","pills","rocks","ropes","sticks","wheels","boots","cones","squares","triangle","puppets","violins","barrels","gloves","erasers","beans","rings","pillows","candles","mugs","books")
-length(a)
-length(unique(a))
-a <- c("boats", "houses", "lamps", "stars", "discs", "planes" , "bags", "locks", "canes", "hands", "shoes", "bones", "squares", "bells", "bows", "cars", "crosses", "flags", "hearts", "leaves", "trees","bikes","chairs","toys","coin","keys","clocks","pumps","shells","houses","hats","planes","dolls","spoons","forks","beds","beetles","cups","bowls","bags","buckets","dogs","geese","cats","cans","hammers","bricks","bottles","pens","pencils","ribbons","cards","buttons","rings","dice","shirts","socks","belts","flowers","pots","eagles","frogs","combs","candies","trays","pipes","baskets","cushions","blankets","towels","cans","tubes","monkeys","napkins","crates","pills","rocks","ropes","sticks","wheels","boots","cones","squares","triangle","puppets","violins","barrels","gloves","erasers","beans","rings","pillows","candles","mugs","books","toys","balloons",)
-a <- c("boats", "houses", "lamps", "stars", "discs", "planes" , "bags", "locks", "canes", "hands", "shoes", "bones", "squares", "bells", "bows", "cars", "crosses", "flags", "hearts", "leaves", "trees","bikes","chairs","toys","coin","keys","clocks","pumps","shells","houses","hats","planes","dolls","spoons","forks","beds","beetles","cups","bowls","bags","buckets","dogs","geese","cats","cans","hammers","bricks","bottles","pens","pencils","ribbons","cards","buttons","rings","dice","shirts","socks","belts","flowers","pots","eagles","frogs","combs","candies","trays","pipes","baskets","cushions","blankets","towels","cans","tubes","monkeys","napkins","crates","pills","rocks","ropes","sticks","wheels","boots","cones","squares","triangle","puppets","violins","barrels","gloves","erasers","beans","rings","pillows","candles","mugs","books","toys","balloons")
-length(unique(a))
-summary(as.factor(a))
-a <- c("boats", "houses", "lamps", "stars", "discs", "planes" , "locks", "canes", "hands", "shoes", "bones", "squares", "bells", "bows", "cars", "crosses", "flags", "hearts", "leaves", "trees","bikes","chairs","coin","keys","clocks","pumps","shells","hats","planes","dolls","spoons","forks","beds","beetles","cups","bowls","bags","buckets","dogs","geese","cats","cans","hammers","bricks","bottles","pens","pencils","ribbons","cards","buttons","dice","shirts","socks","belts","flowers","pots","eagles","frogs","combs","candies","trays","pipes","baskets","cushions","blankets","towels","tubes","monkeys","napkins","crates","pills","rocks","ropes","sticks","wheels","boots","cones","squares","triangle","puppets","violins","barrels","gloves","erasers","beans","rings","pillows","candles","mugs","books","toys","balloons")
-length(unique(a))
-length(a)
-summary(as.factor(a))
-a <- c("boats", "houses", "lamps", "stars", "discs", "planes" , "locks", "canes", "hands", "shoes", "bones", "squares", "bells", "bows", "cars", "crosses", "flags", "hearts", "leaves", "trees","bikes","chairs","coin","keys","clocks","pumps","shells","hats","dolls","spoons","forks","beds","beetles","cups","bowls","bags","buckets","dogs","geese","cats","cans","hammers","bricks","bottles","pens","pencils","ribbons","cards","buttons","dice","shirts","socks","belts","flowers","pots","eagles","frogs","combs","candies","trays","pipes","baskets","cushions","blankets","towels","tubes","monkeys","napkins","crates","pills","rocks","ropes","sticks","wheels","boots","cones","triangle","puppets","violins","barrels","gloves","erasers","beans","rings","pillows","candles","mugs","books","toys","balloons","clocks","letters","parcels","slippers")
-length(a)
-length(unique(a))
-summary(as.factor(a))
-a <- c("boats", "houses", "lamps", "stars", "discs", "planes" , "locks", "canes", "hands", "shoes", "bones", "squares", "bells", "bows", "cars", "crosses", "flags", "hearts", "leaves", "trees","bikes","chairs","coin","keys","clocks","pumps","shells","hats","dolls","spoons","forks","beds","beetles","cups","bowls","bags","buckets","dogs","geese","cats","cans","hammers","bricks","bottles","pens","pencils","ribbons","cards","buttons","dice","shirts","socks","belts","flowers","pots","eagles","frogs","combs","candies","trays","pipes","baskets","cushions","blankets","towels","tubes","monkeys","napkins","crates","pills","rocks","ropes","sticks","wheels","boots","cones","triangle","puppets","violins","barrels","gloves","erasers","beans","rings","pillows","candles","mugs","books","toys","balloons","letters","parcels","slippers","masks","shells")
-length(unique(a))
-length(a)
-summary(as.factor(a))
-a <- c("boats", "houses", "lamps", "stars", "discs", "planes" , "locks", "canes", "hands", "shoes", "bones", "squares", "bells", "bows", "cars", "crosses", "flags", "hearts", "leaves", "trees","bikes","chairs","coin","keys","clocks","pumps","shells","hats","dolls","spoons","forks","beds","beetles","cups","bowls","bags","buckets","dogs","geese","cats","cans","hammers","bricks","bottles","pens","pencils","ribbons","cards","buttons","dice","shirts","socks","belts","flowers","pots","eagles","frogs","combs","candies","trays","pipes","baskets","cushions","blankets","towels","tubes","monkeys","napkins","crates","pills","rocks","ropes","sticks","wheels","boots","cones","triangle","puppets","violins","barrels","gloves","erasers","beans","rings","pillows","candles","mugs","books","toys","balloons","letters","parcels","slippers","masks","seeds","cookies","dishes","drums","carrots")
-summary(as.factor(a))
-length(unique(a))
-length(a)
-a <- c(""boats", "houses", "lamps", "stars", "discs", "planes" , "locks", "canes", "hands", "shoes", "bones", "squares", "bells", "bows", "cars", "crosses", "flags", "hearts", "leaves", "trees","bikes","chairs","coin","keys","clocks","pumps","shells","hats","dolls","spoons","forks","beds","beetles","cups","bowls","bags","buckets","dogs","geese","cats","cans","hammers","bricks","bottles","pens","pencils","ribbons","cards","buttons","dice","shirts","socks","belts","flowers","pots","eagles","frogs","combs","candies","trays","pipes","baskets","cushions","blankets","towels","tubes","monkeys","napkins","crates","pills","rocks","ropes","sticks","wheels","boots","cones","triangle","puppets","violins","barrels","gloves","erasers","beans","rings","pillows","candles","mugs","books","toys","balloons","letters","parcels","slippers","masks","seeds","cookies","dishes","drums","carrots","peppers"")
-a <- c("boats", "houses", "lamps", "stars", "discs", "planes" , "locks", "canes", "hands", "shoes", "bones", "squares", "bells", "bows", "cars", "crosses", "flags", "hearts", "leaves", "trees","bikes","chairs","coin","keys","clocks","pumps","shells","hats","dolls","spoons","forks","beds","beetles","cups","bowls","bags","buckets","dogs","geese","cats","cans","hammers","bricks","bottles","pens","pencils","ribbons","cards","buttons","dice","shirts","socks","belts","flowers","pots","eagles","frogs","combs","candies","trays","pipes","baskets","cushions","blankets","towels","tubes","monkeys","napkins","crates","pills","rocks","ropes","sticks","wheels","boots","cones","triangle","puppets","violins","barrels","gloves","erasers","beans","rings","pillows","candles","mugs","books","toys","balloons","letters","parcels","slippers","masks","seeds","cookies","dishes","drums","carrots","peppers")
-length(a)
-length(unique(a))
-library(lme4)
-inv(-3)
-1/-1.3
-library(retimes)
-rexgauss(5,0,1,1)
-hist(rexgauss(50,0,1,0.5))
-rexgauss(50,0,1,1)
-help('stan')
-library(stan)
-library(rstan)
-help(stan)
-1/10
-1/2
-exp(0.1)
-?exp
-0.1/1
-1/0.1
-1/0.5
-library(retimes)
-curve(dexGAUS(x, mu=300 ,sigma=35,nu=100), 100, 600, #
- main = "The ex-GAUS  density mu=300 ,sigma=35,nu=100")#
-curve(dexGAUS(x, mu=300 ,sigma=35,nu=300), 100, 600,add = T, #
- main = "The ex-GAUS  density mu=300 ,sigma=35,nu=100")
-plot(0, )
-plot(1, type="n", axes=F, xlab="", ylab="")
-curve(dexGAUS(x, mu=300 ,sigma=35,nu=100), 100, 600, #
- main = "The ex-GAUS  density mu=300 ,sigma=35,nu=100")#
-curve(dexGAUS(x, mu=300 ,sigma=35,nu=300), 100, 600,add = T, #
- main = "The ex-GAUS  density mu=300 ,sigma=35,nu=100")
-library(gamlss.dist)
-curve(dexGAUS(x, mu=300 ,sigma=35,nu=100), 100, 600, #
- main = "The ex-GAUS  density mu=300 ,sigma=35,nu=100")#
-curve(dexGAUS(x, mu=300 ,sigma=35,nu=300), 100, 600,add = T, #
- main = "The ex-GAUS  density mu=300 ,sigma=35,nu=100")
-library(gamlss.dist)
-curve(dexGAUS(x, mu=300 ,sigma=35,nu=100), 100, 600, #
- main = "The ex-GAUS  density mu=300 ,sigma=35,nu=100")#
-curve(dexGAUS(x, mu=300 ,sigma=35,nu=300), 100, 600,add = T, #
- main = "The ex-GAUS  density mu=300 ,sigma=35,nu=100")
-curve(dexGAUS(x, mu=300 ,sigma=35,nu=100), 100, 600, #
- main = "")#
-curve(dexGAUS(x, mu=300 ,sigma=35,nu=300), 100, 600,add = T, #
- main = "", col = "red")
-curve(dexGAUS(x, mu=300 ,sigma=35,nu=100), 100, 600, #
- main = "", lwd = 5)#
-curve(dexGAUS(x, mu=300 ,sigma=35,nu=300), 100, 600,add = T, #
- main = "", col = "red", lwd = 5)
-curve(dexGAUS(x, mu=300 ,sigma=35,nu=100), 100, 600, #
- main = "", lwd = 5, ylab = "Prob. Density", xlab  = "reaction time")#
-curve(dexGAUS(x, mu=300 ,sigma=35,nu=300), 100, 600,add = T, #
- main = "", col = "red", lwd = 5)
-curve(dexGAUS(x, mu=300 ,sigma=35,nu=100), 100, 600, #
- main = "", lwd = 5, ylab = "Prob. Density", xlab  = "Reaction Time")#
-curve(dexGAUS(x, mu=300 ,sigma=35,nu=300), 100, 600,add = T, #
- main = "", col = "red", lwd = 5)
-curve(dexGAUS(x, mu=300 ,sigma=35,nu=100), 100, 600, #
- main = "", lwd = 5, ylab = "Prob. Density", xlab  = "Reaction Time", bty = "n")#
-curve(dexGAUS(x, mu=300 ,sigma=35,nu=300), 100, 600,add = T, #
- main = "", col = "red", lwd = 5)
-curve(dexGAUS(x, mu=300 ,sigma=35,nu=100), 100, 600, #
- main = "", lwd = 5, ylab = "Prob. Density", xlab  = "Reaction Time", bty = "n")#
-curve(dexGAUS(x, mu=400 ,sigma=35,nu=100), 100, 600,add = T, #
- main = "", col = "red", lwd = 5)
-curve(dexGAUS(x, mu=300 ,sigma=35,nu=100), 100, 600, #
- main = "", lwd = 5, ylab = "Prob. Density", xlab  = "Reaction Time", bty = "n")
-curve(dexGAUS(x, mu=300 ,sigma=35,nu=300), 100, 600, #
- main = "", lwd = 5, ylab = "Prob. Density", xlab  = "Reaction Time", bty = "n")
-curve(dexGAUS(x, mu=300 ,sigma=35,nu=300), 300, 1500, #
- main = "", lwd = 5, ylab = "Prob. Density", xlab  = "Reaction Time", bty = "n")
-curve(dexGAUS(x, mu=300 ,sigma=35,nu=300), 200, 1500, #
- main = "", lwd = 5, ylab = "Prob. Density", xlab  = "Reaction Time", bty = "n")
-library(plyr)#
-library(lme4)#
+setwd("/Volumes/rablab/Prediction studies/LauraTurnTaking/data")
+ls()
+threes <- read.csv("3yo_R.csv")
+fives <- read.csv("5yo_R.csv")
+ads <- read.csv("Adult_R.csv")
+summary(ads)
+summary(fives)
+rbind(fives,ads) -> a
+ads <- read.csv("Adult_R.csv")
+rbind(fives,ads) -> a
+rbind(fives,ads, threes) -> a
+# NOTE THAT FOR THESE ANALYSES YOU TYPICALLY NEED TO INCLUDE THE LONG RT TAIL. I recommend rt >0 & rt <16000#
+library(retimes)#
 library(doBy)#
-library(ggplot2)#
 #
-read_data <- function(path_name){#
-list.files(path = path_name,full.names = T, pattern = ".csv") -> file_list#
+ads <- read.csv("Adult_R.csv")#
+fives <- read.csv("5yo_R.csv")#
+threes <- read.csv("3yo_R.csv")#
+#
+ads$Age <- "Adult"#
+fives$Age <- "Five"#
+threes$Age <- "Three"#
+#
+tt <- rbind(ads,fives,threes)#
+tt$Age <- as.factor(tt$Age)
+d = data.frame(Subj = rep(NA, times = 24*4), Pred = NA, Match = NA, Mu = NA, Sigma = NA, Tau = NA)#
+index = 1#
+for (k in unique(tt$Pred)){#
+	for (j in unique(subset(tt, Pred == k)$Subj)){#
+		for (i in unique(subset(tt, Pred == k & Subj == j)$Match)){#
+			a = timefit(subset(tt, Pred == k & Subj == j & Match == i )$RT)#
+			d$Subj[index] <- j#
+			d$Pred[index] <- k#
+			d$Match[index] <- i#
+			d$Mu[index] <- a@par[1]#
+			d$Sigma[index] <- a@par[2]#
+			d$Tau[index] <- a@par[3]#
+			index <- index + 1#
+>>>>>>> FETCH_HEAD
+#
+			}#
+		}#
+	}#
+summaryBy(Mu + Sigma+ Tau ~ Pred + Match, data = d, FUN = c(mean, sd))
+summary(tt)
+summary(threes)
+summary(fives)
+summary(ads)
+# NOTE THAT FOR THESE ANALYSES YOU TYPICALLY NEED TO INCLUDE THE LONG RT TAIL. I recommend rt >0 & rt <16000#
+library(retimes)#
+library(doBy)#
+#
+ads <- read.csv("Adult_R.csv")#
+fives <- read.csv("5yo_R.csv")#
+threes <- read.csv("3yo_R.csv")#
+#
+ads$Age <- "Adult"#
+fives$Age <- "Five"#
+threes$Age <- "Three"#
+#
+tt <- rbind(ads,fives,threes)#
+tt$Age <- as.factor(tt$Age)#
+#
+d = data.frame(Subject = rep(NA, times = 24*4), Pred = NA, Match = NA, Mu = NA, Sigma = NA, Tau = NA)#
+index = 1#
+for (k in unique(tt$Pred)){#
+	for (j in unique(subset(tt, Pred == k)$Subj)){#
+		for (i in unique(subset(tt, Pred == k & Subject == j)$Match)){#
+			a = timefit(subset(tt, Pred == k & Subject == j & Match == i )$RT)#
+			d$Subj[index] <- j#
+			d$Pred[index] <- k#
+			d$Match[index] <- i#
+			d$Mu[index] <- a@par[1]#
+			d$Sigma[index] <- a@par[2]#
+			d$Tau[index] <- a@par[3]#
+			index <- index + 1#
+#
+			}#
+		}#
+	}#
+summaryBy(Mu + Sigma+ Tau ~ Pred + Match, data = d, FUN = c(mean, sd))
+length(unique(tt$Subject))
+# NOTE THAT FOR THESE ANALYSES YOU TYPICALLY NEED TO INCLUDE THE LONG RT TAIL. I recommend rt >0 & rt <16000#
+library(retimes)#
+library(doBy)#
+#
+ads <- read.csv("Adult_R.csv")#
+fives <- read.csv("5yo_R.csv")#
+threes <- read.csv("3yo_R.csv")#
+#
+ads$Age <- "Adult"#
+fives$Age <- "Five"#
+threes$Age <- "Three"#
+#
+tt <- rbind(ads,fives,threes)#
+tt$Age <- as.factor(tt$Age)#
+tt$Subject <- paste(tt$Age,tt$Subject, sep = "")#
+d = data.frame(Subject = rep(NA, times = 24*4), Pred = NA, Match = NA, Mu = NA, Sigma = NA, Tau = NA)#
+index = 1#
+for (k in unique(tt$Pred)){#
+	for (j in unique(subset(tt, Pred == k)$Subj)){#
+		for (i in unique(subset(tt, Pred == k & Subject == j)$Match)){#
+			a = timefit(subset(tt, Pred == k & Subject == j & Match == i )$RT)#
+			d$Subj[index] <- j#
+			d$Pred[index] <- k#
+			d$Match[index] <- i#
+			d$Mu[index] <- a@par[1]#
+			d$Sigma[index] <- a@par[2]#
+			d$Tau[index] <- a@par[3]#
+			index <- index + 1#
+#
+			}#
+		}#
+	}#
+summaryBy(Mu + Sigma+ Tau ~ Pred + Match, data = d, FUN = c(mean, sd))
+length(unique(tt$Subject))
+# NOTE THAT FOR THESE ANALYSES YOU TYPICALLY NEED TO INCLUDE THE LONG RT TAIL. I recommend rt >0 & rt <16000#
+library(retimes)#
+library(doBy)#
+#
+ads <- read.csv("Adult_R.csv")#
+fives <- read.csv("5yo_R.csv")#
+threes <- read.csv("3yo_R.csv")#
+#
+ads$Age <- "Adult"#
+fives$Age <- "Five"#
+threes$Age <- "Three"#
+#
+tt <- rbind(ads,fives,threes)#
+tt$Age <- as.factor(tt$Age)#
+tt$Subject <- paste(tt$Age,tt$Subject, sep = "")#
+d = data.frame(Subject = rep(NA, times = length(unique(tt$Subject))*4), Pred = NA, Match = NA, Age = NA, Mu = NA, Sigma = NA, Tau = NA)#
+index = 1#
+for (k in unique(tt$Pred)){#
+	for (j in unique(subset(tt, Pred == k)$Subj)){#
+		for (i in unique(subset(tt, Pred == k & Subject == j)$Match)){#
+			a = timefit(subset(tt, Pred == k & Subject == j & Match == i )$RT)#
+			d$Age[index] <- unique(subset(tt, Pred == k & Subject == j & Match == i )$Age)#
+			d$Subj[index] <- j#
+			d$Pred[index] <- k#
+			d$Match[index] <- i#
+			d$Mu[index] <- a@par[1]#
+			d$Sigma[index] <- a@par[2]#
+			d$Tau[index] <- a@par[3]#
+			index <- index + 1#
+#
+			}#
+		}#
+	}#
+summaryBy(Mu + Sigma+ Tau ~ Age+Pred + Match, data = d, FUN = c(mean, sd))
+summary(tt)
+unique(subset(tt, Pred == k & Subject == j & Match == i )$Age)
+summary(d)
+unique(subset(tt, Pred == k & Subject == j & Match == i )$Age)
+unique(subset(tt, Pred == k & Subject == j & Match == i )$Age)[1]
+d = data.frame(Subject = rep(NA, times = length(unique(tt$Subject))*4), Pred = NA, Match = NA, Age = NA, Mu = NA, Sigma = NA, Tau = NA)#
+index = 1#
+for (k in unique(tt$Pred)){#
+	for (j in unique(subset(tt, Pred == k)$Subj)){#
+		for (i in unique(subset(tt, Pred == k & Subject == j)$Match)){#
+			a = timefit(subset(tt, Pred == k & Subject == j & Match == i )$RT)#
+			d$Age[index] <- unique(subset(tt, Pred == k & Subject == j & Match == i )$Age)[1]#
+			d$Subject[index] <- j#
+			d$Pred[index] <- k#
+			d$Match[index] <- i#
+			d$Mu[index] <- a@par[1]#
+			d$Sigma[index] <- a@par[2]#
+			d$Tau[index] <- a@par[3]#
+			index <- index + 1#
+#
+			}#
+		}#
+	}
+summary(d)
+d = data.frame(Subject = rep(NA, times = length(unique(tt$Subject))*4), Pred = NA, Match = NA, Age = NA, Mu = NA, Sigma = NA, Tau = NA)#
+index = 1#
+for (k in unique(tt$Pred)){#
+	for (j in unique(subset(tt, Pred == k)$Subj)){#
+		for (i in unique(subset(tt, Pred == k & Subject == j)$Match)){#
+			a = timefit(subset(tt, Pred == k & Subject == j & Match == i )$RT)#
+			d$Age[index] <- as.character(unique(subset(tt, Pred == k & Subject == j & Match == i )$Age)[1])#
+			d$Subject[index] <- j#
+			d$Pred[index] <- k#
+			d$Match[index] <- i#
+			d$Mu[index] <- a@par[1]#
+			d$Sigma[index] <- a@par[2]#
+			d$Tau[index] <- a@par[3]#
+			index <- index + 1#
+#
+			}#
+		}#
+	}
+summary(d)
+summary(d$Age)
+d$Age[1]
+d$Age[5]
+summaryBy(Mu + Sigma+ Tau ~ Age+Pred + Match, data = d, FUN = c(mean, sd))
+summary(tt)
+unique(tt$Subject)
+# NOTE THAT FOR THESE ANALYSES YOU TYPICALLY NEED TO INCLUDE THE LONG RT TAIL. I recommend rt >0 & rt <16000#
+library(retimes)#
+library(doBy)#
+#
+ads <- read.csv("Adult_R.csv")#
+fives <- read.csv("5yo_R.csv")#
+threes <- read.csv("3yo_R.csv")#
+#
+ads$Age <- "Adult"#
+fives$Age <- "Five"#
+threes$Age <- "Three"#
+#
+tt <- rbind(ads,fives,threes)#
+tt$Age <- as.factor(tt$Age)#
+tt$Subject <- paste(tt$Age,tt$Subject, sep = "")#
+d = data.frame(Subject = rep(NA, times = length(unique(tt$Subject))*4), Pred = NA, Match = NA, Age = NA, Mu = NA, Sigma = NA, Tau = NA)#
+index = 1#
+for (k in unique(tt$Pred)){#
+	for (j in unique(subset(tt, Pred == k)$Subj)){#
+		for (i in unique(subset(tt, Pred == k & Subject == j)$Match)){#
+			a = timefit(subset(tt, Pred == k & Subject == j & Match == i )$RT)#
+			d$Age[index] <- as.character(unique(subset(tt, Pred == k & Subject == j & Match == i )$Age)[1])#
+			d$Subject[index] <- j#
+			d$Pred[index] <- k#
+			d$Match[index] <- i#
+			d$Mu[index] <- a@par[1]#
+			d$Sigma[index] <- a@par[2]#
+			d$Tau[index] <- a@par[3]#
+			index <- index + 1#
+#
+			}#
+		}#
+	}#
+summaryBy(Mu + Sigma+ Tau ~ Age+Pred + Match, data = d, FUN = c(mean, sd))
+summary(tt)
+unique(tt$Incorrect)
+summary(subset(tt, Incorrect="Child's response: mh-yeah" ))
+summary(subset(tt, Incorrect=="Child's response: mh-yeah" ))
+subset(tt, Incorrect=="Child's response: mh-yeah" )
+# NOTE THAT FOR THESE ANALYSES YOU TYPICALLY NEED TO INCLUDE THE LONG RT TAIL. I recommend rt >0 & rt <16000#
+library(retimes)#
+library(doBy)#
+#
+ads <- read.csv("Adult_R.csv")#
+fives <- read.csv("5yo_R.csv")#
+threes <- read.csv("3yo_R.csv")#
+#
+ads$Age <- "Adult"#
+fives$Age <- "Five"#
+threes$Age <- "Three"#
+#
+tt <- rbind(ads,fives,threes)#
+tt$Age <- as.factor(tt$Age)#
+tt$Subject <- paste(tt$Age,tt$Subject, sep = "")#
+d = data.frame(Subject = rep(NA, times = length(unique(tt$Subject))*4), Pred = NA, Match = NA, Age = NA, Mu = NA, Sigma = NA, Tau = NA)#
+index = 1#
+for (k in unique(tt$Pred)){#
+	for (j in unique(subset(tt, Pred == k)$Subj)){#
+		for (i in unique(subset(tt, Pred == k & Subject == j)$Match)){#
+			a = timefit(subset(tt, Pred == k & Subject == j & Match == i )$RT)#
+			d$Age[index] <- as.character(unique(subset(tt, Pred == k & Subject == j & Match == i )$Age)[1])#
+			d$Subject[index] <- j#
+			d$Pred[index] <- k#
+			d$Match[index] <- i#
+			d$Mu[index] <- a@par[1]#
+			d$Sigma[index] <- a@par[2]#
+			d$Tau[index] <- a@par[3]#
+			index <- index + 1#
+#
+			}#
+		}#
+	}#
+summaryBy(Mu + Sigma+ Tau ~ Age+Pred + Match, data = d, FUN = c(mean, sd))
+tt<- subset(tt, Incorrect == 0)#
+d = data.frame(Subject = rep(NA, times = length(unique(tt$Subject))*4), Pred = NA, Match = NA, Age = NA, Mu = NA, Sigma = NA, Tau = NA)#
+index = 1#
+for (k in unique(tt$Pred)){#
+	for (j in unique(subset(tt, Pred == k)$Subj)){#
+		for (i in unique(subset(tt, Pred == k & Subject == j)$Match)){#
+			a = timefit(subset(tt, Pred == k & Subject == j & Match == i )$RT)#
+			d$Age[index] <- as.character(unique(subset(tt, Pred == k & Subject == j & Match == i )$Age)[1])#
+			d$Subject[index] <- j#
+			d$Pred[index] <- k#
+			d$Match[index] <- i#
+			d$Mu[index] <- a@par[1]#
+			d$Sigma[index] <- a@par[2]#
+			d$Tau[index] <- a@par[3]#
+			index <- index + 1#
+#
+			}#
+		}#
+	}#
+summaryBy(Mu + Sigma+ Tau ~ Age+Pred + Match, data = d, FUN = c(mean, sd))
+summary(tt)
+unique(tt$Incorrect)
+# NOTE THAT FOR THESE ANALYSES YOU TYPICALLY NEED TO INCLUDE THE LONG RT TAIL. I recommend rt >0 & rt <16000#
+library(retimes)#
+library(doBy)#
+#
+ads <- read.csv("Adult_R.csv")#
+fives <- read.csv("5yo_R.csv")#
+threes <- read.csv("3yo_R.csv")#
+#
+ads$Age <- "Adult"#
+fives$Age <- "Five"#
+threes$Age <- "Three"#
+#
+tt <- rbind(ads,fives,threes)#
+tt$Age <- as.factor(tt$Age)#
+tt$Subject <- paste(tt$Age,tt$Subject, sep = "")
+unique(tt$Incorrect)
+# NOTE THAT FOR THESE ANALYSES YOU TYPICALLY NEED TO INCLUDE THE LONG RT TAIL. I recommend rt >0 & rt <16000#
+library(retimes)#
+library(doBy)#
+#
+ads <- read.csv("Adult_R.csv")#
+fives <- read.csv("5yo_R.csv")#
+threes <- read.csv("3yo_R.csv")#
+#
+ads$Age <- "Adult"#
+fives$Age <- "Five"#
+threes$Age <- "Three"#
+#
+tt <- rbind(ads,fives,threes)#
+tt$Age <- as.factor(tt$Age)#
+tt$Subject <- paste(tt$Age,tt$Subject, sep = "")
+unique(tt$Incorrect)
+tt<- subset(tt, Incorrect == 0)#
+d = data.frame(Subject = rep(NA, times = length(unique(tt$Subject))*4), Pred = NA, Match = NA, Age = NA, Mu = NA, Sigma = NA, Tau = NA)#
+index = 1#
+for (k in unique(tt$Pred)){#
+	for (j in unique(subset(tt, Pred == k)$Subj)){#
+		for (i in unique(subset(tt, Pred == k & Subject == j)$Match)){#
+			a = timefit(subset(tt, Pred == k & Subject == j & Match == i )$RT)#
+			d$Age[index] <- as.character(unique(subset(tt, Pred == k & Subject == j & Match == i )$Age)[1])#
+			d$Subject[index] <- j#
+			d$Pred[index] <- k#
+			d$Match[index] <- i#
+			d$Mu[index] <- a@par[1]#
+			d$Sigma[index] <- a@par[2]#
+			d$Tau[index] <- a@par[3]#
+			index <- index + 1#
+#
+			}#
+		}#
+	}#
+summaryBy(Mu + Sigma+ Tau ~ Age+Pred + Match, data = d, FUN = c(mean, sd))
+summary(tt)
+# NOTE THAT FOR THESE ANALYSES YOU TYPICALLY NEED TO INCLUDE THE LONG RT TAIL. I recommend rt >0 & rt <16000#
+library(retimes)#
+library(doBy)#
+#
+ads <- read.csv("Adult_R.csv")#
+fives <- read.csv("5yo_R.csv")#
+threes <- read.csv("3yo_R.csv")#
+#
+ads$Age <- "Adult"#
+fives$Age <- "Five"#
+threes$Age <- "Three"#
+#
+tt <- rbind(ads,fives,threes)#
+tt$Age <- as.factor(tt$Age)#
+tt$Subject <- paste(tt$Age,tt$Subject, sep = "")#
+#
+£tt<- subset(tt, Incorrect == 0)#
+d = data.frame(Subject = rep(NA, times = length(unique(tt$Subject))*4), Pred = NA, Match = NA, Age = NA, Mu = NA, Sigma = NA, Tau = NA)#
+index = 1#
+for (k in unique(tt$Pred)){#
+	for (j in unique(subset(tt, Pred == k)$Subj)){#
+		for (i in unique(subset(tt, Pred == k & Subject == j)$Match)){#
+			a = timefit(subset(tt, Pred == k & Subject == j & Match == i )$RT)#
+			d$Age[index] <- as.character(unique(subset(tt, Pred == k & Subject == j & Match == i )$Age)[1])#
+			d$Subject[index] <- j#
+			d$Pred[index] <- k#
+			d$Match[index] <- i#
+			d$Mu[index] <- a@par[1]#
+			d$Sigma[index] <- a@par[2]#
+			d$Tau[index] <- a@par[3]#
+			index <- index + 1#
+#
+			}#
+		}#
+	}#
+summaryBy(Mu + Sigma+ Tau ~ Age+Pred + Match, data = d, FUN = c(mean, sd))
+>ezANOVA
+?ezANOVA
+library(ez)
+?ezANOVA
+ezANOVA(d, dv = Mu, wid = Subject, within = .(Pred,Match), between = .(Age))
+ezANOVA(d, dv = Mu, wid = Subject, within = .(Pred,Match))
+ezANOVA(d, dv = Sigma, wid = Subject, within = .(Pred,Match), between = .(Age))
+ezANOVA(d, dv = Tau, wid = Subject, within = .(Pred,Match), between = .(Age))
+library(ggplot2)#
+dsamp <- diamonds[sample(nrow(diamonds), 1000), ]    #
+p1 <- qplot(price, carat, data=dsamp, colour=clarity)#
+p2 <- qplot(price, depth, data=dsamp, colour=clarity)
+p1
+p2
+multiplot(p1 + theme(legend.position = "none"),p2,cols=2)
+# Multiple plot function#
+##
+# ggplot objects can be passed in ..., or to plotlist (as a list of ggplot objects)#
+# - cols:   Number of columns in layout#
+# - layout: A matrix specifying the layout. If present, 'cols' is ignored.#
+##
+# If the layout is something like matrix(c(1,2,3,3), nrow=2, byrow=TRUE),#
+# then plot 1 will go in the upper left, 2 will go in the upper right, and#
+# 3 will go all the way across the bottom.#
+##
+multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {#
+  library(grid)#
+#
+  # Make a list from the ... arguments and plotlist#
+  plots <- c(list(...), plotlist)#
+#
+  numPlots = length(plots)#
+#
+  # If layout is NULL, then use 'cols' to determine layout#
+  if (is.null(layout)) {#
+    # Make the panel#
+    # ncol: Number of columns of plots#
+    # nrow: Number of rows needed, calculated from # of cols#
+    layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),#
+                    ncol = cols, nrow = ceiling(numPlots/cols))#
+  }#
+#
+ if (numPlots==1) {#
+    print(plots[[1]])#
+#
+  } else {#
+    # Set up the page#
+    grid.newpage()#
+    pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))#
+#
+    # Make each plot, in the correct location#
+    for (i in 1:numPlots) {#
+      # Get the i,j matrix positions of the regions that contain this subplot#
+      matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))#
+#
+      print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,#
+                                      layout.pos.col = matchidx$col))#
+    }#
+  }#
+}
+multiplot(p1 + theme(legend.position = "none"),p2,cols=2)
+?qplot
+qplot(d$Pred, y=d$Mu, geom = "bar", stat = "identity", fill = d$Match, ylab = "Reaction Time (ms)", xlab = "", facet_wrap = Age)
+qplot(d$Pred, y=d$Mu, geom = "bar",  fill = d$Match, ylab = "Reaction Time (ms)", xlab = "", facet_wrap = Age)
+qplot(d$Pred, y=d$Mu, geom = "bar",  fill = d$Match, ylab = "Reaction Time (ms)", xlab = "", facet_wrap = d$Age)
+qplot(d$Pred, y=d$Mu, geom = "bar",  fill = d$Match, ylab = "Reaction Time (ms)", xlab = "", facets = d$Age)
+summary(mpg)
+qplot(data = d, x = Pred, y=Mu, geom = "bar",  fill = Match, ylab = "Reaction Time (ms)", xlab = "", facets = Age)
+qplot(data = d, x = Pred, y=Mu, geom = "bar",  fill = Match, ylab = "Reaction Time (ms)", xlab = "")
+d
+re.summary <- summaryBy(Mu + Sigma+ Tau ~ Age+Pred + Match, data = d, FUN = c(mean, sd))
+qplot(data = re.summary, x = Pred, y=Mu, geom = "bar",  fill = Match, ylab = "Reaction Time (ms)", xlab = "")
+qplot(data = re.summary, x = Pred, y=Mu.mean, geom = "bar",  fill = Match, ylab = "Reaction Time (ms)", xlab = "")
+re.summary
+qplot(data = re.summary, x = Pred, y=Mu.mean, geom = "bar", stat = "identity",  fill = Match, ylab = "Reaction Time (ms)", xlab = "")
+ggplot(data = re.summary, aes(x = Pred, y = Mu.mean)) +#
+  geom_bar(stat = "identity", position = "stack", aes(fill = Match)) +#
+  coord_flip() +#
+  labs(y = "\n% of total population", x = NULL)
+ggplot(data = re.summary, aes(x = Pred, y = Mu.mean)) +#
+  geom_bar(stat = "identity", position = "stack", aes(fill = Match)) +#
+  facet_wrap(Age)
+ggplot(data = re.summary, aes(x = Pred, y = Mu.mean)) +#
+  geom_bar(stat = "identity", position = "stack", aes(fill = Match)) +#
+  facet_wrap(~Age)
+ggplot(data = re.summary, aes(x = Pred, y = Mu.mean)) +#
+  geom_bar(stat = "identity", aes(fill = Match)) +#
+  facet_wrap(~Age)
+?geom_bar
+ggplot(data = re.summary, aes(x = Pred, y = Mu.mean)) +#
+  geom_bar(stat = "identity", position = "dodge", aes(fill = Match)) +#
+  facet_wrap(~Age)
+re.summary <- summaryBy(RT ~ Age + Pred + Match, data = tt)
+ggplot(data = re.summary, aes(x = Pred, y = RT)) +#
+  geom_bar(stat = "identity", position = "dodge", aes(fill = Match)) +#
+  facet_wrap(~Age)
+ggplot(data = re.summary, aes(x = Pred, y = RT.mean)) +#
+  geom_bar(stat = "identity", position = "dodge", aes(fill = Match)) +#
+  facet_wrap(~Age)
+re.summary <- summaryBy(RT ~ Age + Pred + Match, data = tt, na.rm = T)
+ggplot(data = re.summary, aes(x = Pred, y = RT.mean)) +#
+  geom_bar(stat = "identity", position = "dodge", aes(fill = Match)) +#
+  facet_wrap(~Age)
+summary(tt)
+# NOTE THAT FOR THESE ANALYSES YOU TYPICALLY NEED TO INCLUDE THE LONG RT TAIL. I recommend rt >0 & rt <16000#
+library(retimes)#
+library(doBy)#
+libary(ez)#
+#
+ads <- read.csv("Adult_R.csv")#
+fives <- read.csv("5yo_R.csv")#
+threes <- read.csv("3yo_R.csv")#
+#
+ads$Age <- "Adult"#
+fives$Age <- "Five"#
+threes$Age <- "Three"#
+#
+tt <- rbind(ads,fives,threes)#
+tt$Age <- as.factor(tt$Age)#
+tt$Subject <- paste(tt$Age,tt$Subject, sep = "")#
+#
+£tt<- subset(tt, Incorrect == 0)#
+d = data.frame(Subject = rep(NA, times = length(unique(tt$Subject))*4), Pred = NA, Match = NA, Age = NA, Mu = NA, Sigma = NA, Tau = NA)#
+index = 1#
+for (k in unique(tt$Pred)){#
+	for (j in unique(subset(tt, Pred == k)$Subj)){#
+		for (i in unique(subset(tt, Pred == k & Subject == j)$Match)){#
+			a = timefit(subset(tt, Pred == k & Subject == j & Match == i )$RTms)#
+			d$Age[index] <- as.character(unique(subset(tt, Pred == k & Subject == j & Match == i )$Age)[1])#
+			d$Subject[index] <- j#
+			d$Pred[index] <- k#
+			d$Match[index] <- i#
+			d$Mu[index] <- a@par[1]#
+			d$Sigma[index] <- a@par[2]#
+			d$Tau[index] <- a@par[3]#
+			index <- index + 1#
+#
+			}#
+		}#
+	}#
+re.summary <- summaryBy(Mu + Sigma+ Tau ~ Age+Pred + Match, data = d, FUN = c(mean, sd))#
+#
+ezANOVA(d, dv = Mu, wid = Subject, within = .(Pred,Match), between = .(Age))
+re.summary
+# NOTE THAT FOR THESE ANALYSES YOU TYPICALLY NEED TO INCLUDE THE LONG RT TAIL. I recommend rt >0 & rt <16000#
+library(retimes)#
+library(doBy)#
+libary(ez)#
+#
+ads <- read.csv("Adult_R.csv")#
+fives <- read.csv("5yo_R.csv")#
+threes <- read.csv("3yo_R.csv")#
+#
+ads$Age <- "Adult"#
+fives$Age <- "Five"#
+threes$Age <- "Three"#
+#
+tt <- rbind(ads,fives,threes)#
+tt$Age <- as.factor(tt$Age)#
+tt$Subject <- paste(tt$Age,tt$Subject, sep = "")#
+#
+£tt<- subset(tt, Incorrect == 0)#
+d = data.frame(Subject = rep(NA, times = length(unique(tt$Subject))*4), Pred = NA, Match = NA, Age = NA, Mu = NA, Sigma = NA, Tau = NA)#
+index = 1#
+for (k in unique(tt$Pred)){#
+	for (j in unique(subset(tt, Pred == k)$Subj)){#
+		for (i in unique(subset(tt, Pred == k & Subject == j)$Match)){#
+			a = timefit(subset(tt, Pred == k & Subject == j & Match == i )$RT)#
+			d$Age[index] <- as.character(unique(subset(tt, Pred == k & Subject == j & Match == i )$Age)[1])#
+			d$Subject[index] <- j#
+			d$Pred[index] <- k#
+			d$Match[index] <- i#
+			d$Mu[index] <- a@par[1]#
+			d$Sigma[index] <- a@par[2]#
+			d$Tau[index] <- a@par[3]#
+			index <- index + 1#
+#
+			}#
+		}#
+	}#
+re.summary <- summaryBy(Mu + Sigma+ Tau ~ Age+Pred + Match, data = d, FUN = c(mean, sd))#
+#
+ezANOVA(d, dv = Mu, wid = Subject, within = .(Pred,Match), between = .(Age))
+# NOTE THAT FOR THESE ANALYSES YOU TYPICALLY NEED TO INCLUDE THE LONG RT TAIL. I recommend rt >0 & rt <16000#
+library(retimes)#
+library(doBy)#
+libary(ez)#
+#
+ads <- read.csv("Adult_R.csv")#
+fives <- read.csv("5yo_R.csv")#
+threes <- read.csv("3yo_R.csv")#
+#
+ads$Age <- "Adult"#
+fives$Age <- "Five"#
+threes$Age <- "Three"#
+#
+tt <- rbind(ads,fives,threes)#
+tt$Age <- as.factor(tt$Age)#
+tt$Subject <- paste(tt$Age,tt$Subject, sep = "")#
+#
+£tt<- subset(tt, Incorrect == 0)#
+d = data.frame(Subject = rep(NA, times = length(unique(tt$Subject))*4), Pred = NA, Match = NA, Age = NA, Mu = NA, Sigma = NA, Tau = NA)#
+index = 1#
+for (k in unique(tt$Pred)){#
+	for (j in unique(subset(tt, Pred == k)$Subj)){#
+		for (i in unique(subset(tt, Pred == k & Subject == j)$Match)){#
+			a = timefit(subset(tt, Pred == k & Subject == j & Match == i )$RTms)#
+			d$Age[index] <- as.character(unique(subset(tt, Pred == k & Subject == j & Match == i )$Age)[1])#
+			d$Subject[index] <- j#
+			d$Pred[index] <- k#
+			d$Match[index] <- i#
+			d$Mu[index] <- a@par[1]#
+			d$Sigma[index] <- a@par[2]#
+			d$Tau[index] <- a@par[3]#
+			index <- index + 1#
+#
+			}#
+		}#
+	}#
+re.summary <- summaryBy(Mu + Sigma+ Tau ~ Age+Pred + Match, data = d, FUN = c(mean, sd))#
+#
+ezANOVA(d, dv = Mu, wid = Subject, within = .(Pred,Match), between = .(Age))
+ggplot(data = re.summary, aes(x = Pred, y = RT.mean)) +#
+  geom_bar(stat = "identity", position = "dodge", aes(fill = Match)) +#
+  facet_wrap(~Age)
+ggplot(data = re.summary, aes(x = Pred, y = Mu.mean)) +#
+  geom_bar(stat = "identity", position = "dodge", aes(fill = Match)) +#
+  facet_wrap(~Age)
+ezANOVA(tt, dv = RT, wid = Subject, within = .(Pred,Match), between = .(Age))
+ezANOVA(tt, dv = RTms, wid = Subject, within = .(Pred,Match), between = .(Age))
+ggplot(data = re.summary, aes(x = Pred, y = Tau.mean)) +#
+  geom_bar(stat = "identity", position = "dodge", aes(fill = Match)) +#
+  facet_wrap(~Age)
+ezANOVA(d, dv = Tau, wid = Subject, within = .(Pred,Match), between = .(Age))
+ezANOVA(d, dv = Sigma, wid = Subject, within = .(Pred,Match), between = .(Age))
+library(reshape2)
+?melt
+re.summary
+re.summary.gg <- melt(re.summary(id.vars = c("Age","Pred","Match"), variable.name = "Parameter","Value"))
+re.summary.gg <- melt(re.summary,id.vars = c("Age","Pred","Match"), variable.name = "Parameter","Value")
+re.summary.gg <- melt(re.summary,id.vars = c("Age","Pred","Match"), variable.name = "Parameter",value.name = "Value")
+re.summary.gg
+re.summary <- summaryBy(Mu + Sigma+ Tau ~ Age+Pred + Match, data = d, FUN = c(mean))
+re.summary.gg <- melt(re.summary,id.vars = c("Age","Pred","Match"), variable.name = "Parameter",value.name = "Value")
+re.summary.gg
+re.summary.gg <- melt(re.summary,id.vars = c("Age","Pred","Match"), variable.name = "Parameter",value.name = "Value")#
+ggplot(data = re.summary.gg, aes(x = Pred, y = Tau.mean)) +#
+  geom_bar(stat = "identity", position = "dodge", aes(fill = Match)) +#
+  facet_wrap(~Age,Parameter)
+re.summary.gg <- melt(re.summary,id.vars = c("Age","Pred","Match"), variable.name = "Parameter",value.name = "Value")#
+ggplot(data = re.summary.gg, aes(x = Pred, y = Tau.mean)) +#
+  geom_bar(stat = "identity", position = "dodge", aes(fill = Match)) +#
+  facet_wrap(~Age+Parameter)
+re.summary.gg <- melt(re.summary,id.vars = c("Age","Pred","Match"), variable.name = "Parameter",value.name = "Value")#
+ggplot(data = re.summary.gg, aes(x = Pred, y = Value)) +#
+  geom_bar(stat = "identity", position = "dodge", aes(fill = Match)) +#
+  facet_wrap(~Age+Parameter)
+ggplot(data = re.summary.gg, aes(x = Pred, y = Value)) +#
+  geom_bar(stat = "identity", position = "dodge", aes(fill = Match)) +#
+  facet_wrap(~Parameter+Age)
+ezANOVA(d, dv = Mu, wid = Subject, within = .(Pred,Match), between = .(Age))#
+ezANOVA(d, dv = Sigma, wid = Subject, within = .(Pred,Match), between = .(Age))#
+ezANOVA(d, dv = Tau, wid = Subject, within = .(Pred,Match), between = .(Age))
+ezANOVA(subset(d,Age =="Adult"), dv = Mu, wid = Subject, within = .(Pred,Match))#
+ezANOVA(subset(d,Age =="Adult"), dv = Sigma, wid = Subject, within = .(Pred,Match))#
+ezANOVA(subset(d,Age =="Adult"), dv = Tau, wid = Subject, within = .(Pred,Match))
+ezANOVA(subset(d,Age =="Five"), dv = Mu, wid = Subject, within = .(Pred,Match))#
+ezANOVA(subset(d,Age =="Five"), dv = Sigma, wid = Subject, within = .(Pred,Match))#
+ezANOVA(subset(d,Age =="Five"), dv = Tau, wid = Subject, within = .(Pred,Match))
+ezANOVA(subset(d,Age =="Three"), dv = Mu, wid = Subject, within = .(Pred,Match))#
+ezANOVA(subset(d,Age =="Three"), dv = Sigma, wid = Subject, within = .(Pred,Match))#
+ezANOVA(subset(d,Age =="Three"), dv = Tau, wid = Subject, within = .(Pred,Match))
+# NOTE THAT FOR THESE ANALYSES YOU TYPICALLY NEED TO INCLUDE THE LONG RT TAIL. I recommend rt >0 & rt <16000#
+library(retimes)#
+library(doBy)#
+library(ez)#
+#
+ads <- read.csv("Adult_R.csv")#
+fives <- read.csv("5yo_R.csv")#
+threes <- read.csv("3yo_R.csv")#
+#
+ads$Age <- "Adult"#
+fives$Age <- "Five"#
+threes$Age <- "Three"#
+#
+tt <- rbind(ads,fives,threes)#
+tt$Age <- as.factor(tt$Age)#
+tt$Subject <- paste(tt$Age,tt$Subject, sep = "")#
+#
+#tt<- subset(tt, Incorrect == 0)#
+d = data.frame(Subject = rep(NA, times = length(unique(tt$Subject))*4), Pred = NA, Match = NA, Age = NA, Mu = NA, Sigma = NA, Tau = NA)#
+index = 1#
+for (k in unique(tt$Pred)){#
+	for (j in unique(subset(tt, Pred == k)$Subj)){#
+		for (i in unique(subset(tt, Pred == k & Subject == j)$Match)){#
+			a = timefit(subset(tt, Pred == k & Subject == j & Match == i )$RTms)#
+			d$Age[index] <- as.character(unique(subset(tt, Pred == k & Subject == j & Match == i )$Age)[1])#
+			d$Subject[index] <- j#
+			d$Pred[index] <- k#
+			d$Match[index] <- i#
+			d$Mu[index] <- a@par[1]#
+			d$Sigma[index] <- a@par[2]#
+			d$Tau[index] <- a@par[3]#
+			index <- index + 1#
+#
+			}#
+		}#
+	}#
+re.summary <- summaryBy(Mu + Sigma+ Tau ~ Age+Pred + Match, data = d, FUN = c(mean))#
+#
+ezANOVA(d, dv = Mu, wid = Subject, within = .(Pred,Match), between = .(Age))#
+ezANOVA(d, dv = Sigma, wid = Subject, within = .(Pred,Match), between = .(Age))#
+ezANOVA(d, dv = Tau, wid = Subject, within = .(Pred,Match), between = .(Age))#
+#
+re.summary.gg <- melt(re.summary,id.vars = c("Age","Pred","Match"), variable.name = "Parameter",value.name = "Value")#
+ggplot(data = re.summary.gg, aes(x = Pred, y = Value)) +#
+  geom_bar(stat = "identity", position = "dodge", aes(fill = Match)) +#
+  facet_wrap(~Parameter+Age)
+tt<- subset(tt, Incorrect == 0)#
+d = data.frame(Subject = rep(NA, times = length(unique(tt$Subject))*4), Pred = NA, Match = NA, Age = NA, Mu = NA, Sigma = NA, Tau = NA)#
+index = 1#
+for (k in unique(tt$Pred)){#
+	for (j in unique(subset(tt, Pred == k)$Subj)){#
+		for (i in unique(subset(tt, Pred == k & Subject == j)$Match)){#
+			a = timefit(subset(tt, Pred == k & Subject == j & Match == i )$RTms)#
+			d$Age[index] <- as.character(unique(subset(tt, Pred == k & Subject == j & Match == i )$Age)[1])#
+			d$Subject[index] <- j#
+			d$Pred[index] <- k#
+			d$Match[index] <- i#
+			d$Mu[index] <- a@par[1]#
+			d$Sigma[index] <- a@par[2]#
+			d$Tau[index] <- a@par[3]#
+			index <- index + 1#
+#
+			}#
+		}#
+	}#
+<<<<<<< HEAD
+}#
+return(mydata<-mydata[is.na(mydata$subject)==FALSE,])#
+}#
+mydata <- createdata()#
+#
+#calculate means#
+submeans<-aggregate(mydata$fixtarg,by=list(mydata$subject,mydata$condition,mydata$bin),FUN=mean)#
+colnames(submeans)<-c("subject","condition","bin","fixtarg")#
+means<-aggregate(submeans$fixtarg,by=list(submeans$condition,submeans$bin),FUN=mean)#
+colnames(means)<-c("condition","bin","fixtarg")#
+temp<-aggregate(submeans$fixtarg,by=list(submeans$condition,submeans$bin),FUN=sd)#
+means$se<-temp[,3]/(s_n^.5)
+summary(mydata)
+0.05/20
+logit(1)
+log((1/0))
+log((0.95/0.05))
+?names
+load("/Users/hrabagli/Documents/Studies/Sense Resolution/3_Online_ET/ETAutismData/FullStats_April1.RDATA")
+ls()
+Full.Clusters
+3*12
+36+7
+43/2
+36+8
+/2
+44/22
+?grepl
+a = ("aa","bb","ss","ba")
+a = c("aa","bb","ss","ba")
+a
+grep(a,"b")
+grep("b",a)
+grep("b",a) -1
+a[(grep("b",a) -1)]
+# How do fixations during 500ms ISI predict informative responses?  #
+# Note that we are now using an SMI system for data collection, and the data output is #
+# v different. #
+fix <- read.csv("./data/all_fixation_durations.csv")#
+fix$Targ <- ifelse(fix$informative_target == "TRUE", 1, ifelse(fix$informative_target == "FALSE", 0, NA))#
+fix$Foil <- ifelse(fix$informative_foil == "TRUE", 1, ifelse(fix$informative_foil == "FALSE", 0, NA))
+summary(fix)
+summary(subset(fix, phase == "500ms")
+)
+summary(subset(fix, phase == "500ms"))
+summary(subset(fix, phase == "500ms" & condition == "ambig"))
+summary(subset(fix, phase == "500ms" & condition == "control"))
+library(ggplot2)#
+library(gridExtra)#
+library(grid)#
+library(jsonlite)#
+#
+# This script is used to read in all the csv files in a folder.#
+#
+library(doBy)#
+## for bootstrapping 95% confidence intervals -- from Mike Frank https://github.com/langcog/KTE/blob/master/mcf.useful.R#
+library(bootstrap)#
+theta <- function(x,xdata,na.rm=T) {mean(xdata[x],na.rm=na.rm)}#
+ci.low <- function(x,na.rm=T) {#
+  quantile(bootstrap(1:length(x),1000,theta,x,na.rm=na.rm)$thetastar,.025,na.rm=na.rm)} #  mean(x,na.rm=na.rm) -#
+ci.high <- function(x,na.rm=T) {#
+  quantile(bootstrap(1:length(x),1000,theta,x,na.rm=na.rm)$thetastar,.975,na.rm=na.rm) } #- mean(x,na.rm=na.rm)}#
+Catch_Import= function(path_name){#
+library(jsonlite)#
+#
+list.files(path = path_name,full.names = T, pattern = ".txt") -> file_list#
 comp = c()#
 for (x in file_list){#
-	data <- read.csv(x,header = T)#
-	if ("perceptual.rating.reactiontime" %in% colnames(data)){ #
-		data <- subset(data, select = -perceptual.rating.reactiontime)#
-		}#
-		if ("X" %in% colnames(data)){ #
-		data <- subset(data, select = -X)#
-		data$rt <- as.character(data$rt)#
-		}#
-	comp <- rbind(comp, data)#
+	file_name = x#
+	df <- fromJSON(file_name)#
+	d <- df$data$trialdata[1:2,]   ##df$data[4]$trialdata$key_press %in% c(71,32),]#
+	d$Subj <- unique(df$data$trialdata[df$data$trialdata$Screen == "Real-Response",]$Subj)[2]#
+	output <- cbind(key = d$key_press,Subj = d$Subj)#
+	comp = rbind(comp,output)#
+	print(x)#
+	}#
+	return(comp)#
+}#
+Comp_Import = function(path_name){#
+library(jsonlite)#
+#
+list.files(path = path_name,full.names = T, pattern = ".txt") -> file_list#
+comp = c()#
+for (x in file_list){#
+	file_name = x#
+	df <- fromJSON(file_name)#
+	d <- df$data$trialdata[df$data$trialdata$Screen == "Real-Response",]#
+	d <- d[ grep("match",d$stims$Cond, ignore.case = TRUE),]#
+	d$Cond <- as.factor(d$stims$Cond)#
+	d$Type <- as.factor(d$stims$Type)#
+	d$Phrase <- as.factor(d$stims$Phrase)#
+	d$Length <- as.factor(d$stims$Length)#
+	d$Task <- "Phrase"#
+	d$Task <- as.factor(d$Task)#
+	d$Stim <- "Two Words"#
+	d[d$Length == "1",]$Stim <- "One Word"#
+	d[d$Length == "3",]$Stim <- "Three Words"#
+	d$Stim <- ordered(d$Stim, levels = c("One Word", "Two Words", "Three Words"))#
+	d$PicType <- "Striped"#
+	d[grep("spotted",d$stims$Pic, ignore.case = TRUE),]$PicType <- "Spotted"#
+	d$Match <- "Match"#
+	d[grep("mismatch",d$Cond, ignore.case = TRUE),]$Match <- "MisMatch"#
+	d$Block = rep(c(1,2), each = 150)#
+	d$Match <- as.factor(d$Match)#
+	output <- data.frame(rt = as.numeric(as.character(d$rt)), key_press = d$key_press, Subj = d$Subj, Cond = d$Cond, Type = d$Type, Task = d$Task, Stim = d$Stim, Pic = d$stims$Pic, Phrase = d$Phrase, Match = d$Match, PicType = d$PicType, Block = d$Block, File = d$stimulus)#
+	#print(summary(d))#
+	output$rt <- as.numeric(as.character(output$rt))#
+	comp = rbind(comp,output)#
+	print(x)#
 	}#
 	return(comp)#
 }#
 #
-sense.pop <- read_data("./data/")#
+# Function for plotting data#
+Comp_Graph = function(DV.mean, DV.se, IV1, IV2, Subj, title,ylimit,ylab,leg = FALSE){#
+DV.se <- DV.se/(sqrt(length(unique(Subj))))#
+comp.graph.mean <- tapply(DV.mean,list(IV1, IV2), mean)#
+comp.graph.se <- tapply(DV.se,list(IV1, IV2), mean)#
+if (leg == TRUE){#
+barplot(comp.graph.mean, beside = T, ylim = ylimit, ylab = ylab, legend = T, xpd = FALSE, names.arg = c("Simple Structure\nBig Striped Tree","Complex Structure\nBig Striped Tree"),  col = c("gray47"), density = c(40,65,100), args.legend = list(bty = "n", x = 3.5), tck = -0.01)#
+} else{#
+barplot(comp.graph.mean, beside = T, ylim = ylimit, ylab = ylab,  legend = F, xpd = FALSE, names.arg = c("Simple Structure\nBig Striped Tree","Complex Structure\nBig Striped Tree"),   col = c("gray47"), density = c(40,65,100), tick = FALSE, axes = FALSE)#
+axis(2, at = c(0.5,0.75,1), labels = c(0.5,0.75,1.0), tck = -0.03)#
+}#
+arrows(c(1.5,2.5,3.5,5.5,6.5,7.5), (c(comp.graph.mean) + c(comp.graph.se)+0.01), c(1.5,2.5,3.5,5.5,6.5,7.5), (c(comp.graph.mean) - c(comp.graph.se)-0.01), code = 0)#
+}#
+library(lme4)#
+library(ez)#
+catch <- Catch_Import("./Exp3")#
+print(catch)#
+comp <- Comp_Import("./Exp3")#
+comp <- subset(comp, Type %in% c("Adj3","Adj4", "Adv4"))#
+comp$Acc <- 0#
+comp[comp$key_press == 77 & comp$Match == "Match",]$Acc <- 1#
+comp[comp$key_press == 90 & comp$Match == "MisMatch",]$Acc <- 1#
+comp$Task <- factor(comp$Task, levels(comp$Task)[c(2,1)])#
+comp <- comp[comp$rt > 300 & comp$rt <1500,]#
+comp$rtAdj <- NA#
+comp$AccAdj <- NA#
+for (i in unique(comp$Subj)){#
+	comp[comp$Subj == i,]$rtAdj <- ((comp[comp$Subj == i,]$rt - mean(comp[comp$Subj == i,]$rt, na.rm = T)) + mean(comp$rt, na.rm = T))#
+	comp[comp$Subj == i,]$AccAdj <- ((comp[comp$Subj == i,]$Acc - mean(comp[comp$Subj == i,]$Acc, na.rm = T)) + mean(comp$Acc, na.rm = T))#
+	}#
+# Reaction Times#
+ezANOVA(subset(comp, Acc ==1 & Match == "Match" & Type %in% c("Adj3","Adj4", "Adv4")), rt, wid = .(Subj), within = .(Stim), between = .(Type))$ANOVA#
+ezANOVA(subset(comp, Acc ==1 & Match == "Match" & Type %in% c("Adj3","Adj4", "Adv4") & Stim != "One Word"), rt, wid = .(Subj), within = .(Stim), between = .(Type))$ANOVA#
+ezANOVA(subset(comp, Acc ==1 & Match == "Match" & Type %in% c("Adj3","Adj4", "Adv4") & Stim != "Three Words"), rt, wid = .(Subj), within = .(Stim), between = .(Type))$ANOVA#
 #
-# Make RTs numeric [need to remove timeout "none" responses to 8s]#
-sense.pop <- subset(sense.pop, rt != "None")#
-sense.pop$rt <- as.numeric(sense.pop$rt)#
-sense.pop$Length <- nchar(as.character(sense.pop$prime),allowNA = T)#
-sense.pop$Condition <- as.character(sense.pop$prime_semantics)#
-sense.pop[sense.pop$prime_semantics %in% c("Sklar_control_A","Sklar_control_B"),]$Condition <- "Sklar_control"#
-sense.pop$Condition <- as.factor(sense.pop$Condition)#
-# Note that this analysis includes all of the inclusion criteria discussed by Sklar et al. #
+ezANOVA(subset(comp, Acc ==1 & Match == "Match" & Type == "Adj3" ), rt, wid = .(Subj), within = .(Stim))$ANOVA#
+ezANOVA(subset(comp, Acc ==1 & Match == "Match" & Type == "Adj4"), rt, wid = .(Subj), within = .(Stim))$ANOVA#
+ezANOVA(subset(comp, Acc ==1 & Match == "Match" & Type == "Adv4"), rt, wid = .(Subj), within = .(Stim))$ANOVA#
+ezANOVA(subset(comp, Acc ==1 & Match == "Match" & Type == "Adj3" & Stim != "Three Words" ), rt, wid = .(Subj), within = .(Stim))$ANOVA#
+ezANOVA(subset(comp, Acc ==1 & Match == "Match" & Type == "Adj4" & Stim != "Three Words" ), rt, wid = .(Subj), within = .(Stim))$ANOVA#
+ezANOVA(subset(comp, Acc ==1 & Match == "Match" & Type == "Adv4" & Stim != "Three Words" ), rt, wid = .(Subj), within = .(Stim))$ANOVA#
+ezANOVA(subset(comp, Acc ==1 & Match == "Match" & Type == "Adj3" & Stim != "One Word" ), rt, wid = .(Subj), within = .(Stim))$ANOVA#
+ezANOVA(subset(comp, Acc ==1 & Match == "Match" & Type == "Adj4" & Stim != "One Word" ), rt, wid = .(Subj), within = .(Stim))$ANOVA#
+ezANOVA(subset(comp, Acc ==1 & Match == "Match" & Type == "Adv4" & Stim != "One Word" ), rt, wid = .(Subj), within = .(Stim))$ANOVA#
 #
-###########################################################################################################################
-##
-# Let's first analyze for the Sklar trials#
-sense.pop.sklar <- subset(sense.pop, Condition %in% c("Sklar_control", "Sklar_violation")) #
+# Accuracy#
+ezANOVA(subset(comp, Type %in% c("Adj3","Adj4", "Adv4")), Acc, wid = .(Subj), within = .(Stim), between = .(Type))$ANOVA#
+ezANOVA(subset(comp, Type %in% c("Adj3","Adj4", "Adv4") & Stim != "One Word"), Acc, wid = .(Subj), within = .(Stim), between = .(Type))$ANOVA#
+ezANOVA(subset(comp, Type %in% c("Adj3","Adj4", "Adv4") & Stim != "Two Words"), Acc, wid = .(Subj), within = .(Stim), between = .(Type))$ANOVA#
+ezANOVA(subset(comp, Type %in% c("Adj3","Adj4", "Adv4") & Stim != "Three Words"), Acc, wid = .(Subj), within = .(Stim), between = .(Type))$ANOVA#
 #
-# Remove outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be < 3sd above group mean)#
-Acc <- summaryBy(match. + rt ~ SubjNo, data = subset(sense.pop.sklar), keep.names = T)#
-sense.pop.sklar <- subset(sense.pop.sklar, SubjNo %in% Acc[Acc$match. > 0.9,]$SubjNo)#
+# GLMER Accuracy analysis: Doesn't converge with random slope for stim (detailedType between subject)#
+comp$Num.Stim <- 0#
+comp[comp$Stim == "One Word",]$Num.Stim <- -1#
+comp[comp$Stim == "Three Words",]$Num.Stim <- 1#
+summary(glmer(Acc ~ Type * Num.Stim + (1+Num.Stim|Subj), data = comp, family = "binomial"))#
 #
-sense.pop.sklar <- subset(sense.pop.sklar, SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo)#
+# Prep for bar graph#
+comp$DetailedType <- "Complex Adjective (Big Spotted Tree)"#
+comp[comp$Type == "Adj4",]$DetailedType <- "Simple (Big Spotted Tree)"#
+comp[comp$Type == "Adv4",]$DetailedType <- "Complex Compound Adj. (Big Spotted Tree)"#
+comp$DetailedType <- ordered(comp$DetailedType, levels = c("Simple (Big Spotted Tree)","Complex Adjective (Big Spotted Tree)","Complex Compound Adj. (Big Spotted Tree)"))#
+comp$Stim <- ordered(comp$Stim, levels = c("Three Words", "Two Words","One Word"))#
 #
-# Remove incorrect trials#
-sense.pop.sklar <- subset(sense.pop.sklar, match. == 1)#
+comp.rt1 <- summaryBy(rt + rtAdj ~ Type + DetailedType + Stim + Subj, , data = subset(comp, Acc ==1 & Match == "Match" & Type %in% c("Adj3","Adj4","Adv4")), FUN = c(mean), na.rm = T , keep.names = T)#
+comp.rt1$Type <- ordered(comp.rt1$Type, levels = c("Adj4", "Adj3","Adv4"))#
+comp.rt <- summaryBy(rt + rtAdj ~ Type + DetailedType  + Stim , data = comp.rt1, FUN = c(mean,sd), na.rm = T )#
+print(comp.rt)#
 #
-# Remove outliers by subject (less than 3sd from participant mean -- note that this is not a symmetric exclusion criterion)#
-sense.pop.sklar <- ddply(sense.pop.sklar, .(SubjNo), function(d){ #
-	by_subj_include <- mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)#
-	d = subset(d, rt < by_subj_include[2])#
-	})#
-# Remove RTs < 200ms#
-sense.pop.sklar <- subset(sense.pop.sklar, rt > 0.2)#
+comp.Acc <- summaryBy(Acc + AccAdj~  Type + DetailedType  + Stim  +Subj, , data = comp, FUN = c(mean), na.rm = T , keep.names = T)#
+comp.Acc$Type <- ordered(comp.Acc$Type, levels = c("Adj4", "Adj3","Adv4"))#
+comp.Acc <- summaryBy(Acc + AccAdj~  Type + DetailedType  + Stim   , data = comp.Acc, FUN = c(mean,sd), na.rm = T )#
+print(comp.Acc)#
+par(fig = c(0,1,0.35,1),mar = c(3,4,2,2))#
+Comp_Graph(comp.rt$rt.mean,comp.rt$rtAdj.sd, comp.rt$Stim, comp.rt$Type, comp$Subj, paste("Three Words", "Reaction Time", sep = " "), c(750,1050),"Reaction Time (ms)",leg = TRUE)#
+par(fig = c(0,1,0,0.35),mar = c(3,4,2,2), new = TRUE)#
+Comp_Graph(comp.Acc$Acc.mean,comp.Acc$AccAdj.sd, comp.Acc$Stim, comp.Acc$Type, comp$Subj, paste("Three Words", "Accuracy", sep = " "), c(0.5,1),"Accuracy")#
 #
-# T test (Sklar style)#
-sense.pop.sklar$log.rt <- log(sense.pop.sklar$rt)#
-sense.pop.sklar.summary <- summaryBy(rt + log.rt~ SubjNo + Condition, data = subset(sense.pop.sklar,  Condition %in% c("Sklar_violation", "Sklar_control")), keep.names = T)#
-t.test(rt ~ Condition, data = sense.pop.sklar.summary, paired = T)#
-t.test(log.rt ~ Condition, data = sense.pop.sklar.summary, paired = T)
+# Quick analysis on whether the effect differs depending on whether the size of the image and the size of the texture are congruent#
+comp$Cong <- 0#
+comp[grep("big_big",comp$Pic, ignore.case = TRUE),]$Cong <- 1#
+comp[grep("small_small",comp$Pic, ignore.case = TRUE),]$Cong <- 1#
+ezANOVA(subset(comp, Acc ==1 & Match == "Match" & Type == "Adj3" & Cong ==1 ), rt, wid = .(Subj), within = .(Stim))$ANOVA#
+ezANOVA(subset(comp, Acc ==1 & Match == "Match" & Type == "Adj3" & Cong ==0 ), rt, wid = .(Subj), within = .(Stim))$ANOVA#
+# Prep for line graph#
+comp$DetailedType <- ordered(comp$DetailedType, levels = c("Complex Adjective: (Big-Tree) & Spotted","Complex Compound Adj.: (Big-Spotted) & Tree","Simple: (Big & Spotted & Tree)"))#
+comp$Stim <- ordered(comp$Stim, levels = c("One Word", "Two Words", "Three Words"))#
+comp.rt1 <- summaryBy(rt + rtAdj ~ Type + DetailedType + Stim + Subj, , data = subset(comp, Acc ==1 & Match == "Match"), FUN = c(mean), na.rm = T , keep.names = T)#
+ci.m <- aggregate(rt ~  Stim + DetailedType , comp.rt1, mean); ci.m#
+ci.l <- aggregate(rt ~  Stim + DetailedType , comp.rt1, ci.low); ci.l#
+ci.h <- aggregate(rt ~  Stim + DetailedType , comp.rt1, ci.high); ci.h#
+comp.rt1$Type <- ordered(comp.rt1$Type, levels = c("Adj4", "Adj3"))#
+comp.rt <- summaryBy(rt + rtAdj ~ Type + DetailedType  + Stim , data = comp.rt1, FUN = c(mean,sd), na.rm = T )#
+print(comp.rt)#
+#
+comp.Acc <- summaryBy(Acc + AccAdj~  Type + DetailedType  + Stim  +Subj, , data = comp, FUN = c(mean), na.rm = T , keep.names = T)#
+comp.Acc$Type <- ordered(comp.Acc$Type, levels = c("Adj4", "Adj3"))#
+comp.Acc <- summaryBy(Acc + AccAdj~  Type + DetailedType  + Stim   , data = comp.Acc, FUN = c(mean,sd), na.rm = T )#
+print(comp.Acc)#
+# Function for plotting data#
+Comp_Graph_l = function(DV.mean, DV.se, IV1, IV2, Subj, title,ylimit,ylab,leg = FALSE){#
+theme_set(theme_bw())#
+DV.se <- DV.se/(sqrt((length(unique(Subj))/3)))#
+#comp.graph.mean <- tapply(DV.mean,list(IV1, IV2), mean)#
+#comp.graph.se <- tapply(DV.se,list(IV1, IV2), mean)#
+graph_data <- data.frame(Stim = IV1, Task = IV2, DV = DV.mean, SE = DV.se)#
+print((graph_data))#
+if (leg == TRUE){#
+#x <- barplot(comp.graph.mean, beside = T, ylim = ylimit, ylab = ylab, legend = T, xpd = FALSE, names.arg = c("Composition Task\nPink Tree","List Task\nCup, Tree"),  col = c("gray47"), density = c(40,100), args.legend = list(bty = "n", x = 2.8), tck = -0.01)#
+# PRetty ggplot2 code drawn from https://github.com/langcog/KTE/blob/master/full%20analysis%20all%20experiments.R#
+#
+#		#
+x <- ggplot(graph_data, aes(x=Stim, y=DV,group = Task, linetype = Task)) + #
+		ylim(ylimit) +#
+		ylab(ylab) +#
+		geom_line(aes(group = Task, linetype = Task),position=position_dodge(width=.1),stat="identity") + #
+		geom_linerange(aes(ymin=DV - SE, ymax=DV + SE), position=position_dodge(width=.1))+ #
+#
+		guides(colour=guide_legend()) +#
+		theme(strip.background = element_rect(fill="#FFFFFF"), #
+        strip.text = element_text(size=12), #
+        axis.text = element_text(size=12),#
+        axis.title = element_text(size=14),#
+        legend.text = element_text(size=12),#
+        legend.key = element_blank(),#
+       legend.title=element_blank(),#
+        title = element_text(size=16),#
+        panel.grid = element_blank(),#
+         axis.title.x=element_blank(),#
+        legend.position=c(0.35,0.8))#
+} else{#
+x <- ggplot(graph_data, aes(x=Stim, y=DV,group = Task, linetype = Task)) + #
+		ylim(ylimit) +#
+		ylab(ylab) +#
+		geom_line(aes(group = Task, linetype = Task),position=position_dodge(width=.1),stat="identity") + #
+		geom_linerange(aes(ymin=DV - SE, ymax=DV + SE), position=position_dodge(width=.1))+#
+		theme(strip.background = element_rect(fill="#FFFFFF"), #
+        strip.text = element_text(size=12), #
+        axis.text = element_text(size=12),#
+        axis.title = element_text(size=14),#
+        title = element_text(size=16),#
+        panel.grid = element_blank(),#
+        axis.text.x=element_blank(),#
+       axis.title.x=element_blank(),#
+  	   	legend.position= "none")}#
+#arrows(x, (c(comp.graph.mean) + c(comp.graph.se)+0.01), x, (c(comp.graph.mean) - c(comp.graph.se)-0.01), code = 0)#
+return(x)#
+}#
+RT <- Comp_Graph_l(comp.rt$rt.mean,comp.rt$rtAdj.sd, comp.rt$Stim, comp.rt$DetailedType, comp$Subj, paste("Three Words", "Reaction Time", sep = " "), c(700,1050),"Reaction Time (ms)",leg = TRUE)#
+par(fig = c(0,1,0,0.35),mar = c(3,4,2,2), new = TRUE)#
+Acc <- Comp_Graph_l(comp.Acc$Acc.mean,comp.Acc$AccAdj.sd, comp.Acc$Stim, comp.Acc$DetailedType, comp$Subj, paste("Three Words", "Accuracy", sep = " "), c(0.7,1),"Accuracy")#
+# Get the gtables#
+gRT <- ggplotGrob(RT)#
+gAcc <- ggplotGrob(Acc)#
+#
+# Set the widths#
+gAcc$widths <- gRT$widths#
+#
+# Arrange the two charts.#
+# The legend boxes are centered#
+grid.newpage()#
+grid.arrange(gAcc, gRT, nrow = 2, heights = c(1,2))
+# Prep for bar graph#
+comp$DetailedType <- "Complex Adjective (Big Spotted Tree)"#
+comp[comp$Type == "Adj4",]$DetailedType <- "Simple (Big Spotted Tree)"#
+comp[comp$Type == "Adv4",]$DetailedType <- "Complex Compound Adj. (Big Spotted Tree)"#
+comp$DetailedType <- ordered(comp$DetailedType, levels = c("Simple (Big Spotted Tree)","Complex Adjective (Big Spotted Tree)","Complex Compound Adj. (Big Spotted Tree)"))#
+comp$Stim <- ordered(comp$Stim, levels = c("Three Words", "Two Words","One Word"))#
+#
+comp.rt1 <- summaryBy(rt + rtAdj ~ Type + DetailedType + Stim + Subj, , data = subset(comp, Acc ==1 & Match == "Match" & Type %in% c("Adj3","Adj4","Adv4")), FUN = c(mean), na.rm = T , keep.names = T)#
+comp.rt1$Type <- ordered(comp.rt1$Type, levels = c("Adj4", "Adj3","Adv4"))#
+comp.rt <- summaryBy(rt + rtAdj ~ Type + DetailedType  + Stim , data = comp.rt1, FUN = c(mean,sd), na.rm = T )#
+print(comp.rt)#
+#
+comp.Acc <- summaryBy(Acc + AccAdj~  Type + DetailedType  + Stim  +Subj, , data = comp, FUN = c(mean), na.rm = T , keep.names = T)#
+comp.Acc$Type <- ordered(comp.Acc$Type, levels = c("Adj4", "Adj3","Adv4"))#
+comp.Acc <- summaryBy(Acc + AccAdj~  Type + DetailedType  + Stim   , data = comp.Acc, FUN = c(mean,sd), na.rm = T )#
+print(comp.Acc)#
+par(fig = c(0,1,0.35,1),mar = c(3,4,2,2))#
+Comp_Graph(comp.rt$rt.mean,comp.rt$rtAdj.sd, comp.rt$Stim, comp.rt$Type, comp$Subj, paste("Three Words", "Reaction Time", sep = " "), c(750,1050),"Reaction Time (ms)",leg = TRUE)#
+par(fig = c(0,1,0,0.35),mar = c(3,4,2,2), new = TRUE)#
+Comp_Graph(comp.Acc$Acc.mean,comp.Acc$AccAdj.sd, comp.Acc$Stim, comp.Acc$Type, comp$Subj, paste("Three Words", "Accuracy", sep = " "), c(0.5,1),"Accuracy")#
+#
+# Quick analysis on whether the effect differs depending on whether the size of the image and the size of the texture are congruent#
+comp$Cong <- 0#
+comp[grep("big_big",comp$Pic, ignore.case = TRUE),]$Cong <- 1#
+comp[grep("small_small",comp$Pic, ignore.case = TRUE),]$Cong <- 1#
+ezANOVA(subset(comp, Acc ==1 & Match == "Match" & Type == "Adj3" & Cong ==1 ), rt, wid = .(Subj), within = .(Stim))$ANOVA#
+ezANOVA(subset(comp, Acc ==1 & Match == "Match" & Type == "Adj3" & Cong ==0 ), rt, wid = .(Subj), within = .(Stim))$ANOVA#
+# Prep for line graph#
+comp$DetailedType <- ordered(comp$DetailedType, levels = c("Complex Adjective (Big Spotted Tree)","Complex Compound Adj. (Big Spotted Tree)","Simple (Big Spotted Tree)"), labels = c("Complex Adjective: (Big-Tree) & Spotted","Complex Compound Adj.: (Big-Spotted) & Tree","Simple: (Big & Spotted & Tree)"))#
+comp$Stim <- ordered(comp$Stim, levels = c("One Word", "Two Words", "Three Words"))#
+comp.rt1 <- summaryBy(rt + rtAdj ~ Type + DetailedType + Stim + Subj, , data = subset(comp, Acc ==1 & Match == "Match"), FUN = c(mean), na.rm = T , keep.names = T)#
+ci.m <- aggregate(rt ~  Stim + DetailedType , comp.rt1, mean); ci.m#
+ci.l <- aggregate(rt ~  Stim + DetailedType , comp.rt1, ci.low); ci.l#
+ci.h <- aggregate(rt ~  Stim + DetailedType , comp.rt1, ci.high); ci.h#
+comp.rt1$Type <- ordered(comp.rt1$Type, levels = c("Adj4", "Adj3"))#
+comp.rt <- summaryBy(rt + rtAdj ~ Type + DetailedType  + Stim , data = comp.rt1, FUN = c(mean,sd), na.rm = T )#
+print(comp.rt)#
+#
+comp.Acc <- summaryBy(Acc + AccAdj~  Type + DetailedType  + Stim  +Subj, , data = comp, FUN = c(mean), na.rm = T , keep.names = T)#
+comp.Acc$Type <- ordered(comp.Acc$Type, levels = c("Adj4", "Adj3"))#
+comp.Acc <- summaryBy(Acc + AccAdj~  Type + DetailedType  + Stim   , data = comp.Acc, FUN = c(mean,sd), na.rm = T )#
+print(comp.Acc)#
+# Function for plotting data#
+Comp_Graph_l = function(DV.mean, DV.se, IV1, IV2, Subj, title,ylimit,ylab,leg = FALSE){#
+theme_set(theme_bw())#
+DV.se <- DV.se/(sqrt((length(unique(Subj))/3)))#
+#comp.graph.mean <- tapply(DV.mean,list(IV1, IV2), mean)#
+#comp.graph.se <- tapply(DV.se,list(IV1, IV2), mean)#
+graph_data <- data.frame(Stim = IV1, Task = IV2, DV = DV.mean, SE = DV.se)#
+print((graph_data))#
+if (leg == TRUE){#
+#x <- barplot(comp.graph.mean, beside = T, ylim = ylimit, ylab = ylab, legend = T, xpd = FALSE, names.arg = c("Composition Task\nPink Tree","List Task\nCup, Tree"),  col = c("gray47"), density = c(40,100), args.legend = list(bty = "n", x = 2.8), tck = -0.01)#
+# PRetty ggplot2 code drawn from https://github.com/langcog/KTE/blob/master/full%20analysis%20all%20experiments.R#
+#
+#		#
+x <- ggplot(graph_data, aes(x=Stim, y=DV,group = Task, linetype = Task)) + #
+		ylim(ylimit) +#
+		ylab(ylab) +#
+		geom_line(aes(group = Task, linetype = Task),position=position_dodge(width=.1),stat="identity") + #
+		geom_linerange(aes(ymin=DV - SE, ymax=DV + SE), position=position_dodge(width=.1))+ #
+#
+		guides(colour=guide_legend()) +#
+		theme(strip.background = element_rect(fill="#FFFFFF"), #
+        strip.text = element_text(size=12), #
+        axis.text = element_text(size=12),#
+        axis.title = element_text(size=14),#
+        legend.text = element_text(size=12),#
+        legend.key = element_blank(),#
+       legend.title=element_blank(),#
+        title = element_text(size=16),#
+        panel.grid = element_blank(),#
+         axis.title.x=element_blank(),#
+        legend.position=c(0.35,0.8))#
+} else{#
+x <- ggplot(graph_data, aes(x=Stim, y=DV,group = Task, linetype = Task)) + #
+		ylim(ylimit) +#
+		ylab(ylab) +#
+		geom_line(aes(group = Task, linetype = Task),position=position_dodge(width=.1),stat="identity") + #
+		geom_linerange(aes(ymin=DV - SE, ymax=DV + SE), position=position_dodge(width=.1))+#
+		theme(strip.background = element_rect(fill="#FFFFFF"), #
+        strip.text = element_text(size=12), #
+        axis.text = element_text(size=12),#
+        axis.title = element_text(size=14),#
+        title = element_text(size=16),#
+        panel.grid = element_blank(),#
+        axis.text.x=element_blank(),#
+       axis.title.x=element_blank(),#
+  	   	legend.position= "none")}#
+#arrows(x, (c(comp.graph.mean) + c(comp.graph.se)+0.01), x, (c(comp.graph.mean) - c(comp.graph.se)-0.01), code = 0)#
+return(x)#
+}#
+RT <- Comp_Graph_l(comp.rt$rt.mean,comp.rt$rtAdj.sd, comp.rt$Stim, comp.rt$DetailedType, comp$Subj, paste("Three Words", "Reaction Time", sep = " "), c(700,1050),"Reaction Time (ms)",leg = TRUE)#
+par(fig = c(0,1,0,0.35),mar = c(3,4,2,2), new = TRUE)#
+Acc <- Comp_Graph_l(comp.Acc$Acc.mean,comp.Acc$AccAdj.sd, comp.Acc$Stim, comp.Acc$DetailedType, comp$Subj, paste("Three Words", "Accuracy", sep = " "), c(0.7,1),"Accuracy")#
+# Get the gtables#
+gRT <- ggplotGrob(RT)#
+gAcc <- ggplotGrob(Acc)#
+#
+# Set the widths#
+gAcc$widths <- gRT$widths#
+#
+# Arrange the two charts.#
+# The legend boxes are centered#
+grid.newpage()#
+grid.arrange(gAcc, gRT, nrow = 2, heights = c(1,2))
+comp$DetailedType <- ordered(comp$DetailedType, levels = c("Complex Adjective (Big Spotted Tree)","Complex Compound Adj. (Big Spotted Tree)","Simple (Big Spotted Tree)"), labels = c("Complex Adjective [(Big-Tree) & Spotted]","Complex Compound Adj. [(Big-Spotted) & Tree]","Simple: [Big & Spotted & Tree]"))#
+comp$Stim <- ordered(comp$Stim, levels = c("One Word", "Two Words", "Three Words"))#
+comp.rt1 <- summaryBy(rt + rtAdj ~ Type + DetailedType + Stim + Subj, , data = subset(comp, Acc ==1 & Match == "Match"), FUN = c(mean), na.rm = T , keep.names = T)#
+ci.m <- aggregate(rt ~  Stim + DetailedType , comp.rt1, mean); ci.m#
+ci.l <- aggregate(rt ~  Stim + DetailedType , comp.rt1, ci.low); ci.l#
+ci.h <- aggregate(rt ~  Stim + DetailedType , comp.rt1, ci.high); ci.h#
+comp.rt1$Type <- ordered(comp.rt1$Type, levels = c("Adj4", "Adj3"))#
+comp.rt <- summaryBy(rt + rtAdj ~ Type + DetailedType  + Stim , data = comp.rt1, FUN = c(mean,sd), na.rm = T )#
+print(comp.rt)#
+#
+comp.Acc <- summaryBy(Acc + AccAdj~  Type + DetailedType  + Stim  +Subj, , data = comp, FUN = c(mean), na.rm = T , keep.names = T)#
+comp.Acc$Type <- ordered(comp.Acc$Type, levels = c("Adj4", "Adj3"))#
+comp.Acc <- summaryBy(Acc + AccAdj~  Type + DetailedType  + Stim   , data = comp.Acc, FUN = c(mean,sd), na.rm = T )#
+print(comp.Acc)#
+# Function for plotting data#
+Comp_Graph_l = function(DV.mean, DV.se, IV1, IV2, Subj, title,ylimit,ylab,leg = FALSE){#
+theme_set(theme_bw())#
+DV.se <- DV.se/(sqrt((length(unique(Subj))/3)))#
+#comp.graph.mean <- tapply(DV.mean,list(IV1, IV2), mean)#
+#comp.graph.se <- tapply(DV.se,list(IV1, IV2), mean)#
+graph_data <- data.frame(Stim = IV1, Task = IV2, DV = DV.mean, SE = DV.se)#
+print((graph_data))#
+if (leg == TRUE){#
+#x <- barplot(comp.graph.mean, beside = T, ylim = ylimit, ylab = ylab, legend = T, xpd = FALSE, names.arg = c("Composition Task\nPink Tree","List Task\nCup, Tree"),  col = c("gray47"), density = c(40,100), args.legend = list(bty = "n", x = 2.8), tck = -0.01)#
+# PRetty ggplot2 code drawn from https://github.com/langcog/KTE/blob/master/full%20analysis%20all%20experiments.R#
+#
+#		#
+x <- ggplot(graph_data, aes(x=Stim, y=DV,group = Task, linetype = Task)) + #
+		ylim(ylimit) +#
+		ylab(ylab) +#
+		geom_line(aes(group = Task, linetype = Task),position=position_dodge(width=.1),stat="identity") + #
+		geom_linerange(aes(ymin=DV - SE, ymax=DV + SE), position=position_dodge(width=.1))+ #
+#
+		guides(colour=guide_legend()) +#
+		theme(strip.background = element_rect(fill="#FFFFFF"), #
+        strip.text = element_text(size=12), #
+        axis.text = element_text(size=12),#
+        axis.title = element_text(size=14),#
+        legend.text = element_text(size=12),#
+        legend.key = element_blank(),#
+       legend.title=element_blank(),#
+        title = element_text(size=16),#
+        panel.grid = element_blank(),#
+         axis.title.x=element_blank(),#
+        legend.position=c(0.35,0.8))#
+} else{#
+x <- ggplot(graph_data, aes(x=Stim, y=DV,group = Task, linetype = Task)) + #
+		ylim(ylimit) +#
+		ylab(ylab) +#
+		geom_line(aes(group = Task, linetype = Task),position=position_dodge(width=.1),stat="identity") + #
+		geom_linerange(aes(ymin=DV - SE, ymax=DV + SE), position=position_dodge(width=.1))+#
+		theme(strip.background = element_rect(fill="#FFFFFF"), #
+        strip.text = element_text(size=12), #
+        axis.text = element_text(size=12),#
+        axis.title = element_text(size=14),#
+        title = element_text(size=16),#
+        panel.grid = element_blank(),#
+        axis.text.x=element_blank(),#
+       axis.title.x=element_blank(),#
+  	   	legend.position= "none")}#
+#arrows(x, (c(comp.graph.mean) + c(comp.graph.se)+0.01), x, (c(comp.graph.mean) - c(comp.graph.se)-0.01), code = 0)#
+return(x)#
+}#
+RT <- Comp_Graph_l(comp.rt$rt.mean,comp.rt$rtAdj.sd, comp.rt$Stim, comp.rt$DetailedType, comp$Subj, paste("Three Words", "Reaction Time", sep = " "), c(700,1050),"Reaction Time (ms)",leg = TRUE)#
+par(fig = c(0,1,0,0.35),mar = c(3,4,2,2), new = TRUE)#
+Acc <- Comp_Graph_l(comp.Acc$Acc.mean,comp.Acc$AccAdj.sd, comp.Acc$Stim, comp.Acc$DetailedType, comp$Subj, paste("Three Words", "Accuracy", sep = " "), c(0.7,1),"Accuracy")#
+# Get the gtables#
+gRT <- ggplotGrob(RT)#
+gAcc <- ggplotGrob(Acc)#
+#
+# Set the widths#
+gAcc$widths <- gRT$widths#
+#
+# Arrange the two charts.#
+# The legend boxes are centered#
+grid.newpage()#
+grid.arrange(gAcc, gRT, nrow = 2, heights = c(1,2))
+# Prep for bar graph#
+comp$DetailedType <- "Complex Adjective (Big Spotted Tree)"#
+comp[comp$Type == "Adj4",]$DetailedType <- "Simple (Big Spotted Tree)"#
+comp[comp$Type == "Adv4",]$DetailedType <- "Complex Compound Adj. (Big Spotted Tree)"#
+comp$DetailedType <- ordered(comp$DetailedType, levels = c("Simple (Big Spotted Tree)","Complex Adjective (Big Spotted Tree)","Complex Compound Adj. (Big Spotted Tree)"))#
+comp$Stim <- ordered(comp$Stim, levels = c("Three Words", "Two Words","One Word"))#
+#
+comp.rt1 <- summaryBy(rt + rtAdj ~ Type + DetailedType + Stim + Subj, , data = subset(comp, Acc ==1 & Match == "Match" & Type %in% c("Adj3","Adj4","Adv4")), FUN = c(mean), na.rm = T , keep.names = T)#
+comp.rt1$Type <- ordered(comp.rt1$Type, levels = c("Adj4", "Adj3","Adv4"))#
+comp.rt <- summaryBy(rt + rtAdj ~ Type + DetailedType  + Stim , data = comp.rt1, FUN = c(mean,sd), na.rm = T )#
+print(comp.rt)#
+#
+comp.Acc <- summaryBy(Acc + AccAdj~  Type + DetailedType  + Stim  +Subj, , data = comp, FUN = c(mean), na.rm = T , keep.names = T)#
+comp.Acc$Type <- ordered(comp.Acc$Type, levels = c("Adj4", "Adj3","Adv4"))#
+comp.Acc <- summaryBy(Acc + AccAdj~  Type + DetailedType  + Stim   , data = comp.Acc, FUN = c(mean,sd), na.rm = T )#
+print(comp.Acc)#
+par(fig = c(0,1,0.35,1),mar = c(3,4,2,2))#
+Comp_Graph(comp.rt$rt.mean,comp.rt$rtAdj.sd, comp.rt$Stim, comp.rt$Type, comp$Subj, paste("Three Words", "Reaction Time", sep = " "), c(750,1050),"Reaction Time (ms)",leg = TRUE)#
+par(fig = c(0,1,0,0.35),mar = c(3,4,2,2), new = TRUE)#
+Comp_Graph(comp.Acc$Acc.mean,comp.Acc$AccAdj.sd, comp.Acc$Stim, comp.Acc$Type, comp$Subj, paste("Three Words", "Accuracy", sep = " "), c(0.5,1),"Accuracy")#
+#
+# Quick analysis on whether the effect differs depending on whether the size of the image and the size of the texture are congruent#
+comp$Cong <- 0#
+comp[grep("big_big",comp$Pic, ignore.case = TRUE),]$Cong <- 1#
+comp[grep("small_small",comp$Pic, ignore.case = TRUE),]$Cong <- 1#
+ezANOVA(subset(comp, Acc ==1 & Match == "Match" & Type == "Adj3" & Cong ==1 ), rt, wid = .(Subj), within = .(Stim))$ANOVA#
+ezANOVA(subset(comp, Acc ==1 & Match == "Match" & Type == "Adj3" & Cong ==0 ), rt, wid = .(Subj), within = .(Stim))$ANOVA#
+# Prep for line graph#
+comp$DetailedType <- ordered(comp$DetailedType, levels = c("Complex Adjective (Big Spotted Tree)","Complex Compound Adj. (Big Spotted Tree)","Simple (Big Spotted Tree)"), labels = c("Complex Adjective [(Big-Tree) & Spotted]","Complex Compound Adj. [(Big-Spotted) & Tree]","Simple: [Big & Spotted & Tree]"))#
+comp$Stim <- ordered(comp$Stim, levels = c("One Word", "Two Words", "Three Words"))#
+comp.rt1 <- summaryBy(rt + rtAdj ~ Type + DetailedType + Stim + Subj, , data = subset(comp, Acc ==1 & Match == "Match"), FUN = c(mean), na.rm = T , keep.names = T)#
+ci.m <- aggregate(rt ~  Stim + DetailedType , comp.rt1, mean); ci.m#
+ci.l <- aggregate(rt ~  Stim + DetailedType , comp.rt1, ci.low); ci.l#
+ci.h <- aggregate(rt ~  Stim + DetailedType , comp.rt1, ci.high); ci.h#
+comp.rt1$Type <- ordered(comp.rt1$Type, levels = c("Adj4", "Adj3"))#
+comp.rt <- summaryBy(rt + rtAdj ~ Type + DetailedType  + Stim , data = comp.rt1, FUN = c(mean,sd), na.rm = T )#
+print(comp.rt)#
+#
+comp.Acc <- summaryBy(Acc + AccAdj~  Type + DetailedType  + Stim  +Subj, , data = comp, FUN = c(mean), na.rm = T , keep.names = T)#
+comp.Acc$Type <- ordered(comp.Acc$Type, levels = c("Adj4", "Adj3"))#
+comp.Acc <- summaryBy(Acc + AccAdj~  Type + DetailedType  + Stim   , data = comp.Acc, FUN = c(mean,sd), na.rm = T )#
+print(comp.Acc)#
+# Function for plotting data#
+Comp_Graph_l = function(DV.mean, DV.se, IV1, IV2, Subj, title,ylimit,ylab,leg = FALSE){#
+theme_set(theme_bw())#
+DV.se <- DV.se/(sqrt((length(unique(Subj))/3)))#
+#comp.graph.mean <- tapply(DV.mean,list(IV1, IV2), mean)#
+#comp.graph.se <- tapply(DV.se,list(IV1, IV2), mean)#
+graph_data <- data.frame(Stim = IV1, Task = IV2, DV = DV.mean, SE = DV.se)#
+print((graph_data))#
+if (leg == TRUE){#
+#x <- barplot(comp.graph.mean, beside = T, ylim = ylimit, ylab = ylab, legend = T, xpd = FALSE, names.arg = c("Composition Task\nPink Tree","List Task\nCup, Tree"),  col = c("gray47"), density = c(40,100), args.legend = list(bty = "n", x = 2.8), tck = -0.01)#
+# PRetty ggplot2 code drawn from https://github.com/langcog/KTE/blob/master/full%20analysis%20all%20experiments.R#
+#
+#		#
+x <- ggplot(graph_data, aes(x=Stim, y=DV,group = Task, linetype = Task)) + #
+		ylim(ylimit) +#
+		ylab(ylab) +#
+		geom_line(aes(group = Task, linetype = Task),position=position_dodge(width=.1),stat="identity") + #
+		geom_linerange(aes(ymin=DV - SE, ymax=DV + SE), position=position_dodge(width=.1))+ #
+#
+		guides(colour=guide_legend()) +#
+		theme(strip.background = element_rect(fill="#FFFFFF"), #
+        strip.text = element_text(size=12), #
+        axis.text = element_text(size=12),#
+        axis.title = element_text(size=14),#
+        legend.text = element_text(size=12),#
+        legend.key = element_blank(),#
+       legend.title=element_blank(),#
+        title = element_text(size=16),#
+        panel.grid = element_blank(),#
+         axis.title.x=element_blank(),#
+        legend.position=c(0.35,0.8))#
+} else{#
+x <- ggplot(graph_data, aes(x=Stim, y=DV,group = Task, linetype = Task)) + #
+		ylim(ylimit) +#
+		ylab(ylab) +#
+		geom_line(aes(group = Task, linetype = Task),position=position_dodge(width=.1),stat="identity") + #
+		geom_linerange(aes(ymin=DV - SE, ymax=DV + SE), position=position_dodge(width=.1))+#
+		theme(strip.background = element_rect(fill="#FFFFFF"), #
+        strip.text = element_text(size=12), #
+        axis.text = element_text(size=12),#
+        axis.title = element_text(size=14),#
+        title = element_text(size=16),#
+        panel.grid = element_blank(),#
+        axis.text.x=element_blank(),#
+       axis.title.x=element_blank(),#
+  	   	legend.position= "none")}#
+#arrows(x, (c(comp.graph.mean) + c(comp.graph.se)+0.01), x, (c(comp.graph.mean) - c(comp.graph.se)-0.01), code = 0)#
+return(x)#
+}#
+RT <- Comp_Graph_l(comp.rt$rt.mean,comp.rt$rtAdj.sd, comp.rt$Stim, comp.rt$DetailedType, comp$Subj, paste("Three Words", "Reaction Time", sep = " "), c(700,1050),"Reaction Time (ms)",leg = TRUE)#
+par(fig = c(0,1,0,0.35),mar = c(3,4,2,2), new = TRUE)#
+Acc <- Comp_Graph_l(comp.Acc$Acc.mean,comp.Acc$AccAdj.sd, comp.Acc$Stim, comp.Acc$DetailedType, comp$Subj, paste("Three Words", "Accuracy", sep = " "), c(0.7,1),"Accuracy")#
+# Get the gtables#
+gRT <- ggplotGrob(RT)#
+gAcc <- ggplotGrob(Acc)#
+#
+# Set the widths#
+gAcc$widths <- gRT$widths#
+#
+# Arrange the two charts.#
+# The legend boxes are centered#
+grid.newpage()#
+grid.arrange(gAcc, gRT, nrow = 2, heights = c(1,2))
+=======
+re.summary <- summaryBy(Mu + Sigma+ Tau ~ Age+Pred + Match, data = d, FUN = c(mean))#
+#
+ezANOVA(d, dv = Mu, wid = Subject, within = .(Pred,Match), between = .(Age))#
+ezANOVA(d, dv = Sigma, wid = Subject, within = .(Pred,Match), between = .(Age))#
+ezANOVA(d, dv = Tau, wid = Subject, within = .(Pred,Match), between = .(Age))#
+#
+re.summary.gg <- melt(re.summary,id.vars = c("Age","Pred","Match"), variable.name = "Parameter",value.name = "Value")#
+ggplot(data = re.summary.gg, aes(x = Pred, y = Value)) +#
+  geom_bar(stat = "identity", position = "dodge", aes(fill = Match)) +#
+  facet_wrap(~Parameter+Age)
+summary(tt)
+re.summary
+# NOTE THAT FOR THESE ANALYSES YOU TYPICALLY NEED TO INCLUDE THE LONG RT TAIL. I recommend rt >0 & rt <16000#
+library(retimes)#
+library(doBy)#
+library(ez)#
+#
+ads <- read.csv("Adult_R.csv")#
+fives <- read.csv("5yo_R.csv")#
+threes <- read.csv("3yo_R.csv")#
+#
+ads$Age <- "Adult"#
+fives$Age <- "Five"#
+threes$Age <- "Three"#
+#
+tt <- rbind(ads,fives,threes)#
+tt$Age <- as.factor(tt$Age)#
+tt$Subject <- paste(tt$Age,tt$Subject, sep = "")
+re.summary
+summary(tt)
+summaryBy(Incorrect ~ Age + Pred + Match, data =tt)
+tt<- subset(tt, Disfluent == 0)#
+d = data.frame(Subject = rep(NA, times = length(unique(tt$Subject))*4), Pred = NA, Match = NA, Age = NA, Mu = NA, Sigma = NA, Tau = NA)#
+index = 1#
+for (k in unique(tt$Pred)){#
+	for (j in unique(subset(tt, Pred == k)$Subj)){#
+		for (i in unique(subset(tt, Pred == k & Subject == j)$Match)){#
+			a = timefit(subset(tt, Pred == k & Subject == j & Match == i )$RTms)#
+			d$Age[index] <- as.character(unique(subset(tt, Pred == k & Subject == j & Match == i )$Age)[1])#
+			d$Subject[index] <- j#
+			d$Pred[index] <- k#
+			d$Match[index] <- i#
+			d$Mu[index] <- a@par[1]#
+			d$Sigma[index] <- a@par[2]#
+			d$Tau[index] <- a@par[3]#
+			index <- index + 1#
+#
+			}#
+		}#
+	}#
+re.summary <- summaryBy(Mu + Sigma+ Tau ~ Age+Pred + Match, data = d, FUN = c(mean))#
+#
+ezANOVA(d, dv = Mu, wid = Subject, within = .(Pred,Match), between = .(Age))#
+ezANOVA(d, dv = Sigma, wid = Subject, within = .(Pred,Match), between = .(Age))#
+ezANOVA(d, dv = Tau, wid = Subject, within = .(Pred,Match), between = .(Age))#
+#
+re.summary.gg <- melt(re.summary,id.vars = c("Age","Pred","Match"), variable.name = "Parameter",value.name = "Value")#
+ggplot(data = re.summary.gg, aes(x = Pred, y = Value)) +#
+  geom_bar(stat = "identity", position = "dodge", aes(fill = Match)) +#
+  facet_wrap(~Parameter+Age)
+re.summary
+summaryBy(RTms ~ Age + Pred + Match, data =tt)
+summaryBy(RTms ~ Age + Pred + Match, data =tt, FUN = length)
+summaryBy(RTms ~ Age+Subject + Pred + Match, data =tt, FUN = length)
+?timefit
+# NOTE THAT FOR THESE ANALYSES YOU TYPICALLY NEED TO INCLUDE THE LONG RT TAIL. I recommend rt >0 & rt <16000#
+library(retimes)#
+library(doBy)#
+library(ez)#
+#
+ads <- read.csv("Adult_R.csv")#
+fives <- read.csv("5yo_R.csv")#
+threes <- read.csv("3yo_R.csv")#
+#
+ads$Age <- "Adult"#
+fives$Age <- "Five"#
+threes$Age <- "Three"#
+#
+tt <- rbind(ads,fives,threes)#
+tt$Age <- as.factor(tt$Age)#
+tt$Subject <- paste(tt$Age,tt$Subject, sep = "")
+summaryBy(RT ~ Age + Pred  + Match, data = tt, FUN = c(mean,sd))
+summaryBy(RT ~ Age + Pred  + Match, data = tt, FUN = c(mean,sd), na.rm = T)
+summaryBy(RT ~Subj +  Age + Pred  + Match, data = tt, FUN = c(mean,sd), na.rm = T) -> a
+summaryBy(RT.mean  + RT.sd ~Subj +  Age + Pred  + Match, data = a, FUN = c(mean,sd), na.rm = T)
+summary(a)
+summaryBy(RT.mean  + RT.sd ~Subj +  Age + Pred  + Match, data = a, FUN = c(mean,sd))
+summaryBy(RT.mean  + RT.sd ~Subject +  Age + Pred  + Match, data = a, FUN = c(mean,sd), na.rm = T)
+summary(a)
+summary(tt)
+summaryBy(RT ~Subject +  Age + Pred  + Match, data = tt, FUN = c(mean,sd), na.rm = T) -> a
+summaryBy(RT.mean  + RT.sd ~Subj +  Age + Pred  + Match, data = a, FUN = c(mean,sd), na.rm = T)
+# NOTE THAT FOR THESE ANALYSES YOU TYPICALLY NEED TO INCLUDE THE LONG RT TAIL. I recommend rt >0 & rt <16000#
+library(retimes)#
+library(doBy)#
+library(ez)#
+#
+ads <- read.csv("Adult_R.csv")#
+fives <- read.csv("5yo_R.csv")#
+threes <- read.csv("3yo_R.csv")#
+#
+ads$Age <- "Adult"#
+fives$Age <- "Five"#
+threes$Age <- "Three"#
+#
+tt <- rbind(ads,fives,threes)#
+tt$Age <- as.factor(tt$Age)#
+tt$Subject <- paste(tt$Age,tt$Subject, sep = "")#
+#
+#tt<- subset(tt, Incorrect == 0)#
+d = data.frame(Subject = rep(NA, times = length(unique(tt$Subject))*4), Pred = NA, Match = NA, Age = NA, Mu = NA, Sigma = NA, Tau = NA)#
+index = 1#
+for (k in unique(tt$Pred)){#
+	for (j in unique(subset(tt, Pred == k)$Subj)){#
+		for (i in unique(subset(tt, Pred == k & Subject == j)$Match)){#
+			a = timefit(subset(tt, Pred == k & Subject == j & Match == i )$RTms)#
+			d$Age[index] <- as.character(unique(subset(tt, Pred == k & Subject == j & Match == i )$Age)[1])#
+			d$Subject[index] <- j#
+			d$Pred[index] <- k#
+			d$Match[index] <- i#
+			d$Mu[index] <- a@par[1]#
+			d$Sigma[index] <- a@par[2]#
+			d$Tau[index] <- a@par[3]#
+			index <- index + 1#
+#
+			}#
+		}#
+	}#
+re.summary <- summaryBy(Mu + Sigma+ Tau ~ Age+Pred + Match, data = d, FUN = c(mean))#
+#
+ezANOVA(d, dv = Mu, wid = Subject, within = .(Pred,Match), between = .(Age))#
+ezANOVA(d, dv = Sigma, wid = Subject, within = .(Pred,Match), between = .(Age))#
+ezANOVA(d, dv = Tau, wid = Subject, within = .(Pred,Match), between = .(Age))#
+#
+re.summary.gg <- melt(re.summary,id.vars = c("Age","Pred","Match"), variable.name = "Parameter",value.name = "Value")#
+ggplot(data = re.summary.gg, aes(x = Pred, y = Value)) +#
+  geom_bar(stat = "identity", position = "dodge", aes(fill = Match)) +#
+  facet_wrap(~Parameter+Age)
+>>>>>>> FETCH_HEAD
 library(plyr)#
 library(lme4)#
 library(doBy)#
@@ -1041,7 +2190,186 @@ sense.pop.sklar <- ddply(sense.pop.sklar, .(Condition), function(d){ #
 sense.pop.sklar <- subset(sense.pop.sklar, rt > 0.2)#
 #
 # T test (Sklar style)#
-sense.pop.sklar$log.rt <- log(sense.pop.sklar$rt)#
-sense.pop.sklar.summary <- summaryBy(rt + log.rt~ SubjNo + Condition, data = subset(sense.pop.sklar,  Condition %in% c("Sklar_violation", "Sklar_control")), keep.names = T)#
+sense.pop.sklar.summary <- summaryBy(rt ~ SubjNo + Condition, data = subset(sense.pop.sklar,  Condition %in% c("Sklar_violation", "Sklar_control")), keep.names = T)#
 t.test(rt ~ Condition, data = sense.pop.sklar.summary, paired = T)#
-t.test(log.rt ~ Condition, data = sense.pop.sklar.summary, paired = T)
+t.test(log(rt) ~ Condition, data = sense.pop.sklar.summary, paired = T)#
+#
+# Bayes factor -- minimum effect of 0.01, maximum of 0.06, our effect = -0.03519684 and our SE = -0.03/-1.7874=  0.01678416#
+#
+# lmer (Rabag style)#
+sense.pop.sklar.raw <- summary(lmer(rt ~ Condition + (1+Condition|SubjNo)+ (1|prime), data = subset(sense.pop.sklar,  Condition %in% c("Sklar_violation", "Sklar_control"))))#
+print(sense.pop.sklar.raw)#
+print(paste("p value = ", 2*pnorm(-abs(coef(sense.pop.sklar.raw)[,3]))))#
+#
+sense.pop.sklar.log <- summary(lmer(log(rt) ~ Condition + (1+Condition|SubjNo)+ (1|prime), data = subset(sense.pop.sklar,  Condition %in% c("Sklar_violation", "Sklar_control"))))#
+print(sense.pop.sklar.log)#
+print(paste("p value = ", 2*pnorm(-abs(coef(sense.pop.sklar.log)[,3]))))#
+###########################################################################################################################
+##
+# Let's now analyze for the new trials#
+sense.pop.new <- subset(sense.pop, Condition %in% c("Sensible", "Non-sensible")) #
+#
+# Remove outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be < (!!, see by trial exclusion below) 3sd from group mean)#
+Acc <- summaryBy(match. + rt ~ SubjNo, data = subset(sense.pop.new), keep.names = T)#
+sense.pop.new <- subset(sense.pop.new, SubjNo %in% Acc[Acc$match. > 0.9,]$SubjNo)#
+sense.pop.new <- subset(sense.pop.new, SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo)#
+#
+# Remove incorrect trials#
+sense.pop.new <- subset(sense.pop.new, match. == 1)#
+#
+# Remove outliers by subject (less than 3sd from participant mean -- note that this is not a symmetric exclusion criterion)#
+sense.pop.new <- ddply(sense.pop.new, .(SubjNo), function(d){ #
+	by_subj_include <- mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)#
+	d = subset(d, rt < by_subj_include[2])#
+	})#
+# [for Expt 1 only] Remove outliers by condition (less than 3sd from condition mean -- note that this is not a symmetric exclusion criterion)#
+sense.pop.new <- ddply(sense.pop.new, .(Condition), function(d){ #
+	by_subj_include <- mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)#
+	d = subset(d, rt < by_subj_include[2])#
+	})#
+# Remove RTs < 200ms#
+sense.pop.new <- subset(sense.pop.new, rt > 0.2)#
+#
+# T test (Sklar style)#
+sense.pop.new.summary <- summaryBy(rt ~ SubjNo + Condition, data = subset(sense.pop.new,  Condition %in% c("Non-sensible","Sensible")), keep.names = T)#
+t.test(rt ~ Condition, data = sense.pop.new.summary, paired = T)#
+t.test(log(rt) ~ Condition, data = sense.pop.new.summary, paired = T)#
+#
+# Bayes factor -- minimum effect of 0.01, maximum of 0.06, our effect = -0.0002327283 and our SE = -0.03/-0.02217=  0.01049744#
+# lmer (rabag style)#
+sense.pop.new.raw <-summary(lmer(rt ~ Condition + (1+Condition|SubjNo)+ (1|prime), data = subset(sense.pop.new,  Condition %in% c("Non-sensible","Sensible"))))#
+print(sense.pop.new.raw)#
+print(paste("p value = ", 2*pnorm(-abs(coef(sense.pop.new.raw)[,3]))))#
+#
+sense.pop.new.log <- summary(lmer(log(rt) ~ Condition + (1+Condition|SubjNo)+ (1|prime), data = subset(sense.pop.new,  Condition %in% c("Non-sensible","Sensible"))))#
+print(sense.pop.new.log)#
+print(paste("p value = ", 2*pnorm(-abs(coef(sense.pop.new.log)[,3]))))#
+#
+############################################################################################################################
+##
+# Finally -- a quick test if longer stims are perceived faster than shorter, #
+#
+sense.pop.length <- sense.pop#
+#
+# Remove outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be < (!!, see by trial exclusion below) 3sd from group mean)#
+Acc <- summaryBy(match. + rt ~ SubjNo, data = subset(sense.pop.length), keep.names = T)#
+sense.pop.length <- subset(sense.pop.length, SubjNo %in% Acc[Acc$match. > 0.9,]$SubjNo)#
+sense.pop.length <- subset(sense.pop.length, SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo)#
+#
+# Remove incorrect trials#
+sense.pop.length <- subset(sense.pop.length, match. == 1)#
+#
+# Remove outliers by subject (less than 3sd from participant mean -- note that this is not a symmetric exclusion criterion)#
+sense.pop.length <- ddply(sense.pop.length, .(SubjNo), function(d){ #
+	by_subj_include <- mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)#
+	d = subset(d, rt < by_subj_include[2])#
+	})#
+# Remove RTs < 200ms#
+sense.pop.length <- subset(sense.pop.length, rt > 0.2)#
+#
+# Standardize lenth#
+sense.pop.length$Length <- (sense.pop.length$Length - mean(sense.pop.length$Length, na.rm = T))/sd(sense.pop.length$Length, na.rm = T)#
+sense.pop.length.raw <- summary(lmer(rt ~ Length + (1+Length|SubjNo), data = sense.pop.length))#
+print(sense.pop.length.raw)#
+print(paste("p value = ", 2*pnorm(-abs(coef(sense.pop.length.raw)[,3]))))#
+############################################################################################################################
+##
+# Graphs#
+<<<<<<< HEAD
+#
+sense.sklar.graph <- summaryBy(rt ~ Condition + SubjNo, data = sense.pop.sklar, keep.names = T)#
+sense.sklar.graph <- summaryBy(rt ~ Condition, data = sense.sklar.graph, FUN = c(mean,sd))#
+sense.sklar.graph$SE <- sense.sklar.graph$rt.sd/sqrt(length(unique(sense.pop.sklar$SubjNo)))#
+sense.sklar.graph$Experiment <- "Experiment 1a"#
+#
+sense.new.graph <- summaryBy(rt ~ Condition + SubjNo, data = sense.pop.new, keep.names = T)#
+sense.new.graph <- summaryBy(rt ~ Condition, data = sense.new.graph, FUN = c(mean,sd))#
+sense.new.graph$SE <- sense.new.graph$rt.sd/sqrt(length(unique(sense.pop.new$SubjNo)))#
+sense.new.graph$Experiment <- "Experiment 1b"#
+=======
+#
+sense.sklar.graph <- summaryBy(rt ~ Condition + SubjNo, data = sense.pop.sklar, keep.names = T)#
+sense.sklar.graph <- summaryBy(rt ~ Condition, data = sense.sklar.graph, FUN = c(mean,sd))#
+sense.sklar.graph$SE <- sense.sklar.graph$rt.sd/sqrt(length(unique(sense.pop.sklar$SubjNo)))#
+sense.sklar.graph$Experiment <- "Experiment 1a"#
+#
+sense.new.graph <- summaryBy(rt ~ Condition + SubjNo, data = sense.pop.new, keep.names = T)#
+sense.new.graph <- summaryBy(rt ~ Condition, data = sense.new.graph, FUN = c(mean,sd))#
+sense.new.graph$SE <- sense.new.graph$rt.sd/sqrt(length(unique(sense.pop.new$SubjNo)))#
+sense.new.graph$Experiment <- "Experiment 1b"#
+#
+sense.graph <- rbind(sense.sklar.graph,sense.new.graph)#
+sense.graph$Cond_Graph <- "Violation"#
+sense.graph[sense.graph$Condition %in% c("Sklar_control", "Sensible"),]$Cond_Graph <- "Control"#
+sense.graph$Cond_Graph <- ordered(sense.graph$Cond_Graph, levels = c("Violation", "Control")) #
+sense.graph$rt.mean <- sense.graph$rt.mean * 1000#
+sense.graph$SE <- sense.graph$SE * 1000#
+#
+dodge <- position_dodge(width=0.9)#
+qplot(sense.graph$Experiment, sense.graph$rt.mean, geom = "bar", stat = "identity", fill = sense.graph$Cond_Graph, ylab = "Reaction Time (ms)", xlab = "", position = dodge, ylim = c(0,2000)) +  geom_errorbar(aes(ymax = sense.graph$rt.mean + sense.graph$SE, ymin = sense.graph$rt.mean - sense.graph$SE), width=0.25, position = dodge) + labs(fill = "Sentence Type") + theme(axis.text.x = element_text(colour = "black", size = 12))
+summary(sense.pop.new)
+for (k in unique(sense.pop.new$Condition)){print(k)}
+d = data.frame(Subject = rep(NA, times = length(unique(sense.pop.new$SubjNo))*2), Sensible = NA, Mu = NA, Sigma = NA, Tau = NA)#
+index = 1#
+for (k in unique(sense.pop.new$Condition)){#
+	for (j in unique(subset(sense.pop.new, Condition == k)$SubjNo)){#
+					a = timefit(subset(sense.pop.new, Condition == k & SubjNo == j )$RTms)#
+			d$Subject[index] <- j#
+			d$Condition[index] <- k#
+			d$Mu[index] <- a@par[1]#
+			d$Sigma[index] <- a@par[2]#
+			d$Tau[index] <- a@par[3]#
+			index <- index + 1#
+#
+			}#
+		}#
+	}#
+re.summary <- summaryBy(Mu + Sigma+ Tau ~ Age+Pred + Match, data = d, FUN = c(mean))
+k
+d = data.frame(Subject = rep(NA, times = length(unique(sense.pop.new$SubjNo))*2), Sensible = NA, Mu = NA, Sigma = NA, Tau = NA)#
+index = 1#
+for (k in unique(sense.pop.new$Condition)){#
+	for (j in unique(subset(sense.pop.new, Condition == k)$SubjNo)){#
+			a = timefit(subset(sense.pop.new, Condition == k & SubjNo == j )$rt)#
+			d$Subject[index] <- j#
+			d$Condition[index] <- k#
+			d$Mu[index] <- a@par[1]#
+			d$Sigma[index] <- a@par[2]#
+			d$Tau[index] <- a@par[3]#
+			index <- index + 1#
+>>>>>>> FETCH_HEAD
+#
+			}#
+		}#
+	}#
+re.summary <- summaryBy(Mu + Sigma+ Tau ~ Age+Pred + Match, data = d, FUN = c(mean))
+d = data.frame(Subject = rep(NA, times = length(unique(sense.pop.new$SubjNo))*2), Sensible = NA, Mu = NA, Sigma = NA, Tau = NA)#
+index = 1#
+for (k in unique(sense.pop.new$Condition)){#
+	for (j in unique(subset(sense.pop.new, Condition == k)$SubjNo)){#
+			a = timefit(subset(sense.pop.new, Condition == k & SubjNo == j )$rt)#
+			d$Subject[index] <- j#
+			d$Condition[index] <- k#
+			d$Mu[index] <- a@par[1]#
+			d$Sigma[index] <- a@par[2]#
+			d$Tau[index] <- a@par[3]#
+			index <- index + 1#
+#
+<<<<<<< HEAD
+dodge <- position_dodge(width=0.9)#
+qplot(sense.graph$Experiment, sense.graph$rt.mean, geom = "bar", stat = "identity", fill = sense.graph$Cond_Graph, ylab = "Reaction Time (ms)", xlab = "", position = dodge, ylim = c(0,2000)) +  geom_errorbar(aes(ymax = sense.graph$rt.mean + sense.graph$SE, ymin = sense.graph$rt.mean - sense.graph$SE), width=0.25, position = dodge) + labs(fill = "Sentence Type") + theme(axis.text.x = element_text(colour = "black", size = 12))
+a = rep(NA, 1000)#
+subj.list <- unique(sense.pop.sklar$SubjNo)#
+for (i in 1:1000){#
+a[i] <- t.test(rt ~ Condition, data = subset(sense.pop.sklar.summary, SubjNo %in% sample(subj.list,31)), paired = T)$p.value#
+}
+summary(a)
+hist(a)
+=======
+			}#
+		}#
+re.summary <- summaryBy(Mu + Sigma+ Tau ~ Age+Pred + Match, data = d, FUN = c(mean))
+re.summary
+re.summary <- summaryBy(Mu + Sigma+ Tau ~ Condition, data = d, FUN = c(mean))
+re.summary
+>>>>>>> FETCH_HEAD

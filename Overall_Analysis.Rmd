@@ -1,0 +1,2191 @@
+---
+title: "Overall CFS Semantics Analysis"
+author: "Hugh Rabagliati"
+date: "11 December 2016"
+output: 
+  html_document:
+    toc: true
+    number_sections: true
+    code_folding: hide
+    highlight: tango
+    theme: spacelab
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+library(papeR)
+
+library(knitr)
+library(papeR)
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(cache=TRUE)
+library(compute.es)
+library(metafor)
+library(skewt)
+library(fitdistrplus)
+library(gamlss)
+library(gamlss.dist)
+library(lme4)
+library(ez)
+library(jsonlite)
+library(ggplot2)
+library(gridExtra)
+library(plyr)
+library(dplyr)
+library(doBy)
+library(sn)
+library(bootstrap)
+# From Mike Frank
+theta <- function(x,xdata,na.rm=T) {mean(xdata[x],na.rm=na.rm)}
+ci.low <- function(x,na.rm=T) {
+  mean(x,na.rm=na.rm) - quantile(bootstrap(1:length(x),1000,theta,x,na.rm=na.rm)$thetastar,.025,na.rm=na.rm)}
+ci.high <- function(x,na.rm=T) {
+  quantile(bootstrap(1:length(x),1000,theta,x,na.rm=na.rm)$thetastar,.975,na.rm=na.rm) - mean(x,na.rm=na.rm)}
+
+
+Test_Import = function(path_name,expt){
+  library(jsonlite)
+  
+  list.files(path = path_name,full.names = T, pattern = expt) -> file_list
+  comp = c()
+  for (x in file_list){
+    file_name = x
+    d <- read.csv(file_name, header = T)
+    comp = rbind(comp,d)
+    print(x)
+  }
+  comp$rt <- comp$ReactionTime_column
+  comp$Acc <- comp$Valid_column
+  comp$SubjNo <- comp$subject_column
+  return(comp)
+}
+
+#############
+# Edinburgh Emo Expt
+
+edin.sem <- Test_Import("./data","edin_sem")
+```
+
+# Background
+
+Sklar et al (2012) reports a series of studies that use "breaking continuous flash suppression" to suggest that participants are faster to become aware of sentences if they have unusual semantics.
+
+In these experiments, we set out to replicate these effects. We also replicate work by Yang & Yeh (2011) who demonstrated that suppression times are longer for words with unusual semantics.
+
+In Experiments 1 and 2, we replicated Sklar et al's Experiments 1 and 2, using English versions of their materials, and extending their manipulations to provide a better-controlled test. In Experiment 3, we replicates Experiments 1 and 2 using their original presentation scripts. In Experiment 4, we replicate some of the conditions in Yang and Yeh's Experiment 1.
+
+# Experiment 1
+
+```{r Experiment1, include=FALSE}
+library(plyr)
+library(lme4)
+library(doBy)
+library(ggplot2)
+
+read_data <- function(path_name){
+list.files(path = path_name,full.names = T, pattern = ".csv") -> file_list
+comp = c()
+for (x in file_list){
+	data <- read.csv(x,header = T)
+	if ("perceptual.rating.reactiontime" %in% colnames(data)){ 
+		data <- subset(data, select = -perceptual.rating.reactiontime)
+		}
+		if ("X" %in% colnames(data)){ 
+		data <- subset(data, select = -X)
+		data$rt <- as.character(data$rt)
+		}
+	comp <- rbind(comp, data)
+	}
+	return(comp)
+}
+
+sense.pop <- read_data("./Expt1_Sensicality Study/data/")
+
+# Make RTs numeric [need to remove timeout "none" responses]
+sense.pop$rt <- as.character(sense.pop$rt)
+sense.pop$Length <- nchar(as.character(sense.pop$prime),allowNA = T)
+sense.pop$Condition <- as.character(sense.pop$prime_semantics)
+sense.pop[sense.pop$prime_semantics %in% c("Sklar_control_A","Sklar_control_B"),]$Condition <- "Sklar_control"
+sense.pop$Condition <- as.factor(sense.pop$Condition)
+```
+
+
+In this study, we compare suppression times for semantically anomalous versus neutral sentences. In the original study, the authors only examined raw RTs, but as shown below, these were highly skewed. We therefore examine both raw and log transformed RTs.
+
+```{r rt_dist, echo=FALSE}
+sense.hist <- sense.pop
+sense.hist$rt  <- as.numeric(as.character(sense.hist$rt))
+hist(sense.hist$rt)
+hist(log(sense.hist$rt))
+```
+
+## Experiment 1a
+### Raw RTs
+There is a marginal effect of semantics for Raw RTs for Experiment 1a
+```{r Expt_1a_raw_data, echo=FALSE}
+##########################################################################################################################
+#
+# Let's first analyze for the Sklar trials
+sense.pop.sklar <- subset(sense.pop, Condition %in% c("Sklar_control", "Sklar_violation")) 
+
+
+# <----
+trials.per.subj = max(tapply(sense.pop.sklar$rt, sense.pop.sklar$SubjNo,length)) #length(emo.pop.sklar$rt)/length(unique(emo.pop.sklar$SubjNo))
+timeouts <- summaryBy(rt ~ SubjNo, data = subset(sense.pop.sklar, rt != "None"), FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+# <----
+# Make RTs numeric
+sense.pop.sklar <- subset(sense.pop.sklar, rt != "None")
+
+sense.pop.sklar$rt <- as.numeric(as.character(sense.pop.sklar$rt))
+
+
+
+# <--
+total.n <- length(unique(sense.pop.sklar$SubjNo))
+trials.per.subj = max(tapply(sense.pop.sklar$rt, sense.pop.sklar$SubjNo,length)) #length(sense.pop.sklar$rt)/length(unique(sense.pop.sklar$SubjNo))
+# <--
+
+# Remove outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be < 3sd above group mean)
+Acc <- summaryBy(match. + rt ~ SubjNo, data = subset(sense.pop.sklar), keep.names = T)
+sense.pop.sklar <- subset(sense.pop.sklar, SubjNo %in% Acc[Acc$match. > 0.9,]$SubjNo)
+
+sense.pop.sklar <- subset(sense.pop.sklar, SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo)
+
+#<--
+excl.n <- length(unique(sense.pop.sklar$SubjNo))
+n.trials = length(sense.pop.sklar$rt)
+subj.pre.excl.trials <- summaryBy(rt ~ SubjNo, data = sense.pop.sklar, FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+
+#<--
+
+# Remove incorrect trials
+sense.pop.sklar <- subset(sense.pop.sklar, match. == 1)
+
+
+
+# Remove outliers by subject (less than 3sd from participant mean -- note that this is not a symmetric exclusion criterion)
+sense.pop.sklar <- ddply(sense.pop.sklar, .(SubjNo), function(d){ 
+	by_subj_include <- mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+	d = subset(d, rt < by_subj_include[2])
+	})
+	
+  # Print standard deviation
+ # print(paste("+/- 3 sd from condition mean exclusion criteria = ", ddply(sense.pop.sklar, #.(Condition), function(d){ 
+  #  by_subj_include <-  3*c(-1,1)*sd(d$rt,na.rm = T)
+  #  return(by_subj_include)
+#  })))
+  
+# [for Expt 1 only] Remove outliers by condition (less than 3sd from condition mean -- note that this is not a symmetric exclusion criterion)
+sense.pop.sklar <- ddply(sense.pop.sklar, .(Condition), function(d){ 
+	by_subj_include <- mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+	d = subset(d, rt < by_subj_include[2])
+	})
+
+# Remove RTs < 200ms
+sense.pop.sklar <- subset(sense.pop.sklar, rt > 0.2)
+
+n.excl.trials = length(sense.pop.sklar$rt)
+subj.excl.trials <- summaryBy(rt ~ SubjNo, data = sense.pop.sklar, FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+subj.excl.trials$final_trials =  subj.excl.trials$rt - subj.pre.excl.trials$rt 
+
+sense.pop.sklar.graph <- sense.pop.sklar
+
+```
+
+```{r expt_1a_raw_rt_analysis}
+# excluded subjects
+print(paste("n subj excluded = ",total.n-excl.n))
+# excluded trials
+print(paste("% trials excluded= ",((n.trials - n.excl.trials)/n.trials)*100))
+
+print(paste("median trials excluded per participant = ",median(subj.excl.trials$final_trials), "sd= ", sd(subj.excl.trials$final_trials), "range= ", c(range(subj.excl.trials$final_trials))))
+print(paste("median timeouts per participant = ",median(timeouts$rt), "sd= ", sd(timeouts$rt), "range= ", range(timeouts$rt)))
+
+# Standardize lenth
+sense.pop.sklar$Length <- (sense.pop.sklar$Length - mean(sense.pop.sklar$Length, na.rm = T))/sd(sense.pop.sklar$Length, na.rm = T)
+
+
+# T test (Sklar style)
+sense.pop.sklar.summary <- summaryBy(rt + perceptual.rating~ SubjNo + Condition, data = subset(sense.pop.sklar,  Condition %in% c("Sklar_violation", "Sklar_control")), keep.names = T)
+kable(summaryBy(rt*1000 + perceptual.rating~ Condition, data = sense.pop.sklar.summary, FUN = c(mean,sd)), digits = 2)
+t.test(rt ~ Condition, data = sense.pop.sklar.summary, paired = T)
+t.test(perceptual.rating ~ Condition, data = sense.pop.sklar.summary, paired = T)
+es <- t.test(rt ~ Condition, data = sense.pop.sklar.summary, paired = T)
+es.t.test.raw <- data.frame(t = es$statistic,n1 = es$parameter,n2 = es$parameter)
+
+
+# Bayes factor -- minimum effect of 0.01, maximum of 0.06, our effect = -0.03519684 and our SE = -0.03/-1.7874=  0.01678416
+
+# lmer (Rabag style)
+sense.pop.sklar.raw <- summary(lmer(rt ~ Condition+Length + (1+Condition|SubjNo)+ (1|prime), data = subset(sense.pop.sklar,  Condition %in% c("Sklar_violation", "Sklar_control"))))
+kable(data.frame(sense.pop.sklar.raw$coefficients,"p value"= 2*pnorm(-abs(coef(sense.pop.sklar.raw)[,3]))), digit =2)
+#print(paste("p value = ", 2*pnorm(-abs(coef(sense.pop.sklar.raw)[,3]))))
+
+
+
+```
+
+### Log RTs
+There is no effect of semantics for Log RTs for Experiment 1a
+```{r Expt_1a_log_data, echo=FALSE}
+##########################################################################################################################
+#
+# Let's first analyze for the Sklar trials
+sense.pop.sklar <- subset(sense.pop, Condition %in% c("Sklar_control", "Sklar_violation")) 
+
+# <----
+trials.per.subj = max(tapply(sense.pop.sklar$rt, sense.pop.sklar$SubjNo,length)) #length(emo.pop.sklar$rt)/length(unique(emo.pop.sklar$SubjNo))
+timeouts <- summaryBy(rt ~ SubjNo, data = subset(sense.pop.sklar, rt != "None"), FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+# <----
+# Make RTs numeric
+sense.pop.sklar <- subset(sense.pop.sklar, rt != "None")
+
+sense.pop.sklar$rt <- as.numeric(as.character(sense.pop.sklar$rt))
+sense.pop.sklar$rt <- sense.pop.sklar$rt *1000
+sense.pop.sklar$rt <- log(sense.pop.sklar$rt)
+# Remove outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be < 3sd above group mean)
+Acc <- summaryBy(match. + rt ~ SubjNo, data = subset(sense.pop.sklar), keep.names = T)
+sense.pop.sklar <- subset(sense.pop.sklar, SubjNo %in% Acc[Acc$match. > 0.9,]$SubjNo)
+
+sense.pop.sklar <- subset(sense.pop.sklar, SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo)
+
+# Remove incorrect trials
+sense.pop.sklar <- subset(sense.pop.sklar, match. == 1)
+
+# Remove outliers by subject (less than 3sd from participant mean -- note that this is not a symmetric exclusion criterion)
+sense.pop.sklar <- ddply(sense.pop.sklar, .(SubjNo), function(d){ 
+	by_subj_include <- mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+	d = subset(d, rt < by_subj_include[2])
+	})
+	
+# [for Expt 1 only] Remove outliers by condition (less than 3sd from condition mean -- note that this is not a symmetric exclusion criterion)
+sense.pop.sklar <- ddply(sense.pop.sklar, .(Condition), function(d){ 
+	by_subj_include <- mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+	d = subset(d, rt < by_subj_include[2])
+	})
+
+# Remove RTs < 200ms
+sense.pop.sklar <- subset(sense.pop.sklar, rt > log(200))
+
+```
+
+```{r expt_1a_log_rt_analysis}
+# Standardize lenth
+sense.pop.sklar$Length <- (sense.pop.sklar$Length - mean(sense.pop.sklar$Length, na.rm = T))/sd(sense.pop.sklar$Length, na.rm = T)
+
+
+# T test (Sklar style)
+sense.pop.sklar.summary <- summaryBy(rt~ SubjNo + Condition, data = subset(sense.pop.sklar,  Condition %in% c("Sklar_violation", "Sklar_control")), keep.names = T)
+kable(summaryBy(rt ~ Condition, data = sense.pop.sklar.summary, FUN = c(mean,sd)), digits =2)
+
+t.test(rt ~ Condition, data = sense.pop.sklar.summary, paired = T)
+
+es <- t.test(rt ~ Condition, data = sense.pop.sklar.summary, paired = T)
+es.t.test.log <- data.frame(t = es$statistic,n1 = es$parameter,n2 = es$parameter)
+
+# Bayes factor -- minimum effect of 0.01, maximum of 0.06, our effect = -0.03519684 and our SE = -0.03/-1.7874=  0.01678416
+# Bayes factor -- minimum effect of 0.01, maximum of 0.06, our effect = -0.03519684 and our SE = -0.03/-1.7874=  0.01678416
+
+# lmer (Rabag style)
+sense.pop.sklar.log <- summary(lmer(rt ~ Condition +Length+ (1+Condition|SubjNo)+ (1|prime), data = subset(sense.pop.sklar,  Condition %in% c("Sklar_violation", "Sklar_control"))))
+kable(data.frame(sense.pop.sklar.log$coefficients, "p value" = 2*pnorm(-abs(coef(sense.pop.sklar.log)[,3]))), digits = 2)
+#print(paste("p value = ", 2*pnorm(-abs(coef(sense.pop.sklar.log)[,3]))))
+
+# Analysis of PAS
+# sense.pop.sklar.log.pas <- summary(lmer(rt ~ Condition * perceptual.rating +Length+ (1+Condition|SubjNo)+ (1|prime), data = subset(sense.pop.sklar,  Condition %in% c("Sklar_violation", "Sklar_control"))))
+# print(sense.pop.sklar.log.pas)
+# 
+# sense.pop.sklar.log.pas2 <- summary(lmer(perceptual.rating ~ Condition +Length+ (1+Condition|SubjNo)+ (1|prime), data = subset(sense.pop.sklar,  Condition %in% c("Sklar_violation", "Sklar_control"))))
+# print(sense.pop.sklar.log.pas2)
+
+```
+
+
+## Experiment 1b
+### Raw RTs
+There is no effect of semantics for Raw RTs for Experiment 1b
+```{r Expt_1b_raw_data, echo=FALSE}
+
+##########################################################################################################################
+#
+# Let's now analyze for the new trials
+sense.pop.new <- subset(sense.pop, Condition %in% c("Sensible", "Non-sensible")) 
+
+
+# <----
+trials.per.subj = max(tapply(sense.pop.new$rt, sense.pop.new$SubjNo,length)) #length(emo.pop.sklar$rt)/length(unique(emo.pop.sklar$SubjNo))
+timeouts <- summaryBy(rt ~ SubjNo, data = subset(sense.pop.new, rt != "None"), FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+# <----
+# Make RTs numeric
+sense.pop.new <- subset(sense.pop.new, rt != "None")
+
+sense.pop.new$rt <- as.numeric(as.character(sense.pop.new$rt))
+
+
+# <--
+total.n <- length(unique(sense.pop.new$SubjNo))
+trials.per.subj = max(tapply(sense.pop.new$rt, sense.pop.new$SubjNo,length)) #length(sense.pop.new$rt)/length(unique(sense.pop.new$SubjNo))
+# <--
+
+# Remove outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be < (!!, see by trial exclusion below) 3sd from group mean)
+Acc <- summaryBy(match. + rt ~ SubjNo, data = subset(sense.pop.new), keep.names = T)
+sense.pop.new <- subset(sense.pop.new, SubjNo %in% Acc[Acc$match. > 0.9,]$SubjNo)
+sense.pop.new <- subset(sense.pop.new, SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo)
+
+#<--
+excl.n <- length(unique(sense.pop.new$SubjNo))
+n.trials = length(sense.pop.new$rt)
+subj.pre.excl.trials <- summaryBy(rt ~ SubjNo, data = sense.pop.new, FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+
+#<--
+
+# Remove incorrect trials
+sense.pop.new <- subset(sense.pop.new, match. == 1)
+
+# Remove outliers by subject (less than 3sd from participant mean -- note that this is not a symmetric exclusion criterion)
+sense.pop.new <- ddply(sense.pop.new, .(SubjNo), function(d){ 
+	by_subj_include <- mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+	d = subset(d, rt < by_subj_include[2])
+	})
+	
+# [for Expt 1 only] Remove outliers by condition (less than 3sd from condition mean -- note that this is not a symmetric exclusion criterion)
+sense.pop.new <- ddply(sense.pop.new, .(Condition), function(d){ 
+	by_subj_include <- mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+	d = subset(d, rt < by_subj_include[2])
+	})
+# Remove RTs < 200ms
+sense.pop.new <- subset(sense.pop.new, rt > 0.2)
+
+# <--
+n.excl.trials = length(sense.pop.new$rt)
+subj.excl.trials <- summaryBy(rt ~ SubjNo, data = sense.pop.new, FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+subj.excl.trials$final_trials =  subj.excl.trials$rt - subj.pre.excl.trials$rt 
+
+# <--
+
+sense.pop.new.graph <- sense.pop.new
+
+```
+
+```{r expt_1b_raw_rt_analysis}
+
+# excluded subjects
+print(paste("n subj excluded = ",total.n-excl.n))
+# excluded trials
+print(paste("% trials excluded = ",((n.trials - n.excl.trials)/n.trials)*100))
+
+print(paste("median trials excluded per participant = ",median(subj.excl.trials$final_trials), "sd= ", sd(subj.excl.trials$final_trials), "range= ", range(subj.excl.trials$final_trials)))
+print(paste("median timeouts per participant = ",median(timeouts$rt), "sd= ", sd(timeouts$rt), "range= ", range(timeouts$rt)))
+
+# Standardize lenth
+
+
+# Standardize lenth
+sense.pop.new$Length <- (sense.pop.new$Length - mean(sense.pop.new$Length, na.rm = T))/sd(sense.pop.new$Length, na.rm = T)
+
+# T test (Sklar style)
+sense.pop.new.summary <- summaryBy(rt + perceptual.rating~ SubjNo + Condition, data = subset(sense.pop.new,  Condition %in% c("Non-sensible","Sensible")), keep.names = T)
+kable(summaryBy(rt*1000+ perceptual.rating ~ Condition, data = sense.pop.new.summary, FUN = c(mean,sd)), digits = 2)
+
+t.test(rt ~ Condition, data = sense.pop.new.summary, paired = T)
+t.test(perceptual.rating ~ Condition, data = sense.pop.new.summary, paired = T)
+
+es <- t.test(rt ~ Condition, data = sense.pop.new.summary, paired = T)
+
+es.t.test.raw <- rbind(es.t.test.raw, data.frame(t = es$statistic,n1 = es$parameter,n2 = es$parameter))
+
+# Bayes factor -- minimum effect of 0.01, maximum of 0.06, our effect = -0.0002327283 and our SE = -0.03/-0.02217=  0.01049744
+
+
+# lmer (rabag style)
+sense.pop.new.raw <-summary(lmer(rt ~ Condition+Length + (1+Condition|SubjNo)+ (1|prime), data = subset(sense.pop.new,  Condition %in% c("Non-sensible","Sensible"))))
+kable(data.frame(sense.pop.new.raw$coefficients, "p value" = 2*pnorm(-abs(coef(sense.pop.new.raw)[,3]))), digits = 2)
+#print(paste("p value = ", 2*pnorm(-abs(coef(sense.pop.new.raw)[,3]))))
+
+
+```
+
+
+### Log RTs
+There is no effect of semantics for Log RTs for Experiment 1b
+```{r Expt_1b_log_data, echo=FALSE}
+
+##########################################################################################################################
+#
+# Let's now analyze for the new trials
+sense.pop.new <- subset(sense.pop, Condition %in% c("Sensible", "Non-sensible")) 
+# <----
+trials.per.subj = max(tapply(sense.pop.new$rt, sense.pop.new$SubjNo,length)) #length(emo.pop.sklar$rt)/length(unique(emo.pop.sklar$SubjNo))
+timeouts <- summaryBy(rt ~ SubjNo, data = subset(sense.pop.new, rt != "None"), FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+# <----
+# Make RTs numeric
+sense.pop.new <- subset(sense.pop.new, rt != "None")
+
+sense.pop.new$rt <- as.numeric(as.character(sense.pop.new$rt))
+sense.pop.new$rt <- sense.pop.new$rt *1000
+sense.pop.new$rt <- log(sense.pop.new$rt)
+# Remove outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be < (!!, see by trial exclusion below) 3sd from group mean)
+Acc <- summaryBy(match. + rt ~ SubjNo, data = subset(sense.pop.new), keep.names = T)
+sense.pop.new <- subset(sense.pop.new, SubjNo %in% Acc[Acc$match. > 0.9,]$SubjNo)
+sense.pop.new <- subset(sense.pop.new, SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo)
+
+# Remove incorrect trials
+sense.pop.new <- subset(sense.pop.new, match. == 1)
+
+# Remove outliers by subject (less than 3sd from participant mean -- note that this is not a symmetric exclusion criterion)
+sense.pop.new <- ddply(sense.pop.new, .(SubjNo), function(d){ 
+	by_subj_include <- mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+	d = subset(d, rt < by_subj_include[2])
+	})
+	
+# [for Expt 1 only] Remove outliers by condition (less than 3sd from condition mean -- note that this is not a symmetric exclusion criterion)
+sense.pop.new <- ddply(sense.pop.new, .(Condition), function(d){ 
+	by_subj_include <- mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+	d = subset(d, rt < by_subj_include[2])
+	})
+# Remove RTs < 200ms
+sense.pop.new <- subset(sense.pop.new, rt > log(200))
+```
+
+```{r expt_1b_log_rt_analysis}
+# Standardize lenth
+sense.pop.new$Length <- (sense.pop.new$Length - mean(sense.pop.new$Length, na.rm = T))/sd(sense.pop.new$Length, na.rm = T)
+
+# T test (Sklar style)
+sense.pop.new.summary <- summaryBy(rt ~ SubjNo + Condition, data = subset(sense.pop.new,  Condition %in% c("Non-sensible","Sensible")), keep.names = T)
+kable(summaryBy(rt ~ Condition, data = sense.pop.new.summary, FUN = c(mean,sd)), digits =2 )
+
+t.test(rt ~ Condition, data = sense.pop.new.summary, paired = T)
+
+es <- t.test(rt ~ Condition, data = sense.pop.new.summary, paired = T)
+
+es.t.test.log <- rbind(es.t.test.log, data.frame(t = es$statistic,n1 = es$parameter,n2 = es$parameter))
+# Bayes factor -- minimum effect of 0.01, maximum of 0.06, our effect = -0.0002327283 and our SE = -0.03/-0.02217=  0.01049744
+
+
+# lmer (rabag style)
+sense.pop.new.log <-summary(lmer(rt ~ Condition +Length+ (1+Condition|SubjNo)+ (1|prime), data = subset(sense.pop.new,  Condition %in% c("Non-sensible","Sensible"))))
+kable(data.frame(sense.pop.new.log$coefficients, "p value" = 2*pnorm(-abs(coef(sense.pop.new.log)[,3]))), digits = 2)
+#print(paste("p value = ", 2*pnorm(-abs(coef(sense.pop.new.log)[,3]))))
+
+# Analysis of PAS
+# sense.pop.new.log.pas <- summary(lmer(rt ~ Condition * perceptual.rating +Length+ (1+Condition|SubjNo)+ (1|prime), data = subset(sense.pop.new,  Condition %in% c("Non-sensible","Sensible"))))
+# print(sense.pop.new.log.pas)
+# 
+# sense.pop.new.log.pas2 <- summary(lmer(perceptual.rating ~ Condition +Length+ (1+Condition|SubjNo)+ (1|prime), data = subset(sense.pop.new,  Condition %in% c("Non-sensible","Sensible"))))
+# print(sense.pop.new.log.pas2)
+
+```
+
+## Experiment 1 Length analysis
+RTs are faster for longer stims for raw data
+```{r expt1_length_rt_raw, echo = FALSE}
+
+sense.pop.length <- sense.pop
+sense.pop.length <- subset(sense.pop.length, rt != "None")
+
+sense.pop.length$rt <- as.numeric(as.character(sense.pop.length$rt))
+
+# Remove outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be < (!!, see by trial exclusion below) 3sd from group mean)
+Acc <- summaryBy(match. + rt ~ SubjNo, data = subset(sense.pop.length), keep.names = T)
+sense.pop.length <- subset(sense.pop.length, SubjNo %in% Acc[Acc$match. > 0.9,]$SubjNo)
+sense.pop.length <- subset(sense.pop.length, SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo)
+
+# Remove incorrect trials
+sense.pop.length <- subset(sense.pop.length, match. == 1)
+
+# Remove outliers by subject (less than 3sd from participant mean -- note that this is not a symmetric exclusion criterion)
+sense.pop.length <- ddply(sense.pop.length, .(SubjNo), function(d){ 
+	by_subj_include <- mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+	d = subset(d, rt < by_subj_include[2])
+	})
+	
+
+# Remove RTs < 200ms
+sense.pop.length <- subset(sense.pop.length, rt > 0.2)
+
+# Standardize lenth
+sense.pop.length$Length <- (sense.pop.length$Length - mean(sense.pop.length$Length, na.rm = T))/sd(sense.pop.length$Length, na.rm = T)
+```
+
+```{r expt1_analyze_length_raw}
+sense.pop.length.raw <- summary(lmer(rt ~ Length + (1+Length|SubjNo), data = sense.pop.length))
+kable(data.frame(sense.pop.length.raw$coefficients, "p value" = 2*pnorm(-abs(coef(sense.pop.length.raw)[,3]))), digits = 2)
+#print(paste("p value = ", 2*pnorm(-abs(coef(sense.pop.length.raw)[,3]))))
+
+```
+
+RTs are faster for longer stims for log data.
+```{r expt1_length_rt_log, echo = FALSE}
+
+sense.pop.length <- sense.pop
+sense.pop.length <- subset(sense.pop.length, rt != "None")
+
+sense.pop.length$rt <- as.numeric(as.character(sense.pop.length$rt))
+sense.pop.length$rt <- log(sense.pop.length$rt)
+# Remove outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be < (!!, see by trial exclusion below) 3sd from group mean)
+Acc <- summaryBy(match. + rt ~ SubjNo, data = subset(sense.pop.length), keep.names = T)
+sense.pop.length <- subset(sense.pop.length, SubjNo %in% Acc[Acc$match. > 0.9,]$SubjNo)
+sense.pop.length <- subset(sense.pop.length, SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo)
+
+# Remove incorrect trials
+sense.pop.length <- subset(sense.pop.length, match. == 1)
+
+# Remove outliers by subject (less than 3sd from participant mean -- note that this is not a symmetric exclusion criterion)
+sense.pop.length <- ddply(sense.pop.length, .(SubjNo), function(d){ 
+	by_subj_include <- mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+	d = subset(d, rt < by_subj_include[2])
+	})
+	
+
+# Remove RTs < 200ms
+sense.pop.length <- subset(sense.pop.length, rt > log(0.2))
+
+# Standardize lenth
+sense.pop.length$Length <- (sense.pop.length$Length - mean(sense.pop.length$Length, na.rm = T))/sd(sense.pop.length$Length, na.rm = T)
+```
+
+```{r expt1_analyze_length_log}
+sense.pop.length.log <- summary(lmer(rt ~ Length + (1+Length|SubjNo), data = sense.pop.length))
+kable(data.frame(sense.pop.length.log$coefficients, "p value"=2*pnorm(-abs(coef(sense.pop.length.log)[,3]))), digits = 2)
+#print(paste("p value = ", 2*pnorm(-abs(coef(sense.pop.length.log)[,3]))))
+```
+
+## Graphs
+```{r expt1_graphs, echo = FALSE}
+
+sense.sklar.graph <- summaryBy(rt ~ Condition + SubjNo, data = sense.pop.sklar.graph, keep.names = T)
+sense.sklar.graph <- summaryBy(rt ~ Condition, data = sense.sklar.graph, FUN = c(mean,ci.low,ci.high,sd))
+sense.sklar.graph$SE <- sense.sklar.graph$rt.sd/sqrt(length(unique(sense.pop.sklar$SubjNo)))
+sense.sklar.graph$Experiment <- "Experiment 1a \nIncongruent Phrases"
+
+sense.new.graph <- summaryBy(rt ~ Condition + SubjNo, data = sense.pop.new.graph, keep.names = T)
+sense.new.graph <- summaryBy(rt ~ Condition, data = sense.new.graph, FUN = c(mean,ci.low,ci.high,sd))
+sense.new.graph$SE <- sense.new.graph$rt.sd/sqrt(length(unique(sense.pop.new$SubjNo)))
+sense.new.graph$Experiment <- "Experiment 1b \nReversible Sentences"
+
+sense.graph <- rbind(sense.sklar.graph,sense.new.graph)
+sense.graph$Cond_Graph <- "Violation"
+sense.graph[sense.graph$Condition %in% c("Sklar_control", "Sensible"),]$Cond_Graph <- "Control"
+sense.graph$Cond_Graph <- ordered(sense.graph$Cond_Graph, levels = c("Violation", "Control")) 
+sense.graph$rt.mean <- sense.graph$rt.mean * 1000
+sense.graph$SE <- sense.graph$SE * 1000
+sense.graph$rt.ci.high <- sense.graph$rt.ci.high * 1000
+sense.graph$rt.ci.low <- sense.graph$rt.ci.low * 1000
+dodge <- position_dodge(width=0.9)
+ggplot(sense.graph, aes(Experiment,rt.mean, fill = Cond_Graph)) +
+  geom_bar(stat = "identity",  position = dodge) +
+  geom_errorbar(aes(ymax = sense.graph$rt.mean +
+                      sense.graph$rt.ci.high, ymin = sense.graph$rt.mean - sense.graph$rt.ci.low), width=0.25, position = dodge) +
+  labs(fill = "Sentence Type") + 
+  theme(axis.text.x = element_text(colour = "black", size = 12)) +
+  ylab("Response Time (ms)") +
+  xlab("") + 
+  ylim(c(0,1750))
+```
+
+
+# Experiment 2
+In this experiment, we assess the emotional studies of Sklar et al (Experiment 4).
+
+```{r experiment2, echo = FALSE}
+
+emo.pop <- read.csv("./Expt2_EmotionStudies/all_data_with_w1w2_ratings.csv")
+
+emo.pop$rt <- as.character(emo.pop$rt)
+
+emo.pop$Length <- nchar(as.character(emo.pop$prime),allowNA = T)
+
+# First standardize the MeanAffectivity score
+emo.pop$MeanAffectivity <- (emo.pop$MeanAffectivity - mean(emo.pop$MeanAffectivity, na.rm = T))/sd(emo.pop$MeanAffectivity, na.rm = T)
+
+```
+
+## Experiment 2a 
+### Raw RTs
+Semantics has no effect for raw RTs
+```{r Expt_2a_raw_data, echo=FALSE}
+
+##########################################################################################################################
+#
+# Sklar Experiment first
+emo.pop.sklar <- subset(emo.pop, prime_semantics %in% c("Negative phrase","Neutral phrase"))
+
+# <----
+trials.per.subj = max(tapply(emo.pop.sklar$rt, emo.pop.sklar$SubjNo,length)) #length(emo.pop.sklar$rt)/length(unique(emo.pop.sklar$SubjNo))
+timeouts <- summaryBy(rt ~ SubjNo, data = subset(emo.pop.sklar, rt != "None"), FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+# <----
+# Make RTs numeric
+emo.pop.sklar <- subset(emo.pop.sklar, rt != "None")
+
+emo.pop.sklar$rt <- as.numeric(as.character(emo.pop.sklar$rt))
+
+# <--
+total.n <- length(unique(emo.pop.sklar$SubjNo))
+# <--
+
+# Remove outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be > (!!, see by trial exclusion below) 3sd from group mean [ie we remove extra-fast participants)
+Acc <- summaryBy(match. + rt ~ SubjNo, data = subset(emo.pop.sklar), keep.names = T)
+emo.pop.sklar <- subset(emo.pop.sklar, SubjNo %in% Acc[Acc$match. > 0.9,]$SubjNo)
+emo.pop.sklar <- subset(emo.pop.sklar, SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo)
+
+#<--
+excl.n <- length(unique(emo.pop.sklar$SubjNo))
+n.trials = length(emo.pop.sklar$rt)
+subj.pre.excl.trials <- summaryBy(rt ~ SubjNo, data = emo.pop.sklar, FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+
+#<--
+
+# Remove incorrect trials
+emo.pop.sklar <- subset(emo.pop.sklar, match. == 1)
+
+# Remove RTs +/-3sd from each subject's mean 
+emo.pop.sklar <- ddply(emo.pop.sklar, .(SubjNo), function(d){ 
+	include = mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+	d = subset(d, rt > include[1] & rt < include[2])
+	})
+
+# Remove RTs < 200ms
+emo.pop.sklar <- subset(emo.pop.sklar, rt > 0.2)
+
+n.excl.trials = length(emo.pop.sklar$rt)
+subj.excl.trials <- summaryBy(rt ~ SubjNo, data = emo.pop.sklar, FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+subj.excl.trials$final_trials =  subj.excl.trials$rt - subj.pre.excl.trials$rt 
+
+
+# First standardize the MeanAffectivity score
+emo.pop.sklar$MeanAffectivity <- (emo.pop.sklar$MeanAffectivity - mean(emo.pop.sklar$MeanAffectivity, na.rm = T))/sd(emo.pop.sklar$MeanAffectivity, na.rm = T)
+
+emo.pop.sklar.graph <- emo.pop.sklar
+```
+
+```{r expt_2a_raw_rt_analysis}
+# excluded subjects
+print(paste("n subj excluded = ",total.n-excl.n))
+# excluded trials
+print(paste("% trials excluded = ",((n.trials - n.excl.trials)/n.trials)*100))
+
+print(paste("median trials excluded per participant = ",median(subj.excl.trials$rt), "sd= ", sd(subj.excl.trials$final_trials), "range= ", range(subj.excl.trials$final_trials)))
+print(paste("median timeouts per participant = ",median(timeouts$rt), "sd= ", sd(timeouts$rt), "range= ", range(timeouts$rt)))
+
+# Standardize lenth
+
+# Standardize lenth
+emo.pop.sklar$Length <- (emo.pop.sklar$Length - mean(emo.pop.sklar$Length, na.rm = T))/sd(emo.pop.sklar$Length, na.rm = T)
+
+# Lin Reg (sklar style)
+emo.pop.sklar.sum <- summaryBy(rt +perceptual.rating ~ prime + MeanAffectivity, data = emo.pop.sklar, keep.names = T)
+emo.pop.sklar.sum.graph <- emo.pop.sklar.sum
+print("Affective Valence against RT")
+kable(summary(lm(rt ~ MeanAffectivity, data = emo.pop.sklar.sum))$coefficients,digits=2)
+print("Affective Valence against Rating Scale")
+kable(summary(lm(perceptual.rating ~ MeanAffectivity, data = emo.pop.sklar.sum))$coefficients,digits=2)
+
+es <- lm(rt~MeanAffectivity, data = emo.pop.sklar.sum)
+es.t.test.raw <- rbind(es.t.test.raw, data.frame(t = summary(es)$coefficients[2,3],n1 = summary(es)$df[2],n2 = summary(es)$df[2]))
+
+
+# lmer (rabag style)
+emo.sklar.lmer.raw <- summary(lmer(rt ~ MeanAffectivity+Length + (1+MeanAffectivity|SubjNo)+ (1|prime), data = subset(emo.pop.sklar, prime_semantics %in% c("Negative phrase","Neutral phrase"))))
+print("Affective Valence against RT")
+kable(data.frame(emo.sklar.lmer.raw$coefficients, "p value"=2*pnorm(-abs(coef(emo.sklar.lmer.raw)[,3]))), digits =2 )
+#print(paste("p value = ", 2*pnorm(-abs(coef(emo.sklar.lmer.raw)[,3]))))
+
+```
+
+
+### log RTs 
+For Experiment 2a, semantics has no effect for log RTs
+```{r Expt_2a_log_data, echo=FALSE}
+##########################################################################################################################
+#
+# Sklar Experiment first
+emo.pop.sklar <- subset(emo.pop, prime_semantics %in% c("Negative phrase","Neutral phrase"))
+# <----
+trials.per.subj = max(tapply(emo.pop.sklar$rt, emo.pop.sklar$SubjNo,length)) #length(emo.pop.sklar$rt)/length(unique(emo.pop.sklar$SubjNo))
+timeouts <- summaryBy(rt ~ SubjNo, data = subset(emo.pop.sklar, rt != "None"), FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+# <----
+# Make RTs numeric
+emo.pop.sklar <- subset(emo.pop.sklar, rt != "None")
+
+emo.pop.sklar$rt <- as.numeric(as.character(emo.pop.sklar$rt))
+emo.pop.sklar$rt <- log(emo.pop.sklar$rt)
+# Remove outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be > (!!, see by trial exclusion below) 3sd from group mean [ie we remove extra-fast participants)
+Acc <- summaryBy(match. + rt ~ SubjNo, data = subset(emo.pop.sklar), keep.names = T)
+emo.pop.sklar <- subset(emo.pop.sklar, SubjNo %in% Acc[Acc$match. > 0.9,]$SubjNo)
+emo.pop.sklar <- subset(emo.pop.sklar, SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo)
+
+# Remove incorrect trials
+emo.pop.sklar <- subset(emo.pop.sklar, match. == 1)
+
+# Remove RTs +/-3sd from each subject's mean 
+emo.pop.sklar <- ddply(emo.pop.sklar, .(SubjNo), function(d){ 
+	include = mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+	d = subset(d, rt > include[1] & rt < include[2])
+	})
+
+# Remove RTs < 200ms
+emo.pop.sklar <- subset(emo.pop.sklar, rt > log(0.2))
+
+# First standardize the MeanAffectivity score
+emo.pop.sklar$MeanAffectivity <- (emo.pop.sklar$MeanAffectivity - mean(emo.pop.sklar$MeanAffectivity, na.rm = T))/sd(emo.pop.sklar$MeanAffectivity, na.rm = T)
+```
+
+```{r expt_2a_log_rt_analysis}
+# Standardize lenth
+emo.pop.sklar$Length <- (emo.pop.sklar$Length - mean(emo.pop.sklar$Length, na.rm = T))/sd(emo.pop.sklar$Length, na.rm = T)
+
+
+# Lin Reg (sklar style)
+emo.pop.sklar.sum <- summaryBy(rt ~ prime + MeanAffectivity, data = emo.pop.sklar, keep.names = T)
+print("Valence against RT")
+kable(summary(lm(rt ~ MeanAffectivity, data = emo.pop.sklar.sum))$coefficients, digits =2)
+
+es <- lm(rt~MeanAffectivity, data = emo.pop.sklar.sum)
+es.t.test.log <- rbind(es.t.test.log, data.frame(t = summary(es)$coefficients[2,3],n1 = summary(es)$df[2],n2 = summary(es)$df[2]))
+
+
+# lmer (rabag style)
+emo.sklar.lmer.log <- summary(lmer(rt ~ MeanAffectivity+Length + (1+MeanAffectivity|SubjNo)+ (1|prime), data = subset(emo.pop.sklar, prime_semantics %in% c("Negative phrase","Neutral phrase"))))
+print("Valence against RT")
+kable(data.frame(emo.sklar.lmer.log$coefficients, "p value"=2*pnorm(-abs(coef(emo.sklar.lmer.log)[,3]))), digits =2)
+#print(paste("p value = ", 2*pnorm(-abs(coef(emo.sklar.lmer.log)[,3]))))
+# 
+# # Analysis of PAS
+# emo.pop.sklar.log.pas <- summary(lmer(rt ~ MeanAffectivity * perceptual.rating +Length+ (1+Condition|SubjNo)+ (1|prime), subset(emo.pop.sklar, prime_semantics %in% c("Negative phrase","Neutral phrase"))))
+# print(emo.pop.sklar.log.pas)
+# 
+# emo.pop.sklar.log.pas2 <- summary(lmer(perceptual.rating ~ MeanAffectivity +Length+ (1+Condition|SubjNo)+ (1|prime), subset(emo.pop.sklar, prime_semantics %in% c("Negative phrase","Neutral phrase"))))
+# print(emo.pop.sklar.log.pas2)
+
+```
+
+
+
+## Experiment 2b
+### Raw RTs
+For Experiment 2b, semantics has no effect on raw RTs (tho this model has trouble converging)
+
+```{r Expt_2b_raw_data, echo=FALSE}
+##########################################################################################################################
+#
+# New reversed sentences Experiment next 
+emo.pop.new <- subset(emo.pop, prime_semantics %in% c("Negative sentence","Neutral sentence"))
+
+# <----
+trials.per.subj = max(tapply(emo.pop.new$rt, emo.pop.new$SubjNo,length)) #length(emo.pop.sklar$rt)/length(unique(emo.pop.sklar$SubjNo))
+timeouts <- summaryBy(rt ~ SubjNo, data = subset(emo.pop.new, rt != "None"), FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+# <----
+
+# Make RTs numeric
+emo.pop.new <- subset(emo.pop.new, rt != "None")
+
+emo.pop.new$rt <- as.numeric(as.character(emo.pop.new$rt))
+
+
+# <--
+total.n <- length(unique(emo.pop.new$SubjNo))
+trials.per.subj = max(tapply(emo.pop.new$rt, emo.pop.new$SubjNo,length)) #length(emo.pop.new$rt)/length(unique(emo.pop.new$SubjNo))
+# <--
+
+# Remove outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be > (!!, see by trial exclusion below) 3sd from group mean [ie we remove extra-fast participants)
+Acc <- summaryBy(match. + rt ~ SubjNo, data = subset(emo.pop.new), keep.names = T)
+emo.pop.new <- subset(emo.pop.new, SubjNo %in% Acc[Acc$match. > 0.9,]$SubjNo)
+emo.pop.new <- subset(emo.pop.new, SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo)
+
+#<--
+excl.n <- length(unique(emo.pop.new$SubjNo))
+n.trials = length(emo.pop.new$rt)
+subj.pre.excl.trials <- summaryBy(rt ~ SubjNo, data = emo.pop.new, FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+
+#<--
+
+# Remove incorrect trials
+emo.pop.new <- subset(emo.pop.new, match. == 1)
+
+emo.pop.new <- ddply(emo.pop.new, .(SubjNo), function(d){ 
+	include = mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+	d = subset(d, rt > include[1] & rt < include[2])
+	})
+
+# Remove RTs < 200ms
+emo.pop.new <- subset(emo.pop.new, rt > 0.2)
+
+n.excl.trials = length(emo.pop.new$rt)
+subj.excl.trials <- summaryBy(rt ~ SubjNo, data = emo.pop.new, FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+subj.excl.trials$final_trials =  subj.excl.trials$rt - subj.pre.excl.trials$rt 
+
+
+#  standardize the MeanAffectivity score
+emo.pop.new$MeanAffectivity <- (emo.pop.new$MeanAffectivity - mean(emo.pop.new$MeanAffectivity, na.rm = T))/sd(emo.pop.new$MeanAffectivity, na.rm = T)
+
+emo.pop.new.graph <- emo.pop.new
+
+```
+
+```{r expt_2b_raw_rt_analysis}
+# excluded subjects
+print(paste("n subj excluded = ",total.n-excl.n))
+# excluded trials
+print(paste("% trials excluded = ",((n.trials - n.excl.trials)/n.trials)*100))
+
+print(paste("median trials excluded per participant = ",median(subj.excl.trials$final_trials), "sd= ", sd(subj.excl.trials$final_trials), "range= ", range(subj.excl.trials$final_trials)))
+print(paste("median timeouts per participant = ",median(timeouts$rt), "sd= ", sd(timeouts$rt), "range= ", range(timeouts$rt)))
+
+# Standardize lenth
+
+
+# Standardize lenth
+emo.pop.new$Length <- (emo.pop.new$Length - mean(emo.pop.new$Length, na.rm = T))/sd(emo.pop.new$Length, na.rm = T)
+
+
+emo.pop.new.sum <- summaryBy(rt  + perceptual.rating~ prime + MeanAffectivity, data = emo.pop.new, keep.names = T)
+emo.pop.new.sum.graph <- emo.pop.new.sum
+print("Valence against RTs")
+kable(summary(lm(rt ~ MeanAffectivity, data = emo.pop.new.sum))$coefficients,digits=2)
+print("Valence against Rating Scale")
+kable(summary(lm(perceptual.rating~ MeanAffectivity, data = emo.pop.new.sum))$coefficients,digits=2)
+
+es <- lm(rt~MeanAffectivity, data = emo.pop.new.sum)
+es.t.test.raw <- rbind(es.t.test.raw, data.frame(t = summary(es)$coefficients[2,3],n1 = summary(es)$df[2],n2 = summary(es)$df[2]))
+
+
+
+print("Valence against RT in mixed model")
+
+# lmer (rabag style)
+emo.new.lmer.raw <- summary(lmer(rt ~ MeanAffectivity +Length+ (1+MeanAffectivity|SubjNo)+ (1+MeanAffectivity|PairID), data = subset(emo.pop.new, prime_semantics %in% c("Negative sentence","Neutral sentence"))))
+kable(data.frame(emo.new.lmer.raw$coefficients, "p value"= 2*pnorm(-abs(coef(emo.new.lmer.raw)[,3]))),digits =2 )
+#print(paste("p value = ", 2*pnorm(-abs(coef(emo.new.lmer.raw)[,3]))))
+
+```
+
+
+### Log RTs
+For Experiment 2b, semantics has no effect on log RTs either (and this model converges more easily).
+```{r Expt_2b_log_data, echo=FALSE}
+
+##########################################################################################################################
+#
+# New reversed sentences Experiment next 
+emo.pop.new <- subset(emo.pop, prime_semantics %in% c("Negative sentence","Neutral sentence"))
+
+# <----
+trials.per.subj = max(tapply(emo.pop.new$rt, emo.pop.new$SubjNo,length)) #length(emo.pop.sklar$rt)/length(unique(emo.pop.sklar$SubjNo))
+timeouts <- summaryBy(rt ~ SubjNo, data = subset(emo.pop.new, rt != "None"), FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+# <----
+
+# Make RTs numeric
+emo.pop.new <- subset(emo.pop.new, rt != "None")
+
+emo.pop.new$rt <- as.numeric(as.character(emo.pop.new$rt))
+
+emo.pop.new$rt <- log(emo.pop.new$rt)
+# Remove outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be > (!!, see by trial exclusion below) 3sd from group mean [ie we remove extra-fast participants)
+Acc <- summaryBy(match. + rt ~ SubjNo, data = subset(emo.pop.new), keep.names = T)
+emo.pop.new <- subset(emo.pop.new, SubjNo %in% Acc[Acc$match. > 0.9,]$SubjNo)
+emo.pop.new <- subset(emo.pop.new, SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo)
+
+# Remove incorrect trials
+emo.pop.new <- subset(emo.pop.new, match. == 1)
+
+emo.pop.new <- ddply(emo.pop.new, .(SubjNo), function(d){ 
+	include = mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+	d = subset(d, rt > include[1] & rt < include[2])
+	})
+
+# Remove RTs < 200ms
+emo.pop.new <- subset(emo.pop.new, rt > log(0.2))
+#  standardize the MeanAffectivity score
+emo.pop.new$MeanAffectivity <- (emo.pop.new$MeanAffectivity - mean(emo.pop.new$MeanAffectivity, na.rm = T))/sd(emo.pop.new$MeanAffectivity, na.rm = T)
+```
+
+```{r expt_2b_log_rt_analysis}
+# Standardize lenth
+emo.pop.new$Length <- (emo.pop.new$Length - mean(emo.pop.new$Length, na.rm = T))/sd(emo.pop.new$Length, na.rm = T)
+
+emo.pop.new.sum <- summaryBy(rt  ~ prime + MeanAffectivity, data = emo.pop.new, keep.names = T)
+print("Valence against RT")
+kable(summary(lm(rt ~ MeanAffectivity, data = emo.pop.new.sum))$coefficients, digits =2)
+
+es <- lm(rt~MeanAffectivity, data = emo.pop.new.sum)
+es.t.test.log <- rbind(es.t.test.log, data.frame(t = summary(es)$coefficients[2,3],n1 = summary(es)$df[2],n2 = summary(es)$df[2]))
+
+
+
+# lmer (rabag style)
+emo.new.lmer.log <- summary(lmer(rt ~ MeanAffectivity +Length+ (1+MeanAffectivity|SubjNo)+ (1+MeanAffectivity|PairID), data = subset(emo.pop.new, prime_semantics %in% c("Negative sentence","Neutral sentence"))))
+print("Valence against RT in mixed model")
+kable(data.frame(emo.new.lmer.log$coefficients, "p value"=2*pnorm(-abs(coef(emo.new.lmer.log)[,3]))), digits =2)
+#print(paste("p value = ", 2*pnorm(-abs(coef(emo.new.lmer.log)[,3]))))
+
+# 
+# # Analysis of PAS
+# emo.new.log.pas <- summary(lmer(rt ~ MeanAffectivity * perceptual.rating +Length+ (1+MeanAffectivity|SubjNo)+ (1+MeanAffectivity|PairID), data = subset(emo.pop.new, prime_semantics %in% c("Negative sentence","Neutral sentence"))))
+# print(emo.new.log.pas)
+# 
+# emo.new.log.pas2 <- summary(lmer(perceptual.rating ~ MeanAffectivity +Length+ (1+MeanAffectivity|SubjNo)+ (1+MeanAffectivity|PairID), data = subset(emo.pop.new, prime_semantics %in% c("Negative sentence","Neutral sentence"))))
+# print(emo.new.log.pas2)
+
+```
+
+## Length effect
+For Experiment 2 (combining 2a and 2b) there is no effect of length on raw RTs; we suspect that this is because Experiment 2bs sentences were quite long.
+```{r expt2_length_rt_raw, echo = FALSE}
+
+emo.pop.length <- subset(emo.pop, prime_semantics != "Hebrew")
+
+emo.pop.length <- subset(emo.pop.length, rt != "None")
+
+emo.pop.length$rt <- as.numeric(as.character(emo.pop.length$rt))
+
+# Remove outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be < (!!, see by trial exclusion below) 3sd from group mean)
+Acc <- summaryBy(match. + rt ~ SubjNo, data = subset(emo.pop.length), keep.names = T)
+emo.pop.length <- subset(emo.pop.length, SubjNo %in% Acc[Acc$match. > 0.9,]$SubjNo)
+emo.pop.length <- subset(emo.pop.length, SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo)
+
+# Remove incorrect trials
+emo.pop.length <- subset(emo.pop.length, match. == 1)
+
+# Remove outliers by subject (less than 3sd from participant mean -- note that this is not a symmetric exclusion criterion)
+emo.pop.length <- ddply(emo.pop.length, .(SubjNo), function(d){ 
+	by_subj_include <- mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+	d = subset(d, rt < by_subj_include[2])
+	})
+	
+
+# Remove RTs < 200ms
+emo.pop.length <- subset(emo.pop.length, rt > 0.2)
+
+# Standardize lenth
+emo.pop.length$Length <- (emo.pop.length$Length - mean(emo.pop.length$Length, na.rm = T))/sd(emo.pop.length$Length, na.rm = T)
+```
+
+```{r expt2_analyze_length_raw}
+emo.pop.length.raw <- summary(lmer(rt ~ Length + (1+Length|SubjNo), data = emo.pop.length))
+kable(data.frame(emo.pop.length.raw$coefficients, "p value" = 2*pnorm(-abs(coef(emo.pop.length.raw)[,3]))), digits = 2)
+#print(paste("p value = ", 2*pnorm(-abs(coef(emo.pop.length.raw)[,3]))))
+
+
+```
+
+And the same is true for log data.
+```{r expt2_length_rt_log, echo = FALSE}
+
+emo.pop.length <- subset(emo.pop, prime_semantics != "Hebrew")
+emo.pop.length <- subset(emo.pop.length, rt != "None")
+
+emo.pop.length$rt <- as.numeric(as.character(emo.pop.length$rt))
+emo.pop.length$rt <- log(emo.pop.length$rt)
+# Remove outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be < (!!, see by trial exclusion below) 3sd from group mean)
+Acc <- summaryBy(match. + rt ~ SubjNo, data = subset(emo.pop.length), keep.names = T)
+emo.pop.length <- subset(emo.pop.length, SubjNo %in% Acc[Acc$match. > 0.9,]$SubjNo)
+emo.pop.length <- subset(emo.pop.length, SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo)
+
+# Remove incorrect trials
+emo.pop.length <- subset(emo.pop.length, match. == 1)
+
+# Remove outliers by subject (less than 3sd from participant mean -- note that this is not a symmetric exclusion criterion)
+emo.pop.length <- ddply(emo.pop.length, .(SubjNo), function(d){ 
+	by_subj_include <- mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+	d = subset(d, rt < by_subj_include[2])
+	})
+	
+
+# Remove RTs < 200ms
+emo.pop.length <- subset(emo.pop.length, rt > log(0.2))
+
+# Standardize lenth
+emo.pop.length$Length <- (emo.pop.length$Length - mean(emo.pop.length$Length, na.rm = T))/sd(emo.pop.length$Length, na.rm = T)
+```
+
+```{r expt2_analyze_length_log}
+
+emo.pop.length.log <- summary(lmer(rt ~ Length + (1+Length|SubjNo), data = emo.pop.length))
+kable(data.frame(emo.pop.length.log$coefficients, "p value" = 2*pnorm(-abs(coef(emo.pop.length.log)[,3]))), digits =2)
+#print(paste("p value = ", 2*pnorm(-abs(coef(emo.pop.length.log)[,3]))))
+
+```
+
+## Experiment 2c
+We also included the Hebrew sentence used by Sklar et al (displayed at two contrasts).
+This was designed to assess if any visual characteristics of those sentences may have caused the effect, while the contrast manipulation was a sanity check.
+
+### Raw data 
+The affective valence of the Hebrew stimuli had no effect on raw data, but contrast does have an effect. 
+
+```{r expt2_hebrew_contrast_raw, echo = FALSE}
+###########################################################################################################################
+#
+# Finally, Hebrew Experiment
+emo.pop.hebr <- subset(emo.pop, prime_semantics %in% c("Hebrew"))
+
+# <----
+trials.per.subj = max(tapply(emo.pop.hebr$rt, emo.pop.hebr$SubjNo,length)) #length(emo.pop.sklar$rt)/length(unique(emo.pop.sklar$SubjNo))
+timeouts <- summaryBy(rt ~ SubjNo, data = subset(emo.pop.hebr, rt != "None"), FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+# <----
+
+emo.pop.hebr <- subset(emo.pop.hebr, rt != "None")
+
+emo.pop.hebr$rt <- as.numeric(as.character(emo.pop.hebr$rt))
+
+# <--
+total.n <- length(unique(emo.pop.hebr$SubjNo))
+trials.per.subj = max(tapply(emo.pop.hebr$rt, emo.pop.hebr$SubjNo,length)) #length(emo.pop.hebr$rt)/length(unique(emo.pop.hebr$SubjNo))
+# <--
+
+# Remove outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be > (!!, see by trial exclusion below) 3sd from group mean [ie we remove extra-fast participants)
+Acc <- summaryBy(match. + rt ~ SubjNo, data = subset(emo.pop.hebr), keep.names = T)
+emo.pop.hebr <- subset(emo.pop.hebr, SubjNo %in% Acc[Acc$match. > 0.9,]$SubjNo)
+emo.pop.hebr <- subset(emo.pop.hebr, SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo)
+
+#<--
+excl.n <- length(unique(emo.pop.hebr$SubjNo))
+n.trials = length(emo.pop.hebr$rt)
+subj.pre.excl.trials <- summaryBy(rt ~ SubjNo, data = emo.pop.hebr, FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+
+#<--
+
+# Remove incorrect trials
+emo.pop.hebr <- subset(emo.pop.hebr, match. == 1)
+
+emo.pop.hebr <- ddply(emo.pop.hebr, .(SubjNo), function(d){ 
+	include = mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+	d = subset(d, rt > include[1] & rt < include[2])
+	})
+
+# Remove RTs < 200ms
+emo.pop.hebr <- subset(emo.pop.hebr, rt > 0.2)
+
+#  standardize the MeanAffectivity score
+emo.pop.hebr$MeanAffectivity <- (emo.pop.hebr$MeanAffectivity - mean(emo.pop.hebr$MeanAffectivity, na.rm = T))/sd(emo.pop.hebr$MeanAffectivity, na.rm = T)
+emo.pop.hebr$log.rt <- log(emo.pop.hebr$rt)
+emo.pop.hebr.sum <- summaryBy(rt + log.rt + perceptual.rating~ prime + MeanAffectivity + Contrast, data = emo.pop.hebr, keep.names = T)
+emo.pop.hebr.sum$Contrast <- as.factor(emo.pop.hebr.sum$Contrast)
+contrasts(emo.pop.hebr.sum$Contrast)[1] <- -1
+
+n.excl.trials = length(emo.pop.hebr$rt)
+subj.excl.trials <- summaryBy(rt ~ SubjNo, data = emo.pop.hebr, FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+subj.excl.trials$final_trials =  subj.excl.trials$rt - subj.pre.excl.trials$rt 
+
+emo.pop.hebr.graph <- emo.pop.hebr
+```
+
+```{r Expt2_hebr_contrast_raw}
+# excluded subjects
+print(paste("n subj excluded = ",total.n-excl.n))
+# excluded trials
+print(paste("% trials excluded = ",((n.trials - n.excl.trials)/n.trials)*100))
+
+print(paste("median trials excluded per participant = ",median(subj.excl.trials$final_trials), "sd= ", sd(subj.excl.trials$final_trials), "range= ", range(subj.excl.trials$final_trials)))
+print(paste("median timeouts per participant = ",median(timeouts$rt), "sd= ", sd(timeouts$rt), "range= ", range(timeouts$rt)))
+
+
+emo.pop.hebr$Contrast <- as.factor(emo.pop.hebr$Contrast)
+contrasts(emo.pop.hebr$Contrast)[1] <- -1
+
+print("Valence against RT")
+kable(summary(lm(rt ~ MeanAffectivity*Contrast, data = emo.pop.hebr.sum))$coefficients, digits = 2)
+print("Valence against PAS")
+kable(summary(lm(perceptual.rating ~ MeanAffectivity*Contrast, data = emo.pop.hebr.sum))$coefficients, digits = 2)
+print("Valence against RT in mixed model")
+
+emo.contr.lmer.raw <- summary(lmer(rt ~ Contrast*MeanAffectivity + (1+Contrast*MeanAffectivity|SubjNo)+ (1+Contrast|prime), data = subset(emo.pop.hebr, prime_semantics %in% c("Hebrew"))))
+kable(data.frame(emo.contr.lmer.raw$coefficients, "p value" = 2*pnorm(-abs(coef(emo.contr.lmer.raw)[,3]))), digits =2)
+#print(paste("p value = ", 2*pnorm(-abs(coef(emo.contr.lmer.raw)[,3]))))
+
+
+```
+
+### Log data
+The affective valence of the Hebrew stimuli also has no effect on log data, and contrast again does have an effect. 
+```{r expt2_hebrew_contrast_log, echo = FALSE}
+###########################################################################################################################
+#
+# Finally, Hebrew Experiment
+emo.pop.hebr <- subset(emo.pop, prime_semantics %in% c("Hebrew"))
+
+# <----
+trials.per.subj = max(tapply(emo.pop.hebr$rt, emo.pop.hebr$SubjNo,length)) #length(emo.pop.sklar$rt)/length(unique(emo.pop.sklar$SubjNo))
+timeouts <- summaryBy(rt ~ SubjNo, data = subset(emo.pop.hebr, rt != "None"), FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+# <----
+
+emo.pop.hebr <- subset(emo.pop.hebr, rt != "None")
+
+emo.pop.hebr$rt <- as.numeric(as.character(emo.pop.hebr$rt))
+
+emo.pop.hebr$rt <- log(emo.pop.hebr$rt)
+# Remove outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be > (!!, see by trial exclusion below) 3sd from group mean [ie we remove extra-fast participants)
+Acc <- summaryBy(match. + rt ~ SubjNo, data = subset(emo.pop.hebr), keep.names = T)
+emo.pop.hebr <- subset(emo.pop.hebr, SubjNo %in% Acc[Acc$match. > 0.9,]$SubjNo)
+emo.pop.hebr <- subset(emo.pop.hebr, SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo)
+
+# Remove incorrect trials
+emo.pop.hebr <- subset(emo.pop.hebr, match. == 1)
+
+emo.pop.hebr <- ddply(emo.pop.hebr, .(SubjNo), function(d){ 
+	include = mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+	d = subset(d, rt > include[1] & rt < include[2])
+	})
+
+# Remove RTs < 200ms
+emo.pop.hebr <- subset(emo.pop.hebr, rt > log(0.2))
+
+#  standardize the MeanAffectivity score
+emo.pop.hebr$MeanAffectivity <- (emo.pop.hebr$MeanAffectivity - mean(emo.pop.hebr$MeanAffectivity, na.rm = T))/sd(emo.pop.hebr$MeanAffectivity, na.rm = T)
+#emo.pop.hebr$log.rt <- log(emo.pop.hebr$rt)
+emo.pop.hebr.sum <- summaryBy(rt~ prime + MeanAffectivity + Contrast, data = emo.pop.hebr, keep.names = T)
+emo.pop.hebr.sum$Contrast <- as.factor(emo.pop.hebr.sum$Contrast)
+contrasts(emo.pop.hebr.sum$Contrast)[1] <- -1
+```
+
+```{r Expt2_hebr_contrast_log}
+emo.pop.hebr$Length <- (emo.pop.hebr$Length - mean(emo.pop.hebr$Length))/sd(emo.pop.hebr$Length)
+emo.pop.hebr$Contrast <- as.factor(emo.pop.hebr$Contrast)
+contrasts(emo.pop.hebr$Contrast)[1] <- -1
+print("Valence against RT in linear model")
+kable(summary(lm(rt ~ MeanAffectivity*Contrast, data = emo.pop.hebr.sum))$coefficients, digits =2)
+print("Valence against RT in mixed model")
+emo.contr.lmer.log <- summary(lmer(rt ~ Contrast*MeanAffectivity +Length+ (1+Contrast*MeanAffectivity|SubjNo)+ (1+Contrast|prime), data = subset(emo.pop.hebr, prime_semantics %in% c("Hebrew"))))
+kable(data.frame(emo.contr.lmer.log$coefficients, "p value" = 2*pnorm(-abs(coef(emo.contr.lmer.log)[,3]))), digits =2)
+#print(paste("p value = ", 2*pnorm(-abs(coef(emo.contr.lmer.log)[,3]))))
+
+# 
+# # Analysis of PAS
+# emo.new.log.pas <- summary(lmer(rt ~ Contrast*MeanAffectivity * perceptual.rating +Length++ (1+Contrast*MeanAffectivity|SubjNo)+ (1+Contrast|prime),data = subset(emo.pop.hebr, prime_semantics %in% c("Hebrew"))))
+# print(emo.new.log.pas)
+# 
+# emo.new.log.pas2 <- summary(lmer(perceptual.rating ~ MeanAffectivity +Length+ (1+Contrast*MeanAffectivity|SubjNo)+ (1+Contrast|prime), data = subset(emo.pop.hebr, prime_semantics %in% c("Hebrew"))))
+#                             
+# print(emo.new.log.pas2)
+
+
+
+```
+
+
+
+## English versus Hebrew
+Finally -- a quick test if English is perceived faster than Hebrew (following Jiang et al 07). 
+
+### Raw data
+
+Hebrew phrases emerge slower in an analysis of raw data (tho note that there are length confounds here, which we have to regress out, but can only do by character)
+
+```{r expt2_hebr_english_raw, echo = FALSE}
+emo.pop$Lang <- "English"
+emo.pop[emo.pop$prime_semantics %in% c("Hebrew"),]$Lang <- "Hebrew"
+emo.pop.lang <- emo.pop
+
+
+emo.pop.lang <- subset(emo.pop.lang, rt != "None")
+
+emo.pop.lang$rt <- as.numeric(as.character(emo.pop.lang$rt))
+
+
+# Remove outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be > (!!, see by trial exclusion below) 3sd from group mean [ie we remove extra-fast participants)
+Acc <- summaryBy(match. + rt ~ SubjNo, data = subset(emo.pop.lang), keep.names = T)
+emo.pop.lang <- subset(emo.pop.lang, SubjNo %in% Acc[Acc$match. > 0.9,]$SubjNo)
+emo.pop.lang <- subset(emo.pop.lang, SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo)
+
+# Remove incorrect trials
+emo.pop.lang <- subset(emo.pop.lang, match. == 1)
+
+emo.pop.lang <- ddply(emo.pop.lang, .(SubjNo), function(d){ 
+	include = mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+	d = subset(d, rt > include[1] & rt < include[2])
+	})
+
+# Remove RTs < 200ms
+emo.pop.lang <- subset(emo.pop.lang, rt > 0.2)
+
+```
+
+```{r expt2_hebr_english_analysis_raw}
+emo.pop.lang$Length <- (emo.pop.lang$Length - mean(emo.pop.lang$Length))/sd(emo.pop.lang$Length)
+
+emo.pop.lang.raw <- summary(lmer(rt ~ Lang +Length+ (1+Lang+Length|SubjNo) + (1|prime), data = subset(emo.pop.lang, Contrast == 50)))
+kable(data.frame(emo.pop.lang.raw$coefficients, "p value"=2*pnorm(-abs(coef(emo.pop.lang.raw)[,3]))), digits =2)
+#print(paste("p value = ", 2*pnorm(-abs(coef(emo.pop.lang.raw)[,3]))))
+
+```
+
+### Log data
+And Hebrew phrases emerge slower in an analysis of log transformed data
+```{r expt2_hebr_english_log, echo = FALSE}
+emo.pop$Lang <- "English"
+emo.pop[emo.pop$prime_semantics %in% c("Hebrew"),]$Lang <- "Hebrew"
+emo.pop.lang <- emo.pop
+
+
+emo.pop.lang <- subset(emo.pop.lang, rt != "None")
+
+emo.pop.lang$rt <- as.numeric(as.character(emo.pop.lang$rt))
+emo.pop.lang$rt <- log(emo.pop.lang$rt)
+
+# Remove outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be > (!!, see by trial exclusion below) 3sd from group mean [ie we remove extra-fast participants)
+Acc <- summaryBy(match. + rt ~ SubjNo, data = subset(emo.pop.lang), keep.names = T)
+emo.pop.lang <- subset(emo.pop.lang, SubjNo %in% Acc[Acc$match. > 0.9,]$SubjNo)
+emo.pop.lang <- subset(emo.pop.lang, SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo)
+
+# Remove incorrect trials
+emo.pop.lang <- subset(emo.pop.lang, match. == 1)
+
+emo.pop.lang <- ddply(emo.pop.lang, .(SubjNo), function(d){ 
+	include = mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+	d = subset(d, rt > include[1] & rt < include[2])
+	})
+
+# Remove RTs < 200ms
+emo.pop.lang <- subset(emo.pop.lang, rt > log(0.2))
+
+```
+
+```{r expt2_hebr_english_analysis_log}
+emo.pop.lang$Length <- (emo.pop.lang$Length - mean(emo.pop.lang$Length))/sd(emo.pop.lang$Length)
+
+emo.pop.lang.log <- summary(lmer(rt ~ Lang +Length+ (1+Lang+Length|SubjNo) + (1|prime), data = subset(emo.pop.lang, Contrast == 50)))
+kable(data.frame(emo.pop.lang.log$coefficients, "pvalue"=2*pnorm(-abs(coef(emo.pop.lang.log)[,3]))), digits =2)
+#print(paste("p value = ", 2*pnorm(-abs(coef(emo.pop.lang.log)[,3]))))
+
+```
+
+## Graphs
+``` {r emo_graphs_exp2, echo = FALSE}
+
+emo.pop.hebr.sum <- summaryBy(rt +perceptual.rating~ prime + MeanAffectivity + Contrast, data = emo.pop.hebr.graph, keep.names = T)
+emo.pop.hebr.sum$Experiment <- "Experiment 2c \nHebrew Phrases"
+
+emo.pop.sklar.sum.graph$Experiment <- "Experiment 2a \nTwo Word Phrases"
+emo.pop.sklar.sum.graph$Contrast <- 50
+emo.pop.new.sum.graph$Experiment <- "Experiment 2b \nReversible Sentences"
+emo.pop.new.sum.graph$Contrast <- 50
+
+graph <- rbind(emo.pop.sklar.sum.graph,emo.pop.new.sum.graph,emo.pop.hebr.sum)
+
+graph <- na.omit(graph)
+graph$Experiment <- ordered(graph$Experiment, levels = c("Experiment 2a \nTwo Word Phrases", "Experiment 2b \nReversible Sentences", "Experiment 2c \nHebrew Phrases"))
+graph$Contrast <- ordered(graph$Contrast, levels = c("50","80"), labels = c("50%","80%"))
+
+
+graph$rt <- graph$rt * 1000
+
+ggplot(graph, aes(x=MeanAffectivity, y=rt, shape = Contrast)) +
+    geom_point(size = 2) +    # Use hollow circles
+    geom_smooth(method=lm,   # Add linear regression line
+                se=TRUE) + facet_grid(.~Experiment) + labs(y = "Response Time (ms)", x = "Standardized Valence Rating")+ 
+    theme(strip.text.x = element_text(size = 12))
+```
+
+# Experiment 3
+In Experiment 3, we used Sklar's code to replicate Experiments 1 and 2.
+The experiments were run in an order, such that 1a and 2a were fast (counterbalanced) and 1b and 2b were run second. This, we reasoned, would provide the most likely grounds for Sklar's results to replicate.
+
+```{r expt3, echo = FALSE}
+library(lme4)
+library(ez)
+library(jsonlite)
+library(ggplot2)
+library(gridExtra)
+library(plyr)
+library(dplyr)
+library(doBy)
+## for bootstrapping 95% confidence intervals -- from Mike Frank https://github.com/langcog/KTE/blob/master/mcf.useful.R
+library(bootstrap)
+theta <- function(x,xdata,na.rm=T) {mean(xdata[x],na.rm=na.rm)}
+ci.low <- function(x,na.rm=T) {
+  quantile(bootstrap(1:length(x),1000,theta,x,na.rm=na.rm)$thetastar,.025,na.rm=na.rm)} #  mean(x,na.rm=na.rm) -
+ci.high <- function(x,na.rm=T) {
+  quantile(bootstrap(1:length(x),1000,theta,x,na.rm=na.rm)$thetastar,.975,na.rm=na.rm) } #- mean(x,na.rm=na.rm)}
+
+
+
+
+
+Test_Import = function(path_name,expt){
+  library(jsonlite)
+  
+  list.files(path = path_name,full.names = T, pattern = expt) -> file_list
+  comp = c()
+  for (x in file_list){
+    file_name = x
+    d <- read.csv(file_name, header = T)
+    comp = rbind(comp,d)
+    print(x)
+  }
+  comp$rt <- comp$ReactionTime_column
+  comp$Acc <- comp$Valid_column
+  comp$SubjNo <- comp$subject_column
+  return(comp)
+}
+
+```
+
+## Experiment 3a (Replication of Expt 1a)
+### Raw RTs
+Semantics _does_ affect raw RTs
+```{r expt1a_r_raw, include = FALSE}
+##########
+# Sklar Sem
+sklar.sem <- Test_Import("./Sklar_Direct_Rep/data","sklar_sem")
+sklar.sem$Length <- nchar(as.character(sklar.sem$Stim_column))
+sklar.sem$Length  <- (sklar.sem$Length  - mean(sklar.sem$Length,na.rm= T))/sd(sklar.sem$Length,na.rm= T)
+sklar.sem <- sklar.sem[sklar.sem$Type_column != "Sklar_filler",]
+sklar.sem$Condition = "Control"
+sklar.sem[sklar.sem$Type_column == "Sklar_violation",]$Condition <- "Violation"
+
+# <----
+trials.per.subj = max(tapply(sklar.sem$rt, sklar.sem$SubjNo,length)) #length(sklar.sem$rt)/length(unique(sklar.sem$SubjNo))
+timeouts <- summaryBy(rt ~ SubjNo, data = subset(sklar.sem, Acc != -1), FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+# <----
+
+#Mark timeouts as incorrect, for exclusion
+sklar.sem[sklar.sem$Acc < 0,]$Acc <- 0
+
+# <--
+total.n <- length(unique(sklar.sem$SubjNo))
+# <--
+
+# Rsemve outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be > (!!, see by trial exclusion below) 3sd from group mean [ie we rsemve extra-fast participants)
+Acc <- summaryBy(Acc + rt ~ SubjNo, data = sklar.sem, keep.names = T)
+
+sklar.sem <- sklar.sem[sklar.sem$SubjNo %in% Acc[Acc$Acc > 0.9,]$SubjNo,]
+# Also exclude
+
+sklar.sem <- sklar.sem[sklar.sem$SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo,]
+
+#<--
+excl.n <- length(unique(sklar.sem$SubjNo))
+n.trials = length(sklar.sem$rt)
+subj.pre.excl.trials <- summaryBy(rt ~ SubjNo, data = sklar.sem, FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+
+#<--
+
+#Rsemve incorrect trials
+sklar.sem <- sklar.sem[sklar.sem$Acc ==1,]
+
+# Rsemve RTs +/-3sd from each subject's mean 
+sklar.sem <- ddply(sklar.sem, .(SubjNo), function(d){ 
+  include = mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+  d = subset(d, rt > include[1] & rt < include[2])
+})
+# [for Expt 1 only] Remove outliers by condition (less than 3sd from condition mean -- note that this is not a symmetric exclusion criterion)
+sklar.sem <- ddply(sklar.sem, .(Condition), function(d){ 
+  by_subj_include <- mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+  d = subset(d, rt < by_subj_include[2])
+})
+# Rsemve RTs < 200ms & > 10
+sklar.sem <- subset(sklar.sem, rt > 0.2)
+sklar.sem <- subset(sklar.sem, rt <= 10)
+
+n.excl.trials = length(sklar.sem$rt)
+subj.excl.trials <- summaryBy(rt ~ SubjNo, data = sklar.sem, FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+subj.excl.trials$final_trials =  subj.excl.trials$rt - subj.pre.excl.trials$rt 
+
+sklar.sem.graph <- sklar.sem
+
+
+```
+
+```{r expt1a_r_raw_analysis}
+
+# excluded subjects
+print(paste("n subj excluded = ",total.n-excl.n))
+# excluded trials
+print(paste("% trials excluded = ",((n.trials - n.excl.trials)/n.trials)*100))
+
+print(paste("median trials excluded per participant = ",median(subj.excl.trials$final_trials), "sd= ", sd(subj.excl.trials$final_trials), "range= ", range(subj.excl.trials$final_trials)))
+print(paste("median timeouts per participant = ",median(timeouts$rt), "sd= ", sd(timeouts$rt), "range= ", range(timeouts$rt)))
+
+sklar.sem$Length <- nchar(as.character(sklar.sem$Stim_column))
+sklar.sem$Length  <- (sklar.sem$Length  - mean(sklar.sem$Length,na.rm= T))/sd(sklar.sem$Length,na.rm= T)
+
+
+sklar.sem.sum <- summaryBy(rt~ SubjNo + Condition, data = sklar.sem, keep.names = T)
+kable(summaryBy(rt ~ Condition, data = sklar.sem.sum, FUN = c(mean,sd)),digits=2)
+
+t.test(rt ~ Condition, data = sklar.sem.sum, paired = T)
+
+es <- t.test(rt ~ Condition, data = sklar.sem.sum, paired = T)
+es.t.test.raw <- rbind(es.t.test.raw,data.frame(t = es$statistic,n1 = es$parameter,n2 = es$parameter))
+
+# lmer (Rabag style)
+sklar.sem.sum.raw <- summary(lmer(rt ~ Condition +Length+ (1+Condition|SubjNo)+ (1|Stim_column), data = sklar.sem))
+kable(data.frame(sklar.sem.sum.raw$coefficients, "p value"=2*pnorm(-abs(coef(sklar.sem.sum.raw)[,3]))), digits=2)
+#print(paste("p value = ", 2*pnorm(-abs(coef(sklar.sem.sum.raw)[,3]))))
+```
+
+### Log RTs
+But there is no effect of semantics for log RTs
+```{r expt1a_r_log, include = FALSE}
+##########
+# Sklar Sem
+sklar.sem <- Test_Import("./Sklar_Direct_Rep/data","sklar_sem")
+sklar.sem$rt <- sklar.sem$rt * 1000
+sklar.sem$rt <- log(sklar.sem$rt)
+sklar.sem$Length <- nchar(as.character(sklar.sem$Stim_column))
+sklar.sem$Length  <- (sklar.sem$Length  - mean(sklar.sem$Length,na.rm= T))/sd(sklar.sem$Length,na.rm= T)
+sklar.sem <- sklar.sem[sklar.sem$Type_column != "Sklar_filler",]
+sklar.sem$Condition = "Control"
+sklar.sem[sklar.sem$Type_column == "Sklar_violation",]$Condition <- "Violation"
+
+#Mark timeouts as incorrect, for exclusion
+sklar.sem[sklar.sem$Acc < 0,]$Acc <- 0
+
+# Rsemve outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be > (!!, see by trial exclusion below) 3sd from group mean [ie we rsemve extra-fast participants)
+Acc <- summaryBy(Acc + rt ~ SubjNo, data = sklar.sem, keep.names = T)
+
+sklar.sem <- sklar.sem[sklar.sem$SubjNo %in% Acc[Acc$Acc > 0.9,]$SubjNo,]
+# Also exclude
+
+sklar.sem <- sklar.sem[sklar.sem$SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo,]
+#Rsemve incorrect trials
+sklar.sem <- sklar.sem[sklar.sem$Acc ==1,]
+
+# Rsemve RTs +/-3sd from each subject's mean 
+sklar.sem <- ddply(sklar.sem, .(SubjNo), function(d){ 
+  include = mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+  d = subset(d, rt > include[1] & rt < include[2])
+})
+# [for Expt 1 only] Remove outliers by condition (less than 3sd from condition mean -- note that this is not a symmetric exclusion criterion)
+sklar.sem <- ddply(sklar.sem, .(Condition), function(d){ 
+  by_subj_include <- mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+  d = subset(d, rt < by_subj_include[2])
+})
+# Rsemve RTs < 200ms & > 10
+sklar.sem <- subset(sklar.sem, rt > log(200))
+sklar.sem <- subset(sklar.sem, rt <= log(10000))
+```
+
+```{r expt1a_r_log_analysis}
+sklar.sem$Length <- nchar(as.character(sklar.sem$Stim_column))
+sklar.sem$Length  <- (sklar.sem$Length  - mean(sklar.sem$Length,na.rm= T))/sd(sklar.sem$Length,na.rm= T)
+
+
+sklar.sem.sum <- summaryBy(rt~ SubjNo + Condition, data = sklar.sem, keep.names = T)
+kable(summaryBy(rt ~ Condition, data = sklar.sem.sum, FUN = c(mean,sd)), digits=2)
+
+t.test(rt ~ Condition, data = sklar.sem.sum, paired = T)
+
+es <- t.test(rt ~ Condition, data = sklar.sem.sum, paired = T)
+es.t.test.log <- rbind(es.t.test.log,data.frame(t = es$statistic,n1 = es$parameter,n2 = es$parameter))
+
+# lmer (Rabag style)
+sklar.sem.sum.log <- summary(lmer(rt ~ Condition +Length+ (1+Condition|SubjNo)+ (1|Stim_column), data = sklar.sem))
+kable(data.frame(sklar.sem.sum.log$coefficients, "p value"=2*pnorm(-abs(coef(sklar.sem.sum.log)[,3]))), digits=2)
+#print(paste("p value = ", 2*pnorm(-abs(coef(sklar.sem.sum.log)[,3]))))
+```
+
+
+
+## Experiment 3b (Replication of Experiment 1b)
+### Raw RTs
+Semantics does not affect raw RTs
+```{r expt1b_r_raw, include = FALSE}
+
+##########
+# Edin Sem
+edin.sem <- Test_Import("./Sklar_Direct_Rep/data","edin_sem")
+edin.sem$Length <- nchar(as.character(edin.sem$Stim_column))
+edin.sem$Length <- (edin.sem$Length - mean(edin.sem$Length))/sd(edin.sem$Length)
+edin.sem$Condition = "Violation"
+edin.sem[edin.sem$Type_column == "Sensible",]$Condition <- "Control"
+
+# <----
+trials.per.subj = max(tapply(edin.sem$rt, edin.sem$SubjNo,length)) #length(edin.sem$rt)/length(unique(edin.sem$SubjNo))
+timeouts <- summaryBy(rt ~ SubjNo, data = subset(edin.sem, Acc != -1), FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+# <----
+
+#Mark timeouts as incorrect, for exclusion
+edin.sem[edin.sem$Acc < 0,]$Acc <- 0
+
+# <--
+total.n <- length(unique(edin.sem$SubjNo))
+# <--
+
+# Rsemve outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be > (!!, see by trial exclusion below) 3sd from group mean [ie we rsemve extra-fast participants)
+Acc <- summaryBy(Acc + rt ~ SubjNo, data = edin.sem, keep.names = T)
+edin.sem <- edin.sem[edin.sem$SubjNo %in% Acc[Acc$Acc > 0.9,]$SubjNo,]
+edin.sem <- edin.sem[edin.sem$SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo,]
+
+
+#<--
+excl.n <- length(unique(edin.sem$SubjNo))
+n.trials = length(edin.sem$rt)
+subj.pre.excl.trials <- summaryBy(rt ~ SubjNo, data = edin.sem, FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+
+#<--
+
+#Rsemve incorrect trials
+edin.sem <- edin.sem[edin.sem$Acc ==1,]
+# Rsemve RTs +/-3sd from each subject's mean 
+edin.sem <- ddply(edin.sem, .(SubjNo), function(d){ 
+  include = mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+  d = subset(d, rt > include[1] & rt < include[2])
+})
+# [for Expt 1 only] Remove outliers by condition (less than 3sd from condition mean -- note that this is not a symmetric exclusion criterion)
+edin.sem <- ddply(edin.sem, .(Condition), function(d){ 
+  by_subj_include <- mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+  d = subset(d, rt < by_subj_include[2])
+})
+# Rsemve RTs < 200ms & > 10
+edin.sem <- subset(edin.sem, rt > 0.2)
+edin.sem <- subset(edin.sem, rt <= 10)
+
+n.excl.trials = length(edin.sem$rt)
+subj.excl.trials <- summaryBy(rt ~ SubjNo, data = edin.sem, FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+subj.excl.trials$final_trials =  subj.excl.trials$rt - subj.pre.excl.trials$rt 
+
+edin.sem.graph <- edin.sem
+```
+
+```{r expt1b_r_raw_analysis}
+
+# excluded subjects
+print(paste("n subj excluded = ",total.n-excl.n))
+# excluded trials
+print(paste("% trials excluded = ",((n.trials - n.excl.trials)/ n.trials)*100))
+
+print(paste("median trials excluded per participant = ",median(subj.excl.trials$rt), "sd= ", sd(subj.excl.trials$final_trials), "range= ", range(subj.excl.trials$final_trials)))
+print(paste("median timeouts per participant = ",median(timeouts$rt), "sd= ", sd(timeouts$rt), "range= ", range(timeouts$rt)))
+
+
+edin.sem$Length <- nchar(as.character(edin.sem$Stim_column))
+edin.sem$Length <- (edin.sem$Length - mean(edin.sem$Length))/sd(edin.sem$Length)
+
+
+# Lin Reg (sklar style)
+edin.sem.sum <- summaryBy(rt  ~ SubjNo + Condition, data = edin.sem, keep.names = T)
+kable(summaryBy(rt ~ Condition, data = edin.sem.sum, FUN = c(mean,sd)), digits=2)
+
+t.test(rt ~ Condition, data = edin.sem.sum, paired = T)
+
+
+es <- t.test(rt ~ Condition, data = edin.sem.sum, paired = T)
+es.t.test.raw <- rbind(es.t.test.raw,data.frame(t = es$statistic,n1 = es$parameter,n2 = es$parameter))
+
+# lmer (Rabag style)
+edin.sem.sum.raw <- summary(lmer(rt ~ Condition +Length+ (1+Condition|SubjNo)+ (1|Stim_column), data = edin.sem))
+kable(data.frame(edin.sem.sum.raw$coefficients, "p value"=2*pnorm(-abs(coef(edin.sem.sum.raw)[,3]))), digits=2)
+#print(paste("p value = ", 2*pnorm(-abs(coef(edin.sem.sum.raw)[,3]))))
+
+```
+
+### Log RTs
+Semantics does not affect log RTs
+```{r expt1b_r_log, include = FALSE}
+
+##########
+# Edin Sem
+edin.sem <- Test_Import("./Sklar_Direct_Rep/data","edin_sem")
+edin.sem$rt <- edin.sem$rt *1000
+edin.sem$rt <- log(edin.sem$rt)
+edin.sem$Length <- nchar(as.character(edin.sem$Stim_column))
+edin.sem$Length <- (edin.sem$Length - mean(edin.sem$Length))/sd(edin.sem$Length)
+edin.sem$Condition = "Violation"
+edin.sem[edin.sem$Type_column == "Sensible",]$Condition <- "Control"
+
+#Mark timeouts as incorrect, for exclusion
+edin.sem[edin.sem$Acc < 0,]$Acc <- 0
+
+
+# Rsemve outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be > (!!, see by trial exclusion below) 3sd from group mean [ie we rsemve extra-fast participants)
+Acc <- summaryBy(Acc + rt ~ SubjNo, data = edin.sem, keep.names = T)
+edin.sem <- edin.sem[edin.sem$SubjNo %in% Acc[Acc$Acc > 0.9,]$SubjNo,]
+edin.sem <- edin.sem[edin.sem$SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo,]
+#Rsemve incorrect trials
+edin.sem <- edin.sem[edin.sem$Acc ==1,]
+# Rsemve RTs +/-3sd from each subject's mean 
+edin.sem <- ddply(edin.sem, .(SubjNo), function(d){ 
+  include = mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+  d = subset(d, rt > include[1] & rt < include[2])
+})
+# [for Expt 1 only] Remove outliers by condition (less than 3sd from condition mean -- note that this is not a symmetric exclusion criterion)
+edin.sem <- ddply(edin.sem, .(Condition), function(d){ 
+  by_subj_include <- mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+  d = subset(d, rt < by_subj_include[2])
+})
+# Rsemve RTs < 200ms & > 10
+edin.sem <- subset(edin.sem, rt > log(200))
+edin.sem <- subset(edin.sem, rt <= log(10000))
+
+```
+
+```{r expt1b_r_log_analysis}
+edin.sem$Length <- nchar(as.character(edin.sem$Stim_column))
+edin.sem$Length <- (edin.sem$Length - mean(edin.sem$Length))/sd(edin.sem$Length)
+
+
+# Lin Reg (sklar style)
+edin.sem.sum <- summaryBy(rt  ~ SubjNo + Condition, data = edin.sem, keep.names = T)
+kable(summaryBy(rt ~ Condition, data = edin.sem.sum, FUN = c(mean,sd)), digits=2)
+t.test(rt ~ Condition, data = edin.sem.sum, paired = T)
+
+es <- t.test(rt ~ Condition, data = edin.sem.sum, paired = T)
+es.t.test.log <- rbind(es.t.test.log,data.frame(t = es$statistic,n1 = es$parameter,n2 = es$parameter))
+
+
+# lmer (Rabag style)
+edin.sem.sum.log <- summary(lmer(rt ~ Condition +Length+ (1+Condition|SubjNo)+ (1|Stim_column), data = edin.sem))
+kable(data.frame(edin.sem.sum.log$coefficients, "p value"=2*pnorm(-abs(coef(edin.sem.sum.log)[,3]))), digits=2)
+#print(paste("p value = ", 2*pnorm(-abs(coef(edin.sem.sum.log)[,3]))))
+```
+
+
+## Experiment 3c (Replication of Expt 2a)
+### Raw RTs
+Emotional semantics does not affect raw RTs
+```{r expt2a_r_raw, include = FALSE}
+
+##########
+# Sklar Emo
+sklar.emo <- Test_Import("./Sklar_Direct_Rep/data","sklar_emo")
+sklar.emo$Length <- nchar(as.character(sklar.emo$Stim_column))
+
+# <----
+trials.per.subj = max(tapply(sklar.emo$rt, sklar.emo$SubjNo,length)) #length(sklar.emo$rt)/length(unique(sklar.emo$SubjNo))
+timeouts <- summaryBy(rt ~ SubjNo, data = subset(sklar.emo, Acc != -1), FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+# <----
+
+#Mark timeouts as incorrect, for exclusion
+sklar.emo[sklar.emo$Acc < 0,]$Acc <- 0
+
+# <--
+total.n <- length(unique(sklar.emo$SubjNo))
+# <--
+
+# Remove outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be > (!!, see by trial exclusion below) 3sd from group mean [ie we remove extra-fast participants)
+Acc <- summaryBy(Acc + rt ~ SubjNo, data = sklar.emo, keep.names = T)
+sklar.emo <- sklar.emo[sklar.emo$SubjNo %in% Acc[Acc$Acc > 0.9,]$SubjNo,]
+sklar.emo <- sklar.emo[sklar.emo$SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo,]
+
+#<--
+excl.n <- length(unique(sklar.emo$SubjNo))
+n.trials = length(sklar.emo$rt)
+subj.pre.excl.trials <- summaryBy(rt ~ SubjNo, data = sklar.emo, FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+
+#<--
+
+#Remove incorrect trials
+sklar.emo <- sklar.emo[sklar.emo$Acc ==1,]
+# Remove RTs +/-3sd from each subject's mean 
+sklar.emo <- ddply(sklar.emo, .(SubjNo), function(d){ 
+  include = mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+  d = subset(d, rt > include[1] & rt < include[2])
+})
+
+# Remove RTs < 200ms & > 1000ms
+sklar.emo <- subset(sklar.emo, rt > 0.2)
+sklar.emo <- subset(sklar.emo, rt <= 10)
+
+# First standardize the MeanAffectivity score
+sklar.emo$MeanAffectivity_column <- (sklar.emo$MeanAffectivity_column - mean(sklar.emo$MeanAffectivity_column, na.rm = T))/sd(sklar.emo$MeanAffectivity_column, na.rm = T)
+
+n.excl.trials = length(sklar.emo$rt)
+subj.excl.trials <- summaryBy(rt ~ SubjNo, data = sklar.emo, FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+subj.excl.trials$final_trials =  subj.excl.trials$rt - subj.pre.excl.trials$rt 
+
+```
+
+```{r expt2a_r_raw_analysis}
+
+
+# excluded subjects
+print(paste("n subj excluded = ",total.n-excl.n))
+# excluded trials
+print(paste("% trials excluded = ",((n.trials - n.excl.trials)/n.trials)*100))
+
+print(paste("median trials excluded per participant = ",median(subj.excl.trials$rt), "sd= ", sd(subj.excl.trials$final_trials), "range= ", range(subj.excl.trials$final_trials)))
+print(paste("median timeouts per participant = ",median(timeouts$rt), "sd= ", sd(timeouts$rt), "range= ", range(timeouts$rt)))
+
+
+sklar.emo$Length <- nchar(as.character(sklar.emo$Stim_column))
+sklar.emo$Length <- (sklar.emo$Length - mean(sklar.emo$Length))/sd(sklar.emo$Length)
+
+
+sklar.emo.sum <- summaryBy(rt ~ Stim_column + MeanAffectivity_column, data = sklar.emo, keep.names = T)
+sklar.emo.sum.graph <- sklar.emo.sum
+print("Linear model")
+kable(summary(lm(rt ~ MeanAffectivity_column, data = sklar.emo.sum))$coefficients, digits=2)
+
+
+es <- lm(rt~MeanAffectivity_column, data = sklar.emo.sum)
+es.t.test.raw <- rbind(es.t.test.raw, data.frame(t = summary(es)$coefficients[2,3],n1 = summary(es)$df[2],n2 = summary(es)$df[2]))
+
+print("Mixed model")
+emo.sklar.lmer.raw <- summary(lmer(rt ~ MeanAffectivity_column +Length+ (1+MeanAffectivity_column|SubjNo)+ (1|Stim_column), data = sklar.emo))
+kable(data.frame(emo.sklar.lmer.raw$coefficients, "p value"=2*pnorm(-abs(coef(emo.sklar.lmer.raw)[,3]))), digits =2)
+#print(paste("p value = ", 2*pnorm(-abs(coef(emo.sklar.lmer.raw)[2,3]))))
+
+```
+
+### Log RTs
+Emotional semantics does not affect log RTs
+```{r expt2a_r_log, include = FALSE}
+##########
+# Sklar Emo
+sklar.emo <- Test_Import("./Sklar_Direct_Rep/data","sklar_emo")
+sklar.emo$Length <- nchar(as.character(sklar.emo$Stim_column))
+sklar.emo$Length <- (sklar.emo$Length - mean(sklar.emo$Length))/sd(sklar.emo$Length)
+sklar.emo$rt <- log(sklar.emo$rt)
+#Mark timeouts as incorrect, for exclusion
+sklar.emo[sklar.emo$Acc < 0,]$Acc <- 0
+
+# Remove outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be > (!!, see by trial exclusion below) 3sd from group mean [ie we remove extra-fast participants)
+Acc <- summaryBy(Acc + rt ~ SubjNo, data = sklar.emo, keep.names = T)
+sklar.emo <- sklar.emo[sklar.emo$SubjNo %in% Acc[Acc$Acc > 0.9,]$SubjNo,]
+sklar.emo <- sklar.emo[sklar.emo$SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo,]
+#Remove incorrect trials
+sklar.emo <- sklar.emo[sklar.emo$Acc ==1,]
+# Remove RTs +/-3sd from each subject's mean 
+sklar.emo <- ddply(sklar.emo, .(SubjNo), function(d){ 
+  include = mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+  d = subset(d, rt > include[1] & rt < include[2])
+})
+
+# Remove RTs < 200ms & > 1000ms
+sklar.emo <- subset(sklar.emo, rt > log(0.2))
+sklar.emo <- subset(sklar.emo, rt <= log(10))
+
+# First standardize the MeanAffectivity score
+sklar.emo$MeanAffectivity_column <- (sklar.emo$MeanAffectivity_column - mean(sklar.emo$MeanAffectivity_column, na.rm = T))/sd(sklar.emo$MeanAffectivity_column, na.rm = T)
+
+```
+
+```{r expt2a_r_log_analysis}
+sklar.emo$Length <- nchar(as.character(sklar.emo$Stim_column))
+sklar.emo$Length <- (sklar.emo$Length - mean(sklar.emo$Length))/sd(sklar.emo$Length)
+
+
+sklar.emo.sum <- summaryBy(rt ~ Stim_column + MeanAffectivity_column, data = sklar.emo, keep.names = T)
+print("Linear model")
+kable(summary(lm(rt ~ MeanAffectivity_column, data = sklar.emo.sum))$coefficients, digits =2)
+
+es <- lm(rt~MeanAffectivity_column, data = sklar.emo.sum)
+es.t.test.log <- rbind(es.t.test.log, data.frame(t = summary(es)$coefficients[2,3],n1 = summary(es)$df[2],n2 = summary(es)$df[2]))
+
+
+print("Mixed model")
+emo.sklar.lmer.log <- summary(lmer(rt ~ MeanAffectivity_column+Length + (1+MeanAffectivity_column|SubjNo)+ (1|Stim_column), data = sklar.emo))
+kable(data.frame(emo.sklar.lmer.log$coefficients, "p value"= 2*pnorm(-abs(coef(emo.sklar.lmer.log)[,3]))), digits=2)
+#print(paste("p value = ", 2*pnorm(-abs(coef(emo.sklar.lmer.log)[2,3]))))
+```
+
+## Experiment 3d (Replication of Experiment 2b)
+### Raw RTs
+Emotional semantics marginally affects raw RTs
+```{r expt2b_r_raw, include = FALSE}
+
+# Edinburgh Emo Expt
+
+edin.emo <- Test_Import("./Sklar_Direct_Rep/data","edin_emo")
+edin.emo$Length <- nchar(as.character(edin.emo$Stim_column))
+
+# <----
+trials.per.subj = max(tapply(edin.emo$rt, edin.emo$SubjNo,length)) #length(edin.emo$rt)/length(unique(edin.emo$SubjNo))
+timeouts <- summaryBy(rt ~ SubjNo, data = subset(edin.emo, Acc != -1), FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+# <----
+
+#Mark timeouts as incorrect, for exclusion
+edin.emo[edin.emo$Acc < 0,]$Acc <- 0
+
+# <--
+total.n <- length(unique(edin.emo$SubjNo))
+# <--
+
+# Remove outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be > (!!, see by trial exclusion below) 3sd from group mean [ie we remove extra-fast participants)
+Acc <- summaryBy(Acc + rt ~ SubjNo, data = edin.emo, keep.names = T)
+edin.emo <- edin.emo[edin.emo$SubjNo %in% Acc[Acc$Acc > 0.9,]$SubjNo,]
+edin.emo <- edin.emo[edin.emo$SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo,]
+
+#<--
+excl.n <- length(unique(edin.emo$SubjNo))
+n.trials = length(edin.emo$rt)
+subj.pre.excl.trials <- summaryBy(rt ~ SubjNo, data = edin.emo, FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+
+#<--
+
+#Remove incorrect trials
+edin.emo <- edin.emo[edin.emo$Acc ==1,]
+# Remove RTs +/-3sd from each subject's mean 
+edin.emo <- ddply(edin.emo, .(SubjNo), function(d){ 
+  include = mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+  d = subset(d, rt > include[1] & rt < include[2])
+})
+
+# Remove RTs < 200ms & > 10s
+edin.emo <- subset(edin.emo, rt > 0.2)
+edin.emo <- subset(edin.emo, rt <= 10)
+
+# First standardize the MeanAffectivity score
+edin.emo$MeanAffectivity_column <- (edin.emo$MeanAffectivity_column - mean(edin.emo$MeanAffectivity_column, na.rm = T))/sd(edin.emo$MeanAffectivity_column, na.rm = T)
+
+n.excl.trials = length(edin.emo$rt)
+subj.excl.trials <- summaryBy(rt ~ SubjNo, data = edin.emo, FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+subj.excl.trials$final_trials =  subj.excl.trials$rt - subj.pre.excl.trials$rt 
+# <-- 
+
+```
+
+```{r expt2b_r_raw_analysis}
+
+
+# excluded subjects
+print(paste("n subj excluded = ",total.n-excl.n))
+# excluded trials
+print(paste("% trials excluded = ",((n.trials - n.excl.trials)/n.trials)*100))
+
+print(paste("median trials excluded per participant = ",median(subj.excl.trials$rt), "sd= ", sd(subj.excl.trials$final_trials), "range= ", range(subj.excl.trials$final_trials)))
+print(paste("median timeouts per participant = ",median(timeouts$rt), "sd= ", sd(timeouts$rt), "range= ", range(timeouts$rt)))
+
+
+edin.emo$Length <- nchar(as.character(edin.emo$Stim_column))
+edin.emo$Length <- (edin.emo$Length - mean(edin.emo$Length, na.rm = T))/sd(edin.emo$Length)                                      
+
+
+# Lin Reg (sklar style)
+edin.emo.sum.factorial <- summaryBy(rt  ~ SubjNo + Type_column, data = edin.emo, keep.names = T)
+#t.test(rt ~ Type_column, data = edin.emo.sum.factorial, paired = T)
+
+
+#es <- t.test(rt ~ Type_column, data = edin.emo.sum.factorial, paired = T)
+#es.t.test.raw <- rbind(es.t.test.raw,data.frame(t = es$statistic,n1 = es$parameter,n2 = es$parameter))
+
+
+edin.emo.sum <- summaryBy(rt  ~ Stim_column + MeanAffectivity_column, data = edin.emo, keep.names = T)
+edin.emo.sum.graph <- edin.emo.sum
+print("Linear model")
+kable(summary(lm(rt ~ MeanAffectivity_column, data = edin.emo.sum))$coefficients, digits =2)
+
+es <- lm(rt~MeanAffectivity_column, data = edin.emo.sum)
+es.t.test.raw <- rbind(es.t.test.raw, data.frame(t = summary(es)$coefficients[2,3],n1 = summary(es)$df[2],n2 = summary(es)$df[2]))
+
+
+# lmer (Rabag style)
+print("Mixed model")
+edin.emo.sum.raw <- summary(lmer(rt ~ Type_column +Length+ (1+Type_column|SubjNo)+ (1|Stim_column), data = edin.emo))
+kable(data.frame(edin.emo.sum.raw$coefficients, "p value"=2*pnorm(-abs(coef(edin.emo.sum.raw)[,3]))), digits=2)
+#print(paste("p value = ", 2*pnorm(-abs(coef(edin.emo.sum.raw)[,3]))))
+
+```
+
+### Log RTs
+Emotional semantics does not affect log RTs
+```{r expt2b_r_log, include = FALSE}
+#############
+# Edinburgh Emo Expt
+
+edin.emo <- Test_Import("./Sklar_Direct_Rep/data","edin_emo")
+edin.emo$Length <- nchar(as.character(edin.emo$Stim_column))
+edin.emo$Length <- (edin.emo$Length - mean(edin.emo$Length))/sd(edin.emo$Length)
+edin.emo$rt <- log(edin.emo$rt)
+#Mark timeouts as incorrect, for exclusion
+edin.emo[edin.emo$Acc < 0,]$Acc <- 0
+# Remove outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be > (!!, see by trial exclusion below) 3sd from group mean [ie we remove extra-fast participants)
+Acc <- summaryBy(Acc + rt ~ SubjNo, data = edin.emo, keep.names = T)
+edin.emo <- edin.emo[edin.emo$SubjNo %in% Acc[Acc$Acc > 0.9,]$SubjNo,]
+edin.emo <- edin.emo[edin.emo$SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo,]
+#Remove incorrect trials
+edin.emo <- edin.emo[edin.emo$Acc ==1,]
+# Remove RTs +/-3sd from each subject's mean 
+edin.emo <- ddply(edin.emo, .(SubjNo), function(d){ 
+  include = mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+  d = subset(d, rt > include[1] & rt < include[2])
+})
+
+# Remove RTs < 200ms & > 10s
+edin.emo <- subset(edin.emo, rt > log(0.2))
+edin.emo <- subset(edin.emo, rt <= log(10))
+
+# First standardize the MeanAffectivity score
+edin.emo$MeanAffectivity_column <- (edin.emo$MeanAffectivity_column - mean(edin.emo$MeanAffectivity_column, na.rm = T))/sd(edin.emo$MeanAffectivity_column, na.rm = T)
+
+
+```
+
+```{r expt2b_r_log_analysis}
+edin.emo$Length <- nchar(as.character(edin.emo$Stim_column))
+edin.emo$Length <- (edin.emo$Length - mean(edin.emo$Length, na.rm = T))/sd(edin.emo$Length)                                      
+
+
+# Lin Reg (sklar style)
+edin.emo.sum.factorial <- summaryBy(rt  ~ SubjNo + Type_column, data = edin.emo, keep.names = T)
+# t.test(rt ~ Type_column, data = edin.emo.sum.factorial, paired = T)
+# 
+# 
+# es <- t.test(rt ~ Type_column, data = edin.emo.sum.factorial, paired = T)
+# es.t.test.log <- rbind(es.t.test.log,data.frame(t = es$statistic,n1 = es$parameter,n2 = es$parameter))
+
+
+edin.emo.sum <- summaryBy(rt  ~ Stim_column + MeanAffectivity_column, data = edin.emo, keep.names = T)
+
+print("Linear model")
+kable(summary(lm(rt ~ MeanAffectivity_column, data = edin.emo.sum))$coefficients, digits=2)
+
+es <- lm(rt~MeanAffectivity_column, data = edin.emo.sum)
+es.t.test.log <- rbind(es.t.test.log, data.frame(t = summary(es)$coefficients[2,3],n1 = summary(es)$df[2],n2 = summary(es)$df[2]))
+
+print("Mixed model")
+# lmer (Rabag style)
+edin.emo.sum.log <- summary(lmer(rt ~ Type_column +Length+ (1+Type_column|SubjNo)+ (1|Stim_column), data = edin.emo))
+kable(data.frame(edin.emo.sum.log$coefficients, "p value"=2*pnorm(-abs(coef(edin.emo.sum.log)[,3]))), digits=2)
+#print(paste("p value = ", 2*pnorm(-abs(coef(edin.emo.sum.log)[,3]))))
+
+```
+
+## Graphs
+
+```{r expt3_emo_graphs, echo = FALSE}
+# From Mike Frank
+theta <- function(x,xdata,na.rm=T) {mean(xdata[x],na.rm=na.rm)}
+ci.low <- function(x,na.rm=T) {
+  mean(x,na.rm=na.rm) - quantile(bootstrap(1:length(x),1000,theta,x,na.rm=na.rm)$thetastar,.025,na.rm=na.rm)}
+ci.high <- function(x,na.rm=T) {
+  quantile(bootstrap(1:length(x),1000,theta,x,na.rm=na.rm)$thetastar,.975,na.rm=na.rm) - mean(x,na.rm=na.rm)}
+
+
+sklar.emo.sum.graph$Experiment <- "Experiment 3c\n(Expt. 2a Replication)\nTwo Word Phrases"
+edin.emo.sum.graph$Experiment <- "Experiment 3d\n(Expt. 2b Replication)\nReversible Sentences"
+
+graph <- rbind(sklar.emo.sum.graph,edin.emo.sum.graph)
+
+graph <- na.omit(graph)
+graph$Experiment <- ordered(graph$Experiment, levels = c("Experiment 3c\n(Expt. 2a Replication)\nTwo Word Phrases", "Experiment 3d\n(Expt. 2b Replication)\nReversible Sentences"))
+
+graph$rt <- graph$rt * 1000
+
+emo.graph <- ggplot(graph, aes(x=MeanAffectivity_column, y=rt)) +
+  geom_point(size=2) +    # Use hollow circles
+  geom_smooth(method=lm,   # Add linear regression line
+              se=TRUE) + facet_grid(.~Experiment) + labs(y = "Response Time (ms)", x = "Standardized Valence Rating")+ 
+  theme(strip.text.x = element_text(size = 12))
+
+
+sense.sklar.graph <- summaryBy(rt ~ Condition + SubjNo, data = sklar.sem.graph, keep.names = T)
+sense.sklar.graph <- summaryBy(rt ~ Condition, data = sense.sklar.graph, FUN = c(mean,ci.low,ci.high,sd))
+sense.sklar.graph$SE <- sense.sklar.graph$rt.sd/sqrt(length(unique(sklar.sem$SubjNo)))
+sense.sklar.graph$Experiment <- "Experiment 3a\n(Expt. 1a Replication)\nIncongruent Phrases"
+
+sense.new.graph <- summaryBy(rt ~ Condition + SubjNo, data = edin.sem.graph, keep.names = T)
+sense.new.graph <- summaryBy(rt ~ Condition, data = sense.new.graph, FUN = c(mean,ci.low,ci.high,sd))
+sense.new.graph$SE <- sense.new.graph$rt.sd/sqrt(length(unique(edin.sem$SubjNo)))
+sense.new.graph$Experiment <- "Experiment 3b\n(Expt. 1b Replication)\nReversible Sentences"
+
+sense.graph <- rbind(sense.sklar.graph,sense.new.graph)
+sense.graph$Cond_Graph <- "Violation"
+sense.graph[sense.graph$Condition %in% c("Control"),]$Cond_Graph <- "Control"
+sense.graph$Cond_Graph <- ordered(sense.graph$Cond_Graph, levels = c("Violation","Control")) 
+sense.graph$rt.mean <- sense.graph$rt.mean * 1000
+sense.graph$SE <- sense.graph$SE * 1000
+sense.graph$rt.ci.high <- sense.graph$rt.ci.high * 1000
+sense.graph$rt.ci.low <- sense.graph$rt.ci.low * 1000
+
+dodge <- position_dodge(width=0.9)
+sem.graph <- ggplot(sense.graph, aes(Experiment,rt.mean, fill = Cond_Graph)) +
+  geom_bar(stat = "identity",  position = dodge) +
+  geom_errorbar(aes(ymax = sense.graph$rt.mean +
+                      sense.graph$rt.ci.high, ymin = sense.graph$rt.mean - sense.graph$rt.ci.low), width=0.25, position = dodge) +
+  labs(fill = "Sentence Type") + 
+  theme(axis.text.x = element_text(colour = "black", size = 12), legend.position = c(0.85,0.85), legend.background = element_rect(fill=alpha('white',0))) +
+  ylab("Response Time (ms)") +
+  xlab("") + 
+  ylim(c(0,2250))#+
+  #scale_fill_brewer(palette = "Set1")
+
+a <- grid.arrange(sem.graph, emo.graph, nrow = 1, widths = 4:5)
+
+```
+
+# Experiment 4
+In this experiment, we attempt to replicate Yang & Yeh (2011)'s finding that emotional/neutral words break suppression at different times. Such an effect here, might suggest that participants couldn't combine word meanings because they could not visually resolve them. In our replication, participants saw 300 words, in a 2*2 design that crossed Emotional Content (Negative vs Neutral words) and Length (Short vs Long words). Emotional ratings were taken from the Florida Affective Norms for English Words. We have a smaller number of subjects than our other experiments (28 total, 26 after exclusions), because participants saw many more critical trials than most comparable experiments. 
+
+## Raw RTs
+No effect of semantics on raw RTs (but effect of length)
+```{r read_process_data_raw, include=FALSE}
+sense.pop <- read_data("./SingleWord/data/")
+sense.pop$length <- "Short"
+sense.pop[sense.pop$info %in% c("long negative","long neutral"),]$length <- "Long"
+
+# <----
+trials.per.subj = max(tapply(sense.pop$rt, sense.pop$SubjNo,length)) #length(sense.pop$rt)/length(unique(sense.pop$SubjNo))
+timeouts <- summaryBy(rt ~ SubjNo, data = subset(sense.pop, rt != "None"), FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+# <----
+
+sense.pop <- subset(sense.pop, rt != "None")
+sense.pop$rt <- as.numeric(sense.pop$rt)
+
+# <--
+total.n <- length(unique(sense.pop$SubjNo))
+# <--
+
+
+# Remove outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be < 3sd above group mean)
+Acc <- summaryBy(match. + rt ~ SubjNo, data = subset(sense.pop), keep.names = T)
+sense.pop <- subset(sense.pop, SubjNo %in% Acc[Acc$match. > 0.9,]$SubjNo)
+sense.pop <- subset(sense.pop, SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo)
+#<--
+excl.n <- length(unique(sense.pop$SubjNo))
+n.trials = length(sense.pop$rt)
+subj.pre.excl.trials <- summaryBy(rt ~ SubjNo, data = sense.pop, FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+#<--
+
+# Remove incorrect trials
+sense.pop <- subset(sense.pop, match. == 1)
+
+# Remove RTs < 200ms
+sense.pop <- subset(sense.pop, rt > 0.2)
+sense.pop$rt.log <- log(sense.pop$rt)
+# <---
+n.excl.trials = length(sense.pop$rt)
+subj.excl.trials <- summaryBy(rt ~ SubjNo, data = sense.pop, FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+subj.excl.trials$final_trials =  subj.excl.trials$rt - subj.pre.excl.trials$rt 
+# <-- 
+
+sense.pop.graph <- sense.pop
+```
+
+
+```{r analyze_expt4_raw, echo=FALSE}
+# excluded subjects
+print(paste("n subj excluded = ",total.n-excl.n))
+# excluded trials
+print(paste("% trials excluded = ",((n.trials - n.excl.trials)/n.trials)*100))
+
+print(paste("median trials excluded per participant = ",median(subj.excl.trials$rt), "sd= ", sd(subj.excl.trials$final_trials), "range= ", range(subj.excl.trials$final_trials)))
+
+print(paste("median timeouts per participant = ",median(timeouts$rt), "sd= ", sd(timeouts$rt), "range= ", range(timeouts$rt)))
+words.sum <- summaryBy(rt ~ prime_semantics + length + SubjNo, data = sense.pop,keep.names = T)
+
+print("RTs against length")
+kable(summaryBy(rt*1000 ~ length, data = words.sum, FUN = c(mean,sd)), digits=2)
+print("RTs against semantics")
+kable(summaryBy(rt*1000 ~ prime_semantics, data = words.sum, FUN = c(mean,sd)), digits=2)
+print("RTs against length by semantics")
+kable(summaryBy(rt*1000 ~ prime_semantics, data = words.sum, FUN = c(mean,sd)), digits=2)
+
+
+word.lmer <- summary(lmer(rt~prime_semantics*length + (1+prime_semantics*length|SubjNo)+(1|word), data = sense.pop))
+kable(data.frame(word.lmer$coefficients, "p values" = 2*pnorm(-abs(coef(word.lmer)[,3]))), digits =2)
+#print(paste("p value = ", 2*pnorm(-abs(coef(word.lmer)[,3]))))
+```
+
+## Log RTs
+No effect of semantics on Log RTs (but effect of length)
+```{r read_process_data_log, include=FALSE}
+sense.pop <- read_data("./SingleWord/data/")
+sense.pop$length <- "Short"
+sense.pop[sense.pop$info %in% c("long negative","long neutral"),]$length <- "Long"
+sense.pop <- subset(sense.pop, rt != "None")
+sense.pop$rt <- as.numeric(sense.pop$rt)
+sense.pop$rt <- sense.pop$rt * 1000
+sense.pop$rt <- log(sense.pop$rt)
+# Remove outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be < 3sd above group mean)
+Acc <- summaryBy(match. + rt ~ SubjNo, data = subset(sense.pop), keep.names = T)
+sense.pop <- subset(sense.pop, SubjNo %in% Acc[Acc$match. > 0.9,]$SubjNo)
+sense.pop <- subset(sense.pop, SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo)
+
+# Remove incorrect trials
+sense.pop <- subset(sense.pop, match. == 1)
+
+# Remove RTs < 200ms
+sense.pop <- subset(sense.pop, rt > log(200))
+sense.pop$rt.log <- log(sense.pop$rt)
+
+```
+
+```{r analyze_expt4_log, echo=FALSE}
+
+print("RTs against length")
+kable(summaryBy(rt*1000 ~ length, data = words.sum, FUN = c(mean,sd)), digits=2)
+print("RTs against semantics")
+kable(summaryBy(rt*1000 ~ prime_semantics, data = words.sum, FUN = c(mean,sd)), digits=2)
+print("RTs against length by semantics")
+kable(summaryBy(rt*1000 ~ prime_semantics, data = words.sum, FUN = c(mean,sd)), digits=2)
+
+
+word.lmer <- summary(lmer(rt~prime_semantics*length + (1+prime_semantics*length|SubjNo)+(1|word), data = sense.pop))
+kable(data.frame(word.lmer$coefficients, "p values" = 2*pnorm(-abs(coef(word.lmer)[,3]))), digits =2)
+#print(paste("p value = ", 2*pnorm(-abs(coef(word.lmer)[,3]))))
+```
+
+```{r plot_summaries, echo = FALSE}
+sense.graph <- summaryBy(rt ~ prime_semantics +length + SubjNo, data = sense.pop.graph, keep.names = T)
+sense.graph <- summaryBy(rt ~ prime_semantics +length, data = sense.graph, FUN = c(mean,sd))
+sense.graph$SE <- sense.graph$rt.sd/sqrt(length(unique(sense.pop$SubjNo)))
+
+dodge <- position_dodge(width=0.9)
+ggplot(sense.graph, aes(length,rt.mean, fill = prime_semantics)) +
+    geom_bar(stat = "identity",  position = dodge) +
+    geom_errorbar(aes(ymax = sense.graph$rt.mean +
+                          sense.graph$SE, ymin = sense.graph$rt.mean - sense.graph$SE), width=0.25, position = dodge) +
+    labs(fill = "Sentence Type") + 
+    theme(axis.text.x = element_text(colour = "black", size = 12)) +
+    ylab("Log Reaction Time (s)") +
+    xlab("") 
+
+
+```
+
+# Meta analysis
+```{r effect_sizes}
+
+
+
+print("Raw effect sizes")
+# Add t.tests from our Experiment 4 (n=2),  Sklar Experiments (n =4), yang yeh experiments (n=2)
+es.t.test.raw <- rbind(es.t.test.raw, data.frame(t = c(1.48,0.95,2.63,2.92,2.523,2.229,-4.48,-4.28), n1 = c(25,25,31,21,45,45,11,11), n2 = c(25,25,31,21,45,45,11,11)))
+raw.es <- tes(es.t.test.raw[,1],es.t.test.raw[,2],es.t.test.raw[,3], verbose = FALSE)
+raw.es$exp <- c("Experiment 1a", "Experiment 1b","Experiment 2a", "Experiment 2b","Experiment 3a","Experiment 3b","Experiment 3c","Experiment 3d","Experiment 4a","Experiment 4b", "Sklar et al. Expt. 1","Sklar et al. Expt. 2", "Sklar et al. Expt. 4a","Sklar et al. Expt. 4b", "Yang & Yeh Expt. 1","Yang & Yeh Expt. 2")
+raw.es$lab <- c(rep("Ed",10),rep("Israel",4),rep("Taiwan",2))
+raw.es$session <- c("1","1","2","2","3","3","3","3","4","4","5","6","7","8","9","10")
+raw.es$procedure <- c("1","2","3","4","1","3","2","4","5","5","1","1","3","3","5","5")
+
+#kable(raw.es)
+ran.ef.raw <- rma(d,var.d,random = ~ 1|lab,data = raw.es)
+ran.ef.raw
+forest(ran.ef.raw,
+       slab = raw.es$exp,
+       mlab = "All Experiments",
+       xlab = "Cohen's d", psize = 1.5)
+par(font = 2)
+text(-6, 17.55, "Experiments (raw data)")
+text(5, 17.55, "Cohen's d [95% CI]")
+par(font = 1)
+funnel(ran.ef.raw)
+
+print("log effect sizes")
+
+es.t.test.log <- rbind(es.t.test.log, data.frame(t = c(1.23,1.21), n1 = c(25,25), n2 = c(25,25)))
+es.t.test.log
+log.es <- tes(es.t.test.log[,1],es.t.test.log[,2],es.t.test.log[,3], verbose = FALSE)
+log.es$exp <- c("Experiment 1a", "Experiment 1b","Experiment 2a", "Experiment 2b","Experiment 3a","Experiment 3b","Experiment 3c","Experiment 3d","Experiment 4a","Experiment 4b")
+log.es$lab <- c(rep("Ed",10))#,rep("Israel",4))
+log.es$procedure <- c("1","2","3","4","1","3","2","4","5","5")
+#kable(log.es)
+ran.ef.log <- rma(d,var.d,random = ~ 1|procedure, data = log.es)
+ran.ef.log
+forest(ran.ef.log,
+       slab = log.es$exp,
+       mlab = "All Experiments",
+       xlab = "Cohen's d", psize = 1.5)
+par(font = 2)
+text(-1.4, 11.6, "Experiments (log transformed data)")
+text(2.1, 11.6, "Cohen's d [95% CI]")
+funnel(ran.ef.log)
+```
+
+# Summary
+Over these experiments, when we analyzed raw RT, we found suggestive evidence (p < .1) for an effect of semantics 4 times out of 9 experiments, although only one of these comparisons was reliable.
+
+* Raw RTs
+    + Expt 1a (opposite direction from original finding).
+    + Expt 2a (opposite direction from original finding).
+    + Expt 3a (1a replication, opposite direction from original finding)
+    + Expt 3d (2b replication) 
+    
+When we analyzed log transformed RTs, we found hints of evidence (p <.1) for an effect of semantics 2 times out of 9 experiments, but none of these comparisons was reliable.
+
+* log RTs
+    + Expt 2a (opposite direction from original finding)
+    + Expt 3a (1a replication [ish])
+  

@@ -1,0 +1,47 @@
+subject_column,AssignedList_column,subject_dob_column,subject_age_column,subject_gender_column,trialnum_column,Stim_column,Type_column,Experiment_column,OrderGroup_column,MeanAffectivity_column,ReactionTime_column,StimSide_column,StimPosition_column,Response_column,Valid_column,TrialEndSecs_column,PairID_column,List_column
+1,1,14/08/1992,23,f,1,The photographer shot the actor,Neutral sentence,edin_emo,emo_sem_emo_sem,-1.488372093,10.25664022,2,1,2,1,5524.124089,16,A
+1,1,14/08/1992,23,f,2,The brick hit the baby,Negative sentence,edin_emo,emo_sem_emo_sem,-4.243902439,1.604563613,1,1,2,1,5526.476294,8,A
+1,1,14/08/1992,23,f,3,The pig was a male,Neutral sentence,edin_emo,emo_sem_emo_sem,0.071428571,1.276715797,1,2,2,0,5528.499219,15,A
+1,1,14/08/1992,23,f,4,The man ate the snake,Neutral sentence,edin_emo,emo_sem_emo_sem,-1.219512195,18.1550574,2,2,1,1,5547.399556,23,A
+1,1,14/08/1992,23,f,5,Sam hit the ball,Neutral sentence,edin_emo,emo_sem_emo_sem,1.931818182,1.39614005,1,2,1,1,5549.539973,13,A
+1,1,14/08/1992,23,f,6,Andy cut the paper,Neutral sentence,edin_emo,emo_sem_emo_sem,0.186046512,1.984907157,1,1,2,1,5552.268574,14,A
+1,1,14/08/1992,23,f,7,The patient injected the nurse,Negative sentence,edin_emo,emo_sem_emo_sem,-3.511627907,7.618770302,2,2,1,1,5560.630768,1,A
+1,1,14/08/1992,23,f,8,The octopus caught Harry,Negative sentence,edin_emo,emo_sem_emo_sem,-3.146341463,5.500560622,2,2,1,1,5566.875956,5,A
+1,1,14/08/1992,23,f,9,The dog chased baby,Negative sentence,edin_emo,emo_sem_emo_sem,-2.833333333,1.573712751,1,1,2,1,5569.192911,6,A
+1,1,14/08/1992,23,f,10,The bunny outwitted the hunter,Neutral sentence,edin_emo,emo_sem_emo_sem,2.681818182,1.139003992,1,1,2,1,5571.0747,18,A
+1,1,14/08/1992,23,f,11,The cat licked Sally,Neutral sentence,edin_emo,emo_sem_emo_sem,2.255813953,1.703530633,1,2,1,1,5573.521072,19,A
+1,1,14/08/1992,23,f,12,The car dragged Claire,Negative sentence,edin_emo,emo_sem_emo_sem,-4.627906977,5.066902868,2,1,2,1,5579.331028,10,A
+1,1,14/08/1992,23,f,13,Mum hit the baby,Negative sentence,edin_emo,emo_sem_emo_sem,-4.195121951,1.820984372,1,1,2,1,5581.894972,12,A
+1,1,14/08/1992,23,f,14,Dad slapped the toddler,Negative sentence,edin_emo,emo_sem_emo_sem,-4.363636364,4.02009546,2,1,2,1,5586.65826,4,A
+1,1,14/08/1992,23,f,15,The fire killed the fireman,Negative sentence,edin_emo,emo_sem_emo_sem,-4.837209302,2.926748126,2,2,1,1,5590.327775,3,A
+1,1,14/08/1992,23,f,16,The car crushed the officer,Negative sentence,edin_emo,emo_sem_emo_sem,-4.581395349,1.032981095,1,2,1,1,5592.103716,7,A
+1,1,14/08/1992,23,f,17,The bridge went over Claire,Neutral sentence,edin_emo,emo_sem_emo_sem,-1.113636364,1.70369837,1,2,1,1,5594.550026,17,A
+1,1,14/08/1992,23,f,18,The boar ate Bobby,Negative sentence,edin_emo,emo_sem_emo_sem,-4.658536585,10.83013135,2,1,2,1,5606.123007,2,A
+1,1,14/08/1992,23,f,19,The child spun the washer,Neutral sentence,edin_emo,emo_sem_emo_sem,-0.068181818,1.796245183,1,1,2,1,5608.663434,22,A
+1,1,14/08/1992,23,f,20,The people ate the fish,Neutral sentence,edin_emo,emo_sem_emo_sem,1.404761905,19.76834945,2,1,2,1,5629.175019,20,A
+1,1,14/08/1992,23,f,21,The child scared the dog,Neutral sentence,edin_emo,emo_sem_emo_sem,-1.136363636,2.7134528,1,2,1,1,5632.632726,21,A
+1,1,14/08/1992,23,f,22,Steve jumped on the dog,Negative sentence,edin_emo,emo_sem_emo_sem,-2.311111111,1.937585953,1,2,1,1,5635.314258,9,A
+1,1,14/08/1992,23,f,23,John kicked the baby,Negative sentence,edin_emo,emo_sem_emo_sem,-4.522727273,1.926851398,2,2,1,1,5637.984096,11,A
+1,1,14/08/1992,23,f,24,The baby kicked john,Neutral sentence,edin_emo,emo_sem_emo_sem,-1.75,3.376168068,1,2,1,1,5687.334008,11,B
+1,1,14/08/1992,23,f,25,The officer crushed the car,Neutral sentence,edin_emo,emo_sem_emo_sem,-3.222222222,1.381895517,1,2,1,1,5689.462762,7,B
+1,1,14/08/1992,23,f,26,Claire went over the bridge,Negative sentence,edin_emo,emo_sem_emo_sem,-1,1.443455802,1,2,1,1,5691.650377,17,B
+1,1,14/08/1992,23,f,27,Harry caught the octopus,Neutral sentence,edin_emo,emo_sem_emo_sem,0.181818182,1.431894105,1,2,1,1,5693.826164,5,B
+1,1,14/08/1992,23,f,28,The baby hit the brick,Neutral sentence,edin_emo,emo_sem_emo_sem,-2.348837209,1.279384843,1,1,2,1,5695.849094,8,B
+1,1,14/08/1992,23,f,29,Bobby ate the boar,Neutral sentence,edin_emo,emo_sem_emo_sem,-0.955555556,4.855389472,2,1,2,1,5701.447397,2,B
+1,1,14/08/1992,23,f,30,The dog jumped on Steve,Neutral sentence,edin_emo,emo_sem_emo_sem,-0.909090909,1.209286946,1,2,1,1,5703.399742,9,B
+1,1,14/08/1992,23,f,31,Sally licked the cat,Negative sentence,edin_emo,emo_sem_emo_sem,-1.048780488,1.209320622,1,2,1,1,5705.352109,19,B
+1,1,14/08/1992,23,f,32,Baby chased the dog,Neutral sentence,edin_emo,emo_sem_emo_sem,0.414634146,8.948325961,2,1,2,1,5715.043348,6,B
+1,1,14/08/1992,23,f,33,The hunter outwitted the bunny,Negative sentence,edin_emo,emo_sem_emo_sem,-1.386363636,6.101150172,2,1,2,1,5721.888352,18,B
+1,1,14/08/1992,23,f,34,The ball hit Sam,Negative sentence,edin_emo,emo_sem_emo_sem,-2.644444444,1.127174172,1,2,1,1,5723.758369,13,B
+1,1,14/08/1992,23,f,35,The fish ate the people,Negative sentence,edin_emo,emo_sem_emo_sem,-3.933333333,11.39469392,2,1,2,1,5735.89593,20,B
+1,1,14/08/1992,23,f,36,The male was a pig,Negative sentence,edin_emo,emo_sem_emo_sem,-2.23255814,11.69988146,2,2,1,1,5748.33923,15,B
+1,1,14/08/1992,23,f,37,The toddler slapped dad,Neutral sentence,edin_emo,emo_sem_emo_sem,-2.585365854,8.171400091,2,1,2,1,5757.254239,4,B
+1,1,14/08/1992,23,f,38,The nurse injected the patient,Neutral sentence,edin_emo,emo_sem_emo_sem,-0.511627907,1.161113905,1,2,1,1,5759.159556,1,B
+1,1,14/08/1992,23,f,39,The dog scared the child,Negative sentence,edin_emo,emo_sem_emo_sem,-2.80952381,1.984955586,1,2,1,1,5761.888111,21,B
+1,1,14/08/1992,23,f,40,Claire dragged the car,Neutral sentence,edin_emo,emo_sem_emo_sem,-1.414634146,2.255980498,1,1,2,1,5764.887211,10,B
+1,1,14/08/1992,23,f,41,The fireman killed the fire,Neutral sentence,edin_emo,emo_sem_emo_sem,3.545454545,20.00358888,2,2,0,0,5785.633925,3,B
+1,1,14/08/1992,23,f,42,The washer spun the child,Negative sentence,edin_emo,emo_sem_emo_sem,-3.536585366,10.39341327,2,1,2,1,5796.771789,22,B
+1,1,14/08/1992,23,f,43,The snake ate the man,Negative sentence,edin_emo,emo_sem_emo_sem,-4.511627907,1.172860017,1,2,1,1,5798.688893,23,B
+1,1,14/08/1992,23,f,44,The baby hit Mum,Neutral sentence,edin_emo,emo_sem_emo_sem,-2.046511628,10.34673159,2,1,2,1,5809.779665,12,B
+1,1,14/08/1992,23,f,45,The actor shot the photographer,Negative sentence,edin_emo,emo_sem_emo_sem,-3.911111111,1.208180135,1,1,2,1,5811.732042,16,B
+1,1,14/08/1992,23,f,46,The paper cut Andy,Negative sentence,edin_emo,emo_sem_emo_sem,-2.022727273,1.044386921,1,1,2,1,5813.519721,14,B

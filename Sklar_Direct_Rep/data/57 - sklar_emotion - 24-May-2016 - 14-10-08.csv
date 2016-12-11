@@ -1,0 +1,51 @@
+subject_column,AssignedList_column,subject_dob_column,subject_age_column,subject_gender_column,trialnum_column,Stim_column,Type_column,Experiment_column,OrderGroup_column,MeanAffectivity_column,ReactionTime_column,StimSide_column,StimPosition_column,Response_column,Valid_column,TrialEndSecs_column
+57,1,13/1/93,23,f,1,clothes closet,Neutral phrase,sklar_emo,emo_sem_emo_sem,0.636363636,1.56574720621575,1,2,2,1,89511.4407861737
+57,1,13/1/93,23,f,2,computer bug,Negative phrase,sklar_emo,emo_sem_emo_sem,-2.731707317,1.33421777120384,1,1,1,1,89513.5225254234
+57,1,13/1/93,23,f,3,front door,Neutral phrase,sklar_emo,emo_sem_emo_sem,0.88372093,0.945925064501353,1,2,2,1,89515.2161278363
+57,1,13/1/93,23,f,4,wooden stool,Neutral phrase,sklar_emo,emo_sem_emo_sem,0.292682927,0.914514424046502,1,1,1,1,89516.874470973
+57,1,13/1/93,23,f,5,weak knees,Negative phrase,sklar_emo,emo_sem_emo_sem,-2.255813953,1.22037801299302,2,2,2,1,89518.8385699368
+57,1,13/1/93,23,f,6,spotty face,Negative phrase,sklar_emo,emo_sem_emo_sem,-1.840909091,0.91004519580747,1,2,2,1,89520.4851048176
+57,1,13/1/93,23,f,7,speed bumps,Neutral phrase,sklar_emo,emo_sem_emo_sem,-0.666666667,0.727212869329378,2,1,1,1,89521.9552345936
+57,1,13/1/93,23,f,8,kidnap,Negative phrase,sklar_emo,emo_sem_emo_sem,-4.302325581,0.844330702995649,1,2,2,1,89523.5429988826
+57,1,13/1/93,23,f,9,frost bite,Negative phrase,sklar_emo,emo_sem_emo_sem,-3.534883721,0.808730181131978,2,1,1,1,89525.0954538632
+57,1,13/1/93,23,f,10,vegetative state,Negative phrase,sklar_emo,emo_sem_emo_sem,-3.465116279,0.984676977590425,1,2,2,1,89526.8243473035
+57,1,13/1/93,23,f,11,overdose,Negative phrase,sklar_emo,emo_sem_emo_sem,-3.833333333,0.996849570947234,2,1,1,1,89528.5649919115
+57,1,13/1/93,23,f,12,cogwheel,Neutral phrase,sklar_emo,emo_sem_emo_sem,0.214285714,1.38566088130756,1,1,1,1,89530.6937586033
+57,1,13/1/93,23,f,13,gear shift,Neutral phrase,sklar_emo,emo_sem_emo_sem,0.325581395,1.4668873003975,2,2,2,1,89532.9048437646
+57,1,13/1/93,23,f,14,helicopter pad,Neutral phrase,sklar_emo,emo_sem_emo_sem,0.674418605,1.14873116894159,2,1,1,1,89534.7984312319
+57,1,13/1/93,23,f,15,paper clip,Neutral phrase,sklar_emo,emo_sem_emo_sem,0.431818182,0.738761662971228,2,1,1,1,89536.2803012712
+57,1,13/1/93,23,f,16,black eye,Negative phrase,sklar_emo,emo_sem_emo_sem,-2.860465116,1.36235578841297,2,1,1,1,89538.3855345178
+57,1,13/1/93,23,f,17,apartment building,Neutral phrase,sklar_emo,emo_sem_emo_sem,0.522727273,0.761602674552705,2,1,1,1,89539.8909238907
+57,1,13/1/93,23,f,18,high ceiling,Neutral phrase,sklar_emo,emo_sem_emo_sem,0.813953488,0.701784933116869,2,1,1,1,89541.3375468411
+57,1,13/1/93,23,f,19,tile roof,Neutral phrase,sklar_emo,emo_sem_emo_sem,0.511111111,1.05665640790539,2,2,2,1,89543.1369777562
+57,1,13/1/93,23,f,20,pedestrian crossing,Neutral phrase,sklar_emo,emo_sem_emo_sem,0.613636364,0.809435122908326,2,1,2,0,89544.689458715
+57,1,13/1/93,23,f,21,ironed shirt,Neutral phrase,sklar_emo,emo_sem_emo_sem,2.11627907,1.92649041625555,1,2,2,1,89547.359249298
+57,1,13/1/93,23,f,22,carpark,Neutral phrase,sklar_emo,emo_sem_emo_sem,0.181818182,1.91368183585291,1,2,2,1,89550.0172197584
+57,1,13/1/93,23,f,23,foot fungus,Negative phrase,sklar_emo,emo_sem_emo_sem,-3.488372093,0.890225042559905,1,1,1,1,89551.6520342606
+57,1,13/1/93,23,f,24,tin opener,Neutral phrase,sklar_emo,emo_sem_emo_sem,0.555555556,0.938836518937023,2,1,1,1,89553.3338431707
+57,1,13/1/93,23,f,25,skinhead,Negative phrase,sklar_emo,emo_sem_emo_sem,-3.285714286,0.867342978875968,1,1,1,1,89554.9451364149
+57,1,13/1/93,23,f,26,cardboard box,Neutral phrase,sklar_emo,emo_sem_emo_sem,0.090909091,0.996479781184462,2,2,2,1,89556.6858005868
+57,1,13/1/93,23,f,27,letterbox,Neutral phrase,sklar_emo,emo_sem_emo_sem,0.522727273,1.00951543109841,2,2,2,1,89558.4381973247
+57,1,13/1/93,23,f,28,backpack,Neutral phrase,sklar_emo,emo_sem_emo_sem,0.744186047,1.04455693863565,1,2,2,1,89560.2258466036
+57,1,13/1/93,23,f,29,facial hair,Negative phrase,sklar_emo,emo_sem_emo_sem,-0.136363636,1.24441210164514,2,2,2,1,89562.2135088397
+57,1,13/1/93,23,f,30,runny nose,Negative phrase,sklar_emo,emo_sem_emo_sem,-2.325581395,0.938358967381646,1,1,1,1,89563.8953591226
+57,1,13/1/93,23,f,31,hand rail,Neutral phrase,sklar_emo,emo_sem_emo_sem,0.681818182,1.39745406333532,1,1,1,1,89566.0358529282
+57,1,13/1/93,23,f,32,cow pat,Negative phrase,sklar_emo,emo_sem_emo_sem,-1.090909091,0.950745801455923,1,2,2,1,89567.7294540582
+57,1,13/1/93,23,f,33,missing teeth,Negative phrase,sklar_emo,emo_sem_emo_sem,-2.790697674,0.820923941981164,1,1,2,0,89569.2936890713
+57,1,13/1/93,23,f,34,body wash,Neutral phrase,sklar_emo,emo_sem_emo_sem,1.697674419,1.02101034384395,1,2,2,1,89571.0578238274
+57,1,13/1/93,23,f,35,traffic light,Neutral phrase,sklar_emo,emo_sem_emo_sem,0.363636364,0.891560198433581,1,1,1,1,89572.6926598178
+57,1,13/1/93,23,f,36,bad breath,Negative phrase,sklar_emo,emo_sem_emo_sem,-2.933333333,0.997741812985623,2,2,2,1,89574.4332935213
+57,1,13/1/93,23,f,37,desk lamp,Neutral phrase,sklar_emo,emo_sem_emo_sem,0.772727273,1.1491105802852,1,2,2,1,89576.3268232591
+57,1,13/1/93,23,f,38,stomach pump,Negative phrase,sklar_emo,emo_sem_emo_sem,-3,0.808150640732492,1,1,1,1,89577.879259638
+57,1,13/1/93,23,f,39,concentration camp,Negative phrase,sklar_emo,emo_sem_emo_sem,-4.395348837,0.961679775544326,2,2,2,1,89579.5846545914
+57,1,13/1/93,23,f,40,computer screen,Neutral phrase,sklar_emo,emo_sem_emo_sem,0.886363636,0.833158754932811,2,2,2,1,89581.1606131903
+57,1,13/1/93,23,f,41,human trafficking,Negative phrase,sklar_emo,emo_sem_emo_sem,-4.658536585,0.785454594442854,1,1,1,1,89582.6895892479
+57,1,13/1/93,23,f,42,electric chair,Negative phrase,sklar_emo,emo_sem_emo_sem,-3.813953488,0.773674882642808,2,1,1,1,89584.2067605777
+57,1,13/1/93,23,f,43,upside-down car,Negative phrase,sklar_emo,emo_sem_emo_sem,-2.840909091,0.856526388161001,1,2,2,1,89585.8062468489
+57,1,13/1/93,23,f,44,lined paper,Neutral phrase,sklar_emo,emo_sem_emo_sem,0.533333333,0.93868930861936,1,1,1,1,89587.4881029048
+57,1,13/1/93,23,f,45,root canal,Negative phrase,sklar_emo,emo_sem_emo_sem,-3.511111111,1.03248120260832,2,2,2,1,89589.2640189763
+57,1,13/1/93,23,f,46,windshield,Neutral phrase,sklar_emo,emo_sem_emo_sem,0.454545455,1.37307584249356,1,2,2,1,89591.3810043528
+57,1,13/1/93,23,f,47,dentist drill,Negative phrase,sklar_emo,emo_sem_emo_sem,-2.545454545,0.914407303673215,2,1,1,1,89593.0393555075
+57,1,13/1/93,23,f,48,dining table,Neutral phrase,sklar_emo,emo_sem_emo_sem,1.302325581,1.08030884018808,2,1,1,1,89594.8623285272
+57,1,13/1/93,23,f,49,water boarding,Negative phrase,sklar_emo,emo_sem_emo_sem,-3.139534884,0.878894338267855,1,2,2,1,89596.4853463195
+57,1,13/1/93,23,f,50,black head,Negative phrase,sklar_emo,emo_sem_emo_sem,-1.952380952,0.856144090357702,1,2,2,1,89598.0848345151

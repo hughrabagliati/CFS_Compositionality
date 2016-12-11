@@ -1,0 +1,218 @@
+---
+title: "SingleWord CFS"
+author: "Hugh Rabagliati"
+date: "29 August 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(cache=TRUE)
+library(fitdistrplus)
+library(gamlss)
+library(gamlss.dist)
+library(lme4)
+library(ez)
+library(jsonlite)
+library(ggplot2)
+library(gridExtra)
+library(plyr)
+library(dplyr)
+library(doBy)
+library(sn)
+library(bootstrap)
+# From Mike Frank
+theta <- function(x,xdata,na.rm=T) {mean(xdata[x],na.rm=na.rm)}
+ci.low <- function(x,na.rm=T) {
+  mean(x,na.rm=na.rm) - quantile(bootstrap(1:length(x),1000,theta,x,na.rm=na.rm)$thetastar,.025,na.rm=na.rm)}
+ci.high <- function(x,na.rm=T) {
+  quantile(bootstrap(1:length(x),1000,theta,x,na.rm=na.rm)$thetastar,.975,na.rm=na.rm) - mean(x,na.rm=na.rm)}
+
+
+read_data <- function(path_name){
+list.files(path = path_name,full.names = T, pattern = ".csv") -> file_list
+comp = c()
+for (x in file_list){
+	data <- read.csv(x,header = T)
+	if ("perceptual.rating.reactiontime" %in% colnames(data)){ 
+		data <- subset(data, select = -perceptual.rating.reactiontime)
+		}
+		if ("X" %in% colnames(data)){ 
+		data <- subset(data, select = -X)
+		data$rt <- as.character(data$rt)
+		}
+	comp <- rbind(comp, data)
+	}
+	return(comp)
+}
+
+
+
+```
+
+### Background
+This is an attempt to conduct an English-language replication of Yang and Yeh (2011, Consc. & Cogn). That paper showed that **neutral** words break suppression **more quickly** than **negative** words.
+
+In our replication, participants saw 300 words, in a 2*2 design that crossed Emotional Content (Negative vs Neutral words) and Length (Short vs Long words). Emotional ratings were taken from the Florida Affective Norms for English Words.
+
+We have a smaller number of subjects than our other experiments (28 total, 26 after exclusions), because participants saw many more critical trials than most comparable experiments. 
+
+```{r read_process_data}
+sense.pop <- read_data("./data/")
+sense.pop$length <- "Short words"
+sense.pop[sense.pop$info %in% c("long negative","long neutral"),]$length <- "Long words"
+sense.pop <- subset(sense.pop, rt != "None")
+sense.pop$rt <- as.numeric(sense.pop$rt)
+
+# Remove outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be < 3sd above group mean)
+Acc <- summaryBy(match. + rt ~ SubjNo, data = subset(sense.pop), keep.names = T)
+sense.pop <- subset(sense.pop, SubjNo %in% Acc[Acc$match. > 0.9,]$SubjNo)
+sense.pop <- subset(sense.pop, SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo)
+
+# Remove incorrect trials
+sense.pop <- subset(sense.pop, match. == 1)
+
+# Remove RTs < 200ms
+sense.pop <- subset(sense.pop, rt > 0.2)
+#sense.pop$rt.log <- log(sense.pop$rt)
+
+sense.pop$length <- ordered(sense.pop$length, levels = c("Short words","Long words"))
+sense.pop$prime_semantics <- ordered(sense.pop$prime_semantics, levels = c("negative","neutral"))
+contrasts(sense.pop$length)[1] <- -1
+contrasts(sense.pop$prime_semantics)[1] <- -1
+```
+## Untransformed data
+#### Plot RT distribution 
+As seen below, there is considerable skew in the raw RT data (upper plot), which somewhat remains after log transforming the RTs (lower plot).
+```{r plot_dist, echo=FALSE}
+ggplot(sense.pop,aes(x=rt,..density..))+ geom_histogram(binwidth = 0.1)+xlab("Response Time (ms)")
+
+#ggplot(sense.pop,aes(x=rt.log,..density..))+ geom_histogram(binwidth = 0.1)+xlab("Log of Response Time (ms)")
+```
+
+#### Plot Summaries
+These bar plots suggest that the effect of Length is considerably greater than any effect of Emotional Content.
+```{r plot_summaries, echo = FALSE}
+sense.graph <- summaryBy(rt ~ prime_semantics +length + SubjNo, data = sense.pop, keep.names = T)
+sense.graph <- summaryBy(rt ~ prime_semantics +length, data = sense.graph, FUN = c(mean,ci.low,ci.high,sd))
+sense.graph$SE <- sense.graph$rt.sd/sqrt(length(unique(sense.pop$SubjNo)))
+sense.graph$rt.mean <- sense.graph$rt.mean * 1000
+sense.graph$SE <- sense.graph$SE * 1000
+sense.graph$rt.ci.high <- sense.graph$rt.ci.high * 1000
+sense.graph$rt.ci.low <- sense.graph$rt.ci.low * 1000
+
+dodge <- position_dodge(width=0.9)
+ggplot(sense.graph, aes(length,rt.mean, fill = prime_semantics)) +
+    geom_bar(stat = "identity",  position = dodge) +
+    geom_errorbar(aes(ymax = sense.graph$rt.mean +
+                          sense.graph$rt.ci.high, ymin = sense.graph$rt.mean - sense.graph$rt.ci.low), width=0.25, position = dodge) +
+    labs(fill = "Emotional valence") + 
+    theme(axis.text.x = element_text(colour = "black", size = 12), legend.position = c(0.85,0.9), legend.background = element_rect(fill=alpha('white',0))) +
+    ylab("Response Time (ms)") +
+    ylim(c(0,2000))+
+    xlab("") 
+  #+ 
+    #ylim(c(0,2000))
+
+
+#ggplot(sense.pop, aes(x=len, y=rt.log)) +
+ #   geom_point() +    # Use hollow circles
+  #  geom_smooth(method=loess,   # Add linear regression line
+   #             se=TRUE) + labs(y = "Log Reaction Time (ms)", x = "Length in Characters")
+
+
+```
+
+#### Analyze data
+Statistical analyses show a robust effect of Length, and no effect of Emotional Content. This holds for both the raw data (top analysis) and the log transformed data (bottom analysis).
+```{r analyze_data, echo=FALSE}
+print(contrasts(sense.pop$length))
+word.lmer <- summary(lmer(rt~prime_semantics*length + (1+prime_semantics+length|SubjNo) + (1|word), data = sense.pop))
+print(word.lmer)
+print(paste("p value = ", 2*pnorm(-abs(coef(word.lmer)[,3]))))
+
+# Do by subject analysis for metanalysis
+word.subj <- summaryBy(rt ~ prime_semantics+length + SubjNo, data = sense.pop, keep.names = T)
+t.test(rt ~ prime_semantics, paired = T, data = subset(word.subj, length == "Long"))
+t.test(rt ~ prime_semantics, paired = T, data = subset(word.subj, length != "Long"))
+
+#summary(lmer(rt.log~prime_semantics*length + (1+prime_semantics*length|SubjNo), data = sense.pop))
+```
+
+## Log transformed data
+```{r read_process_data_log}
+sense.pop <- read_data("./data/")
+sense.pop$length <- "Short"
+sense.pop[sense.pop$info %in% c("long negative","long neutral"),]$length <- "Long"
+sense.pop <- subset(sense.pop, rt != "None")
+sense.pop$rt <- log(as.numeric(sense.pop$rt))
+
+# Remove outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be < 3sd above group mean)
+Acc <- summaryBy(match. + rt ~ SubjNo, data = subset(sense.pop), keep.names = T)
+sense.pop <- subset(sense.pop, SubjNo %in% Acc[Acc$match. > 0.9,]$SubjNo)
+sense.pop <- subset(sense.pop, SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo)
+
+# Remove incorrect trials
+sense.pop <- subset(sense.pop, match. == 1)
+
+# Remove RTs < 200ms
+sense.pop <- subset(sense.pop, rt > log(0.2))
+#sense.pop$rt.log <- log(sense.pop$rt)
+sense.pop$length <- as.factor(sense.pop$length)
+sense.pop$prime_semantics <- as.factor(sense.pop$prime_semantics)
+contrasts(sense.pop$length)[1] <- -1
+contrasts(sense.pop$prime_semantics)[1] <- -1
+```
+
+#### Plot RT distribution 
+As seen below, there is considerable skew in the raw RT data (upper plot), which somewhat remains after log transforming the RTs (lower plot).
+```{r plot_dist_log, echo=FALSE}
+ggplot(sense.pop,aes(x=rt,..density..))+ geom_histogram(binwidth = 0.1)+xlab("Response Time (ms)")
+
+#ggplot(sense.pop,aes(x=rt.log,..density..))+ geom_histogram(binwidth = 0.1)+xlab("Log of Response Time (ms)")
+```
+
+#### Plot Summaries
+These bar plots suggest that the effect of Length is considerably greater than any effect of Emotional Content.
+```{r plot_summaries_log, echo = FALSE}
+sense.graph <- summaryBy(rt ~ prime_semantics +length + SubjNo, data = sense.pop, keep.names = T)
+sense.graph <- summaryBy(rt ~ prime_semantics +length, data = sense.graph, FUN = c(mean,sd))
+sense.graph$SE <- sense.graph$rt.sd/sqrt(length(unique(sense.pop$SubjNo)))
+sense.graph$rt.mean <- sense.graph$rt.mean * 1000
+sense.graph$SE <- sense.graph$SE * 1000
+
+dodge <- position_dodge(width=0.9)
+ggplot(sense.graph, aes(length,rt.mean, fill = prime_semantics)) +
+    geom_bar(stat = "identity",  position = dodge) +
+    geom_errorbar(aes(ymax = sense.graph$rt.mean +
+                          sense.graph$SE, ymin = sense.graph$rt.mean - sense.graph$SE), width=0.25, position = dodge) +
+    labs(fill = "Sentence Type") + 
+    theme(axis.text.x = element_text(colour = "black", size = 12)) +
+    ylab("Reaction Time (ms)") +
+    xlab("") #+ 
+    #ylim(c(0,2000))
+
+
+#ggplot(sense.pop, aes(x=len, y=rt.log)) +
+ #   geom_point() +    # Use hollow circles
+  #  geom_smooth(method=loess,   # Add linear regression line
+   #             se=TRUE) + labs(y = "Log Reaction Time (ms)", x = "Length in Characters")
+
+
+```
+
+#### Analyze data
+Statistical analyses show a robust effect of Length, and no effect of Emotional Content. This holds for both the raw data (top analysis) and the log transformed data (bottom analysis).
+```{r analyze_data_log, echo=FALSE}
+word.lmer <- summary(lmer(rt~prime_semantics*length + (1+prime_semantics*length|SubjNo)+(1|word), data = sense.pop))
+print(word.lmer)
+print(paste("p value = ", 2*pnorm(-abs(coef(word.lmer)[,3]))))
+
+# Do by subject analysis for metanalysis
+word.subj <- summaryBy(rt ~ prime_semantics+length + SubjNo, data = sense.pop, keep.names = T)
+t.test(rt ~ prime_semantics, paired = T, data = subset(word.subj, length == "Long"))
+t.test(rt ~ prime_semantics, paired = T, data = subset(word.subj, length != "Long"))
+
+#summary(lmer(rt.log~prime_semantics*length + (1+prime_semantics*length|SubjNo), data = sense.pop))
+```

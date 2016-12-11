@@ -1,0 +1,986 @@
+---
+title: "CFS RT distributions"
+author: "Hugh Rabagliati"
+date: "8 June 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(cache=TRUE)
+library(skewt)
+library(fitdistrplus)
+library(gamlss)
+library(gamlss.dist)
+library(lme4)
+library(ez)
+library(jsonlite)
+library(ggplot2)
+library(gridExtra)
+library(plyr)
+library(dplyr)
+library(doBy)
+library(sn)
+Test_Import = function(path_name,expt){
+  library(jsonlite)
+  
+  list.files(path = path_name,full.names = T, pattern = expt) -> file_list
+  comp = c()
+  for (x in file_list){
+    file_name = x
+    d <- read.csv(file_name, header = T)
+    comp = rbind(comp,d)
+    print(x)
+  }
+  comp$rt <- comp$ReactionTime_column
+  comp$Acc <- comp$Valid_column
+  comp$SubjNo <- comp$subject_column
+  return(comp)
+}
+
+#############
+# Edinburgh Emo Expt
+
+edin.sem <- Test_Import("./data","edin_sem")
+```
+
+## b-CFS RT Distribution analyses
+
+In this document, we are going to explore how RTs are distributed in b-CFS experiments, and simulate what happens when we analyze this type of data, assuming it is more like a standard RT. Our test case is the Edinburgh version of a Semantic Violation task developed by Sklar et al. In our version of this task, participants respond when they see a sentence break suppression, indicating if it was above or below fixation. They have 20s to respond. Approx 74 people did this task.
+
+First, let's see how RTs were distributed
+```{r distribution_of_RTs}
+ggplot(edin.sem,aes(x=rt,..density..))+ geom_histogram(binwidth = 0.1)+xlab("Response Time (ms)")
+```
+
+You should see that there is a long right tail, but that there are very few instances in that tail after about 7.5s. What sort of distribution fits this best? We have tried four, an ex-Gaussian (three parameters), a log-normal (two parameters), a gamma (two parameters), and a skewed t distribution (four parameters, using Azzalini 1986's method). They are fit to the data below.
+
+```{r fit_histograms, echo=FALSE}
+histDist(edin.sem$rt, family = exGAUS,nbins = 100)
+histDist(edin.sem$rt, family = LOGNO,nbins = 100)
+histDist(edin.sem$rt, family = GA,nbins = 100)
+histDist(edin.sem$rt, family = ST1,nbins = 100)
+```
+
+As you can see, the skewed t provides the cleanest fit, both graphically and in terms of deviance etc. So, let's try and simulate a bunch of data using that distribution.
+
+```{r sim_data, echo=FALSE}
+# To get parameter estimates
+edin.sem.t <- fitdist(edin.sem$rt, "ST1", method="mle", start = c(mu=0.7,sigma=0.7,nu=5,tau=0.5) )
+mu <- 0.7000
+sigma <- 0.8
+tau <- 3
+nu <- 1.7
+subj_range<- data.frame(subj = c(30),rt.p.noexcl = NA, log_rt.p.noexcl = NA, rt.p.excl1 = NA,rt.p.excl2 = NA,rt.p.excl3 = NA,rt.p.excl4 = NA,rt.p.full = NA)
+
+for (l in subj_range$subj){
+  print(l)
+  no.sim <- 1000
+  no.subj <- l
+  no.conditions <- 2
+  no.trials <- 34
+  sim = rep(1:no.sim, each = no.subj*no.conditions*no.trials)
+  subj = rep(1:no.subj,each = no.conditions*no.trials)
+  cond = rep(rep(1:no.conditions, each =no.trials), no.subj)
+  
+  data <- data.frame(sim = sim, subj = subj, cond = cond, rt = NA)
+  pval.noexcludes <- data.frame(sim = 1:no.sim,pval_rt = NA,pval_log_rt=NA)
+  pval.sklarvalues  <- data.frame(sim = 1:no.sim,pval_rt_full = NA,pval_rt_excl1 = NA,pval_rt_excl2 = NA,pval_rt_excl3 = NA,pval_rt_excl4 = NA,pval_log_rt=NA)
+  
+  
+  #######
+  # Without Sklar exclusions
+  sim = rep(1:no.sim, each = no.subj*no.conditions*no.trials)
+  subj = rep(1:no.subj,each = no.conditions*no.trials)
+  cond = rep(rep(1:no.conditions, each =no.trials), no.subj)
+  
+  pval <- data.frame(sim = 1:no.sim,pval_rt = NA,pval_log_rt = NA)
+  
+  
+  for (i in 1:no.sim){
+    if(i %in% c(200,400,600,800)){print(i)}
+    data <- data.frame(subj = subj, cond = cond, rt = NA)
+    
+    for (k in 1:no.subj){
+      mu.subj <- jitter(mu)
+      sigma.subj <- jitter(sigma)
+      tau.subj <- jitter(tau)
+      nu.subj <- jitter(nu)
+      df.subj <- jitter(1.5)
+      scale.subj <- jitter(1.3)
+      
+      for (j in 1:no.conditions){
+        data[data$subj == k & data$cond == j,]$rt <- rskt(no.trials,df.subj,scale.subj)
+          #rst(no.trials, xi=mu.subj, omega=sigma.subj, alpha=tau.subj, nu=nu.subj)
+      }
+    }
+    if (length(data[data$rt<0,]$rt) > 0){data[data$rt<0,]$rt <- 0.2}
+    if (length(data[data$rt>20,]$rt) > 0){data[data$rt>20,]$rt <- 20}
+    data_subset <- data
+    data_subset$cond_comb <- 1
+    data_subset[data_subset$cond %in% c(2,3),]$cond_comb <- 2
+    data_subset$log_rt <- log(data_subset$rt)
+    data_subset_test <- summaryBy(rt +log_rt~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.noexcludes[pval.noexcludes$sim == i,]$pval_rt <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    pval.noexcludes[pval.noexcludes$sim == i,]$pval_log_rt <- t.test(log_rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    
+    # Exclude 3sd from 
+    Acc <- summaryBy( rt ~ subj, data = data_subset, keep.names = T)
+    data_subset <- data_subset[data_subset$subj %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$subj,]
+    data_subset_test <- summaryBy(rt ~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_rt_excl1 <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    
+    # Rsemve RTs +/-3sd from each subject's mean 
+    data_subset <- ddply(data_subset, .(subj,cond_comb), function(d){ 
+      include = mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+      d = subset(d, rt > include[1] & rt < include[2])
+    })
+    data_subset_test <- summaryBy(rt ~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_rt_excl2 <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    # [for Expt 1 only] Remove outliers by condition (less than 3sd from condition mean -- note that this is not a symmetric exclusion criterion)
+    data_subset <- ddply(data_subset, .(cond_comb), function(d){ 
+      by_subj_include <- mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+      d = subset(d, rt < by_subj_include[2])
+    })
+    data_subset_test <- summaryBy(rt ~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_rt_excl3 <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    
+    # Rsemve RTs < 200ms & > 10
+    data_subset <- subset(data_subset, rt > 0.2)
+    data_subset_test <- summaryBy(rt ~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_rt_excl4 <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    data_subset <- subset(data_subset, rt <= 10)
+
+    data_subset_test <- summaryBy(rt +log_rt~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_rt_full <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_log_rt <- t.test(log_rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    
+    
+  }
+  
+  subj_range[subj_range$subj == l,]$rt.p.noexcl <- length(pval.noexcludes[pval.noexcludes$pval_rt<=0.05,]$pval_rt)/length(pval.noexcludes$pval_rt)
+   subj_range[subj_range$subj == l,]$log_rt.p.noexcl <- length(pval.noexcludes[pval.noexcludes$pval_log_rt<=0.05,]$pval_log_rt)/length(pval.noexcludes$pval_log_rt)
+  subj_range[subj_range$subj == l,]$rt.p.excl1 <- length(pval.sklarvalues[pval.sklarvalues$pval_rt_excl1 <=0.05,]$pval_rt_excl1)/length(pval.sklarvalues$pval_rt_excl1)
+  subj_range[subj_range$subj == l,]$rt.p.excl2 <- length(pval.sklarvalues[pval.sklarvalues$pval_rt_excl2 <=0.05,]$pval_rt_excl2)/length(pval.sklarvalues$pval_rt_excl2)
+  subj_range[subj_range$subj == l,]$rt.p.excl3 <- length(pval.sklarvalues[pval.sklarvalues$pval_rt_excl3<=0.05,]$pval_rt_excl3)/length(pval.sklarvalues$pval_rt_excl3)
+  subj_range[subj_range$subj == l,]$rt.p.excl4 <- length(pval.sklarvalues[pval.sklarvalues$pval_rt_excl4 <=0.05,]$pval_rt_excl4)/length(pval.sklarvalues$pval_rt_excl4)
+  subj_range[subj_range$subj == l,]$rt.p.full <- length(pval.sklarvalues[pval.sklarvalues$pval_rt_full <=0.1,]$pval_rt_full)/length(pval.sklarvalues$pval_rt_full)
+}
+subj_range
+```
+
+We sim'd 20,30,and 70 subjects doing a simple 2 condition experiment with 34 trials in each condition, and no difference across the conditions. This is similar to Sklar et al's Experiment 1. Rt.p.noexcl is the result of paired t-tests on 1000 sims with no exclusion criteria applied to the data. log_rt.p.noexcl is the log rts with no exclusion. rt.p.excl1 has subjects removed who were outside 3sd of the group mean. rt.p.excl2 has trials excluded from each subject that are 3sd outside of the subject mean. rt.p.excl3 has trials excluded from each condition for each subject that are greater than 3sd from the condition-subject mean. rt.p.excl4 has trials excluded that are < 0.2s, or > 10s. rt.p.full is the same as excl4.  
+
+```{r, echo = TRUE} 
+subj_range
+```
+```{r, echo = TRUE} 
+subj_range
+```
+Weird skew t
+```{r, echo = TRUE} 
+subj_range
+```
+
+Latest skew t with non-fit values
+```{r, echo = TRUE} 
+subj_range
+```
+
+What about if we use a simple normal distribution instead?
+
+```{r sim_data_norm, echo=FALSE}
+# To get parameter estimates
+#edin.sem.t <- fitdist(edin.sem$rt, "ST1", method="mle", start = c(mu=0.7,sigma=0.7,nu=5,tau=0.5) )
+mu <- 0.7000
+sigma <- 1.5
+tau <- 5
+nu <- 2.5
+subj_range<- data.frame(subj = c(20,30,70),rt.p.noexcl = NA, log_rt.p.noexcl = NA, rt.p.excl1 = NA,rt.p.excl2 = NA,rt.p.excl3 = NA,rt.p.excl4 = NA,rt.p.full = NA)
+
+for (l in subj_range$subj){
+  print(l)
+  no.sim <- 5000
+  no.subj <- l
+  no.conditions <- 3
+  no.trials <- 34
+  sim = rep(1:no.sim, each = no.subj*no.conditions*no.trials)
+  subj = rep(1:no.subj,each = no.conditions*no.trials)
+  cond = rep(rep(1:no.conditions, each =no.trials), no.subj)
+  
+  data <- data.frame(sim = sim, subj = subj, cond = cond, rt = NA)
+  pval.noexcludes <- data.frame(sim = 1:no.sim,pval_rt = NA,pval_log_rt=NA)
+  pval.sklarvalues  <- data.frame(sim = 1:no.sim,pval_rt_full = NA,pval_rt_excl1 = NA,pval_rt_excl2 = NA,pval_rt_excl3 = NA,pval_rt_excl4 = NA,pval_log_rt=NA)
+  
+  
+  #######
+  # Without Sklar exclusions
+  sim = rep(1:no.sim, each = no.subj*no.conditions*no.trials)
+  subj = rep(1:no.subj,each = no.conditions*no.trials)
+  cond = rep(rep(1:no.conditions, each =no.trials), no.subj)
+  
+  pval <- data.frame(sim = 1:no.sim,pval_rt = NA,pval_log_rt = NA)
+  
+  
+  for (i in 1:no.sim){
+    if(i %in% c(200,400,600,800)){print(i)}
+    data <- data.frame(subj = subj, cond = cond, rt = NA)
+    
+    for (k in 1:no.subj){
+      mu.subj <- jitter(mu)
+      sigma.subj <- sigma
+      tau.subj <- tau
+      nu.subj <- nu
+      
+      for (j in 1:no.conditions){
+        data[data$subj == k & data$cond == j,]$rt <- rnorm(no.trials, mean=mu.subj, sd=sigma.subj)
+      }
+    }
+    if (length(data[data$rt<0,]$rt) > 0){data[data$rt<0,]$rt <- 0.2}
+    if (length(data[data$rt>20,]$rt) > 0){data[data$rt>20,]$rt <- 20}
+    data_subset <- data
+    data_subset$cond_comb <- 1
+    data_subset[data_subset$cond %in% c(2,3),]$cond_comb <- 2
+    data_subset$log_rt <- log(data_subset$rt)
+    data_subset_test <- summaryBy(rt +log_rt~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.noexcludes[pval.noexcludes$sim == i,]$pval_rt <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    pval.noexcludes[pval.noexcludes$sim == i,]$pval_log_rt <- t.test(log_rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    
+    # Exclude 3sd from 
+    Acc <- summaryBy( rt ~ subj, data = data_subset, keep.names = T)
+    data_subset <- data_subset[data_subset$subj %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$subj,]
+    data_subset_test <- summaryBy(rt ~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_rt_excl1 <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    
+    # Rsemve RTs +/-3sd from each subject's mean 
+    data_subset <- ddply(data_subset, .(subj,cond_comb), function(d){ 
+      include = mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+      d = subset(d, rt > include[1] & rt < include[2])
+    })
+    data_subset_test <- summaryBy(rt ~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_rt_excl2 <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    # [for Expt 1 only] Remove outliers by condition (less than 3sd from condition mean -- note that this is not a symmetric exclusion criterion)
+    data_subset <- ddply(data_subset, .(cond), function(d){ 
+      by_subj_include <- mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+      d = subset(d, rt < by_subj_include[2])
+    })
+    data_subset_test <- summaryBy(rt ~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_rt_excl3 <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    
+    # Rsemve RTs < 200ms & > 10
+    data_subset <- subset(data_subset, rt > 0.2)
+    data_subset_test <- summaryBy(rt ~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_rt_excl4 <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    data_subset <- subset(data_subset, rt <= 10)
+    
+    data_subset$cond_comb <- 1
+    data_subset[data_subset$cond %in% c(2,3),]$cond_comb <- 2
+    data_subset$log_rt <- log(data_subset$rt)
+    data_subset_test <- summaryBy(rt +log_rt~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_rt_full <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_log_rt <- t.test(log_rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    
+    
+  }
+  
+  subj_range[subj_range$subj == l,]$rt.p.noexcl <- length(pval.noexcludes[pval.noexcludes$pval_rt<=0.05,]$pval_rt)/length(pval.noexcludes$pval_rt)
+   subj_range[subj_range$subj == l,]$log_rt.p.noexcl <- length(pval.noexcludes[pval.noexcludes$pval_log_rt<=0.05,]$pval_log_rt)/length(pval.noexcludes$pval_log_rt)
+  subj_range[subj_range$subj == l,]$rt.p.excl1 <- length(pval.sklarvalues[pval.sklarvalues$pval_rt_excl1 <=0.05,]$pval_rt_excl1)/length(pval.sklarvalues$pval_rt_excl1)
+  subj_range[subj_range$subj == l,]$rt.p.excl2 <- length(pval.sklarvalues[pval.sklarvalues$pval_rt_excl2 <=0.05,]$pval_rt_excl2)/length(pval.sklarvalues$pval_rt_excl2)
+  subj_range[subj_range$subj == l,]$rt.p.excl3 <- length(pval.sklarvalues[pval.sklarvalues$pval_rt_excl3<=0.05,]$pval_rt_excl3)/length(pval.sklarvalues$pval_rt_excl3)
+  subj_range[subj_range$subj == l,]$rt.p.excl4 <- length(pval.sklarvalues[pval.sklarvalues$pval_rt_excl4 <=0.05,]$pval_rt_excl4)/length(pval.sklarvalues$pval_rt_excl4)
+  subj_range[subj_range$subj == l,]$rt.p.full <- length(pval.sklarvalues[pval.sklarvalues$pval_rt_full <=0.05,]$pval_rt_full)/length(pval.sklarvalues$pval_rt_full)
+}
+```
+
+Normal distribution with non-fit values
+```{r, echo = TRUE} 
+subj_range
+```
+
+# Let's see with a slightly looser significance criterion
+```{r sim_data_loose signif, echo=FALSE}
+# To get parameter estimates
+#edin.sem.t <- fitdist(edin.sem$rt, "ST1", method="mle", start = c(mu=0.7,sigma=0.7,nu=5,tau=0.5) )
+mu <- 0.7000
+sigma <- 1.5
+tau <- 5
+nu <- 2.5
+subj_range<- data.frame(subj = c(20,30,70),rt.p.noexcl = NA, log_rt.p.noexcl = NA, rt.p.excl1 = NA,rt.p.excl2 = NA,rt.p.excl3 = NA,rt.p.excl4 = NA,rt.p.full = NA)
+
+for (l in subj_range$subj){
+  print(l)
+  no.sim <- 5
+  no.subj <- l
+  no.conditions <- 3
+  no.trials <- 34
+  sim = rep(1:no.sim, each = no.subj*no.conditions*no.trials)
+  subj = rep(1:no.subj,each = no.conditions*no.trials)
+  cond = rep(rep(1:no.conditions, each =no.trials), no.subj)
+  cond2 = rep(rep(1:no.conditions, times =no.trials), no.subj)
+  
+  data <- data.frame(sim = sim, subj = subj, cond = cond, rt = NA)
+  pval.noexcludes <- data.frame(sim = 1:no.sim,pval_rt = NA,pval_log_rt=NA)
+  pval.sklarvalues  <- data.frame(sim = 1:no.sim,pval_rt_full = NA,pval_rt_excl1 = NA,pval_rt_excl2 = NA,pval_rt_excl3 = NA,pval_rt_excl4 = NA,pval_log_rt=NA)
+  
+  
+  #######
+  # Without Sklar exclusions
+  sim = rep(1:no.sim, each = no.subj*no.conditions*no.trials)
+  subj = rep(1:no.subj,each = no.conditions*no.trials)
+  cond = rep(rep(1:no.conditions, each =no.trials), no.subj)
+  
+  pval <- data.frame(sim = 1:no.sim,pval_rt = NA,pval_log_rt = NA)
+  
+  
+  for (i in 1:no.sim){
+    if(i %in% c(200,400,600,800)){print(i)}
+    data <- data.frame(subj = subj, cond = cond, rt = NA)
+    
+    for (k in 1:no.subj){
+      mu.subj <- jitter(mu)
+      sigma.subj <- sigma
+      tau.subj <- tau
+      nu.subj <- nu
+      
+      for (j in 1:no.conditions){
+        data[data$subj == k & data$cond == j,]$rt <- rst(no.trials, xi=mu.subj, omega=sigma.subj, alpha=tau.subj, nu=nu.subj)
+      }
+    }
+    if (length(data[data$rt<0,]$rt) > 0){data[data$rt<0,]$rt <- 0.2}
+    if (length(data[data$rt>20,]$rt) > 0){data[data$rt>20,]$rt <- 20}
+    data_subset <- data
+    data_subset$cond_comb <- 1
+    data_subset[data_subset$cond %in% c(2,3),]$cond_comb <- 2
+    data_subset$log_rt <- log(data_subset$rt)
+    data_subset_test <- summaryBy(rt +log_rt~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.noexcludes[pval.noexcludes$sim == i,]$pval_rt <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    pval.noexcludes[pval.noexcludes$sim == i,]$pval_log_rt <- t.test(log_rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    
+    # Exclude 3sd from 
+    Acc <- summaryBy( rt ~ subj, data = data_subset, keep.names = T)
+    data_subset <- data_subset[data_subset$subj %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$subj,]
+    data_subset_test <- summaryBy(rt ~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_rt_excl1 <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    
+    # Rsemve RTs +/-3sd from each subject's mean 
+    data_subset <- ddply(data_subset, .(subj,cond_comb), function(d){ 
+      include = mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+      d = subset(d, rt > include[1] & rt < include[2])
+    })
+    data_subset_test <- summaryBy(rt ~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_rt_excl2 <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    # [for Expt 1 only] Remove outliers by condition (less than 3sd from condition mean -- note that this is not a symmetric exclusion criterion)
+    data_subset <- ddply(data_subset, .(cond), function(d){ 
+      by_subj_include <- mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+      d = subset(d, rt < by_subj_include[2])
+    })
+    data_subset_test <- summaryBy(rt ~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_rt_excl3 <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    
+    # Rsemve RTs < 200ms & > 10
+    data_subset <- subset(data_subset, rt > 0.2)
+    data_subset_test <- summaryBy(rt ~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_rt_excl4 <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    data_subset <- subset(data_subset, rt <= 10)
+    
+    data_subset$cond_comb <- 1
+    data_subset[data_subset$cond %in% c(2,3),]$cond_comb <- 2
+    data_subset$log_rt <- log(data_subset$rt)
+    data_subset_test <- summaryBy(rt +log_rt~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_rt_full <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_log_rt <- t.test(log_rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    
+    
+  }
+  
+  subj_range[subj_range$subj == l,]$rt.p.noexcl <- length(pval.noexcludes[pval.noexcludes$pval_rt<=0.1,]$pval_rt)/length(pval.noexcludes$pval_rt)
+   subj_range[subj_range$subj == l,]$log_rt.p.noexcl <- length(pval.noexcludes[pval.noexcludes$pval_log_rt<=0.1,]$pval_log_rt)/length(pval.noexcludes$pval_log_rt)
+  subj_range[subj_range$subj == l,]$rt.p.excl1 <- length(pval.sklarvalues[pval.sklarvalues$pval_rt_excl1 <=0.1,]$pval_rt_excl1)/length(pval.sklarvalues$pval_rt_excl1)
+  subj_range[subj_range$subj == l,]$rt.p.excl2 <- length(pval.sklarvalues[pval.sklarvalues$pval_rt_excl2 <=0.1,]$pval_rt_excl2)/length(pval.sklarvalues$pval_rt_excl2)
+  subj_range[subj_range$subj == l,]$rt.p.excl3 <- length(pval.sklarvalues[pval.sklarvalues$pval_rt_excl3<=0.1,]$pval_rt_excl3)/length(pval.sklarvalues$pval_rt_excl3)
+  subj_range[subj_range$subj == l,]$rt.p.excl4 <- length(pval.sklarvalues[pval.sklarvalues$pval_rt_excl4 <=0.1,]$pval_rt_excl4)/length(pval.sklarvalues$pval_rt_excl4)
+  subj_range[subj_range$subj == l,]$rt.p.full <- length(pval.sklarvalues[pval.sklarvalues$pval_rt_full <=0.1,]$pval_rt_full)/length(pval.sklarvalues$pval_rt_full)
+}
+```
+
+```{r, echo = TRUE} 
+subj_range
+```
+
+### Let's see what happens when there is an uncorrelated effect
+```{r sim_data_uncorr_effect, echo=FALSE}
+# To get parameter estimates
+#edin.sem.t <- fitdist(edin.sem$rt, "ST1", method="mle", start = c(mu=0.7,sigma=0.7,nu=5,tau=0.5) )
+mu <- 0.7000
+sigma <- 1.5
+tau <- 5
+nu <- 2.5
+subj_range<- data.frame(subj = c(20,30,70),rt.p.noexcl = NA, log_rt.p.noexcl = NA, rt.p.excl1 = NA,rt.p.excl2 = NA,rt.p.excl3 = NA,rt.p.excl4 = NA,rt.p.full = NA)
+
+for (l in subj_range$subj){
+  print(l)
+  no.sim <- 500
+  no.subj <- l
+  no.conditions <- 3
+  no.trials <- 34
+  sim = rep(1:no.sim, each = no.subj*no.conditions*no.trials)
+  subj = rep(1:no.subj,each = no.conditions*no.trials)
+  cond = rep(rep(1:no.conditions, each =no.trials), no.subj)
+  cond2 = rep(rep(1:no.conditions, times =no.trials), no.subj)
+  
+  data <- data.frame(sim = sim, subj = subj, cond = cond, cond2 = cond2, rt = NA)
+  pval.noexcludes <- data.frame(sim = 1:no.sim,pval_rt = NA,pval_log_rt=NA)
+  pval.sklarvalues  <- data.frame(sim = 1:no.sim,pval_rt_full = NA,pval_rt_excl1 = NA,pval_rt_excl2 = NA,pval_rt_excl3 = NA,pval_rt_excl4 = NA,pval_log_rt=NA)
+  
+  
+  #######
+  # Without Sklar exclusions
+  sim = rep(1:no.sim, each = no.subj*no.conditions*no.trials)
+  subj = rep(1:no.subj,each = no.conditions*no.trials)
+  cond = rep(rep(1:no.conditions, each =no.trials), no.subj)
+  
+  pval <- data.frame(sim = 1:no.sim,pval_rt = NA,pval_log_rt = NA)
+  
+  
+  for (i in 1:no.sim){
+    if(i %in% c(200,400,600,800)){print(i)}
+    data <- data.frame(subj = subj, cond = cond, cond2 = cond2, rt = NA)
+    
+    for (k in 1:no.subj){
+      mu.subj <- jitter(mu)
+      sigma.subj <- sigma
+      tau.subj <- tau
+      nu.subj <- nu
+      
+      for (j in 1:1){
+        data[data$subj == k & data$cond == j,]$rt <- rst(no.trials, xi=mu.subj, omega=sigma.subj, alpha=tau.subj, nu=nu.subj)
+      }
+      for (j in 2:3){
+        data[data$subj == k & data$cond == j,]$rt <- rst(no.trials, xi=(mu.subj+0.4), omega=sigma.subj, alpha=tau.subj, nu=nu.subj)
+      }
+    }
+    if (length(data[data$rt<0,]$rt) > 0){data[data$rt<0,]$rt <- 0.2}
+    if (length(data[data$rt>20,]$rt) > 0){data[data$rt>20,]$rt <- 20}
+    data_subset <- data
+    data_subset$cond_comb <- 1
+    data_subset[data_subset$cond2 %in% c(2,3),]$cond_comb <- 2
+    data_subset$log_rt <- log(data_subset$rt)
+    data_subset_test <- summaryBy(rt +log_rt~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.noexcludes[pval.noexcludes$sim == i,]$pval_rt <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    pval.noexcludes[pval.noexcludes$sim == i,]$pval_log_rt <- t.test(log_rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    
+    # Exclude 3sd from 
+    Acc <- summaryBy( rt ~ subj, data = data_subset, keep.names = T)
+    data_subset <- data_subset[data_subset$subj %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$subj,]
+    data_subset_test <- summaryBy(rt ~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_rt_excl1 <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    
+    # Rsemve RTs +/-3sd from each subject's mean 
+    data_subset <- ddply(data_subset, .(subj,cond_comb), function(d){ 
+      include = mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+      d = subset(d, rt > include[1] & rt < include[2])
+    })
+    data_subset_test <- summaryBy(rt ~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_rt_excl2 <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    # [for Expt 1 only] Remove outliers by condition (less than 3sd from condition mean -- note that this is not a symmetric exclusion criterion)
+    data_subset <- ddply(data_subset, .(cond_comb), function(d){ 
+      by_subj_include <- mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+      d = subset(d, rt < by_subj_include[2])
+    })
+    data_subset_test <- summaryBy(rt ~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_rt_excl3 <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    
+    # Rsemve RTs < 200ms & > 10
+    data_subset <- subset(data_subset, rt > 0.2)
+    data_subset_test <- summaryBy(rt ~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_rt_excl4 <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    data_subset <- subset(data_subset, rt <= 10)
+    
+    data_subset$cond_comb <- 1
+    data_subset[data_subset$cond2 %in% c(2,3),]$cond_comb <- 2
+    data_subset$log_rt <- log(data_subset$rt)
+    data_subset_test <- summaryBy(rt +log_rt~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_rt_full <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_log_rt <- t.test(log_rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    
+    
+  }
+  
+  subj_range[subj_range$subj == l,]$rt.p.noexcl <- length(pval.noexcludes[pval.noexcludes$pval_rt<=0.05,]$pval_rt)/length(pval.noexcludes$pval_rt)
+   subj_range[subj_range$subj == l,]$log_rt.p.noexcl <- length(pval.noexcludes[pval.noexcludes$pval_log_rt<=0.05,]$pval_log_rt)/length(pval.noexcludes$pval_log_rt)
+  subj_range[subj_range$subj == l,]$rt.p.excl1 <- length(pval.sklarvalues[pval.sklarvalues$pval_rt_excl1 <=0.05,]$pval_rt_excl1)/length(pval.sklarvalues$pval_rt_excl1)
+  subj_range[subj_range$subj == l,]$rt.p.excl2 <- length(pval.sklarvalues[pval.sklarvalues$pval_rt_excl2 <=0.05,]$pval_rt_excl2)/length(pval.sklarvalues$pval_rt_excl2)
+  subj_range[subj_range$subj == l,]$rt.p.excl3 <- length(pval.sklarvalues[pval.sklarvalues$pval_rt_excl3<=0.05,]$pval_rt_excl3)/length(pval.sklarvalues$pval_rt_excl3)
+  subj_range[subj_range$subj == l,]$rt.p.excl4 <- length(pval.sklarvalues[pval.sklarvalues$pval_rt_excl4 <=0.05,]$pval_rt_excl4)/length(pval.sklarvalues$pval_rt_excl4)
+  subj_range[subj_range$subj == l,]$rt.p.full <- length(pval.sklarvalues[pval.sklarvalues$pval_rt_full <=0.05,]$pval_rt_full)/length(pval.sklarvalues$pval_rt_full)
+}
+subj_range
+```
+
+
+### Let's see what happens when there is an uncorrelated effect for a normal distr.
+```{r sim_data_uncorr_effect_normal, echo=FALSE}
+# To get parameter estimates
+#edin.sem.t <- fitdist(edin.sem$rt, "ST1", method="mle", start = c(mu=0.7,sigma=0.7,nu=5,tau=0.5) )
+mu <- 0.7000
+sigma <- 1.5
+tau <- 5
+nu <- 2.5
+subj_range<- data.frame(subj = c(20,30,70),rt.p.noexcl = NA, log_rt.p.noexcl = NA, rt.p.excl1 = NA,rt.p.excl2 = NA,rt.p.excl3 = NA,rt.p.excl4 = NA,rt.p.full = NA)
+
+for (l in subj_range$subj){
+  print(l)
+  no.sim <- 5000
+  no.subj <- l
+  no.conditions <- 3
+  no.trials <- 34
+  sim = rep(1:no.sim, each = no.subj*no.conditions*no.trials)
+  subj = rep(1:no.subj,each = no.conditions*no.trials)
+  cond = rep(rep(1:no.conditions, each =no.trials), no.subj)
+  cond2 = rep(rep(1:no.conditions, times =no.trials), no.subj)
+  
+  data <- data.frame(sim = sim, subj = subj, cond = cond, cond2 = cond2, rt = NA)
+  pval.noexcludes <- data.frame(sim = 1:no.sim,pval_rt = NA,pval_log_rt=NA)
+  pval.sklarvalues  <- data.frame(sim = 1:no.sim,pval_rt_full = NA,pval_rt_excl1 = NA,pval_rt_excl2 = NA,pval_rt_excl3 = NA,pval_rt_excl4 = NA,pval_log_rt=NA)
+  
+  
+  #######
+  # Without Sklar exclusions
+  sim = rep(1:no.sim, each = no.subj*no.conditions*no.trials)
+  subj = rep(1:no.subj,each = no.conditions*no.trials)
+  cond = rep(rep(1:no.conditions, each =no.trials), no.subj)
+  
+  pval <- data.frame(sim = 1:no.sim,pval_rt = NA,pval_log_rt = NA)
+  
+  
+  for (i in 1:no.sim){
+    if(i %in% c(200,400,600,800)){print(i)}
+    data <- data.frame(subj = subj, cond = cond, cond2 = cond2, rt = NA)
+    
+    for (k in 1:no.subj){
+      mu.subj <- jitter(mu)
+      sigma.subj <- sigma
+      tau.subj <- tau
+      nu.subj <- nu
+      
+      for (j in 1:1){
+        data[data$subj == k & data$cond == j,]$rt <- rnorm(no.trials, mean=mu.subj, sd=sigma.subj)
+      }
+      for (j in 2:3){
+        data[data$subj == k & data$cond == j,]$rt <- rnorm(no.trials, mean=(mu.subj+0.4), sd=sigma.subj)
+      }
+    }
+    if (length(data[data$rt<0,]$rt) > 0){data[data$rt<0,]$rt <- 0.2}
+    if (length(data[data$rt>20,]$rt) > 0){data[data$rt>20,]$rt <- 20}
+    data_subset <- data
+    data_subset$cond_comb <- 1
+    data_subset[data_subset$cond2 %in% c(2,3),]$cond_comb <- 2
+    data_subset$log_rt <- log(data_subset$rt)
+    data_subset_test <- summaryBy(rt +log_rt~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.noexcludes[pval.noexcludes$sim == i,]$pval_rt <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    pval.noexcludes[pval.noexcludes$sim == i,]$pval_log_rt <- t.test(log_rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    
+    # Exclude 3sd from 
+    Acc <- summaryBy( rt ~ subj, data = data_subset, keep.names = T)
+    data_subset <- data_subset[data_subset$subj %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$subj,]
+    data_subset_test <- summaryBy(rt ~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_rt_excl1 <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    
+    # Rsemve RTs +/-3sd from each subject's mean 
+    data_subset <- ddply(data_subset, .(subj,cond_comb), function(d){ 
+      include = mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+      d = subset(d, rt > include[1] & rt < include[2])
+    })
+    data_subset_test <- summaryBy(rt ~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_rt_excl2 <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    # [for Expt 1 only] Remove outliers by condition (less than 3sd from condition mean -- note that this is not a symmetric exclusion criterion)
+    data_subset <- ddply(data_subset, .(cond), function(d){ 
+      by_subj_include <- mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+      d = subset(d, rt < by_subj_include[2])
+    })
+    data_subset_test <- summaryBy(rt ~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_rt_excl3 <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    
+    # Rsemve RTs < 200ms & > 10
+    data_subset <- subset(data_subset, rt > 0.2)
+    data_subset_test <- summaryBy(rt ~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_rt_excl4 <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    data_subset <- subset(data_subset, rt <= 10)
+    
+    data_subset$cond_comb <- 1
+    data_subset[data_subset$cond2 %in% c(2,3),]$cond_comb <- 2
+    data_subset$log_rt <- log(data_subset$rt)
+    data_subset_test <- summaryBy(rt +log_rt~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_rt_full <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_log_rt <- t.test(log_rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    
+    
+  }
+  
+  subj_range[subj_range$subj == l,]$rt.p.noexcl <- length(pval.noexcludes[pval.noexcludes$pval_rt<=0.1,]$pval_rt)/length(pval.noexcludes$pval_rt)
+   subj_range[subj_range$subj == l,]$log_rt.p.noexcl <- length(pval.noexcludes[pval.noexcludes$pval_log_rt<=0.1,]$pval_log_rt)/length(pval.noexcludes$pval_log_rt)
+  subj_range[subj_range$subj == l,]$rt.p.excl1 <- length(pval.sklarvalues[pval.sklarvalues$pval_rt_excl1 <=0.1,]$pval_rt_excl1)/length(pval.sklarvalues$pval_rt_excl1)
+  subj_range[subj_range$subj == l,]$rt.p.excl2 <- length(pval.sklarvalues[pval.sklarvalues$pval_rt_excl2 <=0.1,]$pval_rt_excl2)/length(pval.sklarvalues$pval_rt_excl2)
+  subj_range[subj_range$subj == l,]$rt.p.excl3 <- length(pval.sklarvalues[pval.sklarvalues$pval_rt_excl3<=0.1,]$pval_rt_excl3)/length(pval.sklarvalues$pval_rt_excl3)
+  subj_range[subj_range$subj == l,]$rt.p.excl4 <- length(pval.sklarvalues[pval.sklarvalues$pval_rt_excl4 <=0.1,]$pval_rt_excl4)/length(pval.sklarvalues$pval_rt_excl4)
+  subj_range[subj_range$subj == l,]$rt.p.full <- length(pval.sklarvalues[pval.sklarvalues$pval_rt_full <=0.1,]$pval_rt_full)/length(pval.sklarvalues$pval_rt_full)
+}
+```
+
+```{r normal_uncorr, echo = TRUE} 
+subj_range
+```
+
+```{r normal_uncorr2, echo = TRUE} 
+subj_range
+```
+```{r normal_uncorr3, echo = TRUE} 
+subj_range
+```
+```{r normal_uncorr4, echo = TRUE} 
+subj_range
+```
+
+## Now let's try with only 2 conditions
+
+
+```{r sim_data_uncorr_effect_normal_2conds, echo=FALSE}
+# To get parameter estimates
+#edin.sem.t <- fitdist(edin.sem$rt, "ST1", method="mle", start = c(mu=0.7,sigma=0.7,nu=5,tau=0.5) )
+mu <- 0.7000
+sigma <- 1.5
+tau <- 5
+nu <- 2.5
+subj_range<- data.frame(subj = c(20,30,70),rt.p.noexcl = NA, log_rt.p.noexcl = NA, rt.p.excl1 = NA,rt.p.excl2 = NA,rt.p.excl3 = NA,rt.p.excl4 = NA,rt.p.full = NA)
+
+for (l in subj_range$subj){
+  print(l)
+  no.sim <- 200
+  no.subj <- l
+  no.conditions <- 2
+  no.trials <- 34
+  sim = rep(1:no.sim, each = no.subj*no.conditions*no.trials)
+  subj = rep(1:no.subj,each = no.conditions*no.trials)
+  cond = rep(rep(1:no.conditions, each =no.trials), no.subj)
+  cond2 = rep(rep(1:no.conditions, times =no.trials), no.subj)
+  
+  data <- data.frame(sim = sim, subj = subj, cond = cond, cond2 = cond2, rt = NA)
+  pval.noexcludes <- data.frame(sim = 1:no.sim,pval_rt = NA,pval_log_rt=NA)
+  pval.sklarvalues  <- data.frame(sim = 1:no.sim,pval_rt_full = NA,pval_rt_excl1 = NA,pval_rt_excl2 = NA,pval_rt_excl3 = NA,pval_rt_excl4 = NA,pval_log_rt=NA)
+  
+  
+  #######
+  # Without Sklar exclusions
+  sim = rep(1:no.sim, each = no.subj*no.conditions*no.trials)
+  subj = rep(1:no.subj,each = no.conditions*no.trials)
+  cond = rep(rep(1:no.conditions, each =no.trials), no.subj)
+  
+  pval <- data.frame(sim = 1:no.sim,pval_rt = NA,pval_log_rt = NA)
+  
+  
+  for (i in 1:no.sim){
+    if(i %in% c(200,400,600,800)){print(i)}
+    data <- data.frame(subj = subj, cond = cond, cond2 = cond2, rt = NA)
+    
+    for (k in 1:no.subj){
+      mu.subj <- jitter(mu)
+      sigma.subj <- sigma
+      tau.subj <- tau
+      nu.subj <- nu
+      
+      for (j in 1:1){
+        data[data$subj == k & data$cond == j,]$rt <- rnorm(no.trials, mean=mu.subj, sd=sigma.subj)
+      }
+      for (j in 2:2){
+        data[data$subj == k & data$cond == j,]$rt <- rnorm(no.trials, mean=(mu.subj+0.4), sd=sigma.subj)
+      }
+    }
+    if (length(data[data$rt<0,]$rt) > 0){data[data$rt<0,]$rt <- 0.2}
+    if (length(data[data$rt>20,]$rt) > 0){data[data$rt>20,]$rt <- 20}
+    data_subset <- data
+    data_subset$cond_comb <- 1
+    data_subset[data_subset$cond2 %in% c(2,3),]$cond_comb <- 2
+    data_subset$log_rt <- log(data_subset$rt)
+    data_subset_test <- summaryBy(rt +log_rt~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.noexcludes[pval.noexcludes$sim == i,]$pval_rt <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    pval.noexcludes[pval.noexcludes$sim == i,]$pval_log_rt <- t.test(log_rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    
+    # Exclude 3sd from 
+    Acc <- summaryBy( rt ~ subj, data = data_subset, keep.names = T)
+    data_subset <- data_subset[data_subset$subj %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$subj,]
+    data_subset_test <- summaryBy(rt ~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_rt_excl1 <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    
+    # Rsemve RTs +/-3sd from each subject's mean 
+    data_subset <- ddply(data_subset, .(subj,cond_comb), function(d){ 
+      include = mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+      d = subset(d, rt > include[1] & rt < include[2])
+    })
+    data_subset_test <- summaryBy(rt ~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_rt_excl2 <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    # [for Expt 1 only] Remove outliers by condition (less than 3sd from condition mean -- note that this is not a symmetric exclusion criterion)
+    data_subset <- ddply(data_subset, .(cond), function(d){ 
+      by_subj_include <- mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+      d = subset(d, rt < by_subj_include[2])
+    })
+    data_subset_test <- summaryBy(rt ~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_rt_excl3 <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    
+    # Rsemve RTs < 200ms & > 10
+    data_subset <- subset(data_subset, rt > 0.2)
+    data_subset_test <- summaryBy(rt ~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_rt_excl4 <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    data_subset <- subset(data_subset, rt <= 10)
+    
+    data_subset$cond_comb <- 1
+    data_subset[data_subset$cond2 %in% c(2,3),]$cond_comb <- 2
+    data_subset$log_rt <- log(data_subset$rt)
+    data_subset_test <- summaryBy(rt +log_rt~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_rt_full <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_log_rt <- t.test(log_rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    
+    
+  }
+  
+  subj_range[subj_range$subj == l,]$rt.p.noexcl <- length(pval.noexcludes[pval.noexcludes$pval_rt<=0.05,]$pval_rt)/length(pval.noexcludes$pval_rt)
+   subj_range[subj_range$subj == l,]$log_rt.p.noexcl <- length(pval.noexcludes[pval.noexcludes$pval_log_rt<=0.05,]$pval_log_rt)/length(pval.noexcludes$pval_log_rt)
+  subj_range[subj_range$subj == l,]$rt.p.excl1 <- length(pval.sklarvalues[pval.sklarvalues$pval_rt_excl1 <=0.05,]$pval_rt_excl1)/length(pval.sklarvalues$pval_rt_excl1)
+  subj_range[subj_range$subj == l,]$rt.p.excl2 <- length(pval.sklarvalues[pval.sklarvalues$pval_rt_excl2 <=0.05,]$pval_rt_excl2)/length(pval.sklarvalues$pval_rt_excl2)
+  subj_range[subj_range$subj == l,]$rt.p.excl3 <- length(pval.sklarvalues[pval.sklarvalues$pval_rt_excl3<=0.05,]$pval_rt_excl3)/length(pval.sklarvalues$pval_rt_excl3)
+  subj_range[subj_range$subj == l,]$rt.p.excl4 <- length(pval.sklarvalues[pval.sklarvalues$pval_rt_excl4 <=0.05,]$pval_rt_excl4)/length(pval.sklarvalues$pval_rt_excl4)
+  subj_range[subj_range$subj == l,]$rt.p.full <- length(pval.sklarvalues[pval.sklarvalues$pval_rt_full <=0.05,]$pval_rt_full)/length(pval.sklarvalues$pval_rt_full)
+}
+subj_range
+```
+```{r normal_uncorr_2conds, echo = TRUE} 
+subj_range
+```
+
+#### Mix of lognormal and uniform
+```{r sim_data_uniform_lognorm_mix, echo=FALSE}
+# To get parameter estimates
+#edin.sem.t <- fitdist(edin.sem$rt, "ST1", method="mle", start = c(mu=0.7,sigma=0.7,nu=5,tau=0.5) )
+mu <- 0.6000
+sigma <- 0.4
+tau <- 5
+nu <- 2.5
+subj_range<- data.frame(subj = c(20,30,70),rt.p.noexcl = NA, log_rt.p.noexcl = NA, rt.p.excl1 = NA,rt.p.excl2 = NA,rt.p.excl3 = NA,rt.p.excl4 = NA,rt.p.full = NA)
+
+for (l in subj_range$subj){
+  print(l)
+  no.sim <- 1000
+  no.subj <- l
+  no.conditions <- 3
+  no.trials <- 34
+  prop <- 0.85 # Proportion of uniform
+  sim = rep(1:no.sim, each = no.subj*no.conditions*no.trials)
+  subj = rep(1:no.subj,each = no.conditions*no.trials)
+  cond = rep(rep(1:no.conditions, each =no.trials), no.subj)
+  
+  data <- data.frame(sim = sim, subj = subj, cond = cond, rt = NA)
+  pval.noexcludes <- data.frame(sim = 1:no.sim,pval_rt = NA,pval_log_rt=NA)
+  pval.sklarvalues  <- data.frame(sim = 1:no.sim,pval_rt_full = NA,pval_rt_excl1 = NA,pval_rt_excl2 = NA,pval_rt_excl3 = NA,pval_rt_excl4 = NA,pval_log_rt=NA)
+  
+  
+  #######
+  # Without Sklar exclusions
+  sim = rep(1:no.sim, each = no.subj*no.conditions*no.trials)
+  subj = rep(1:no.subj,each = no.conditions*no.trials)
+  cond = rep(rep(1:no.conditions, each =no.trials), no.subj)
+  
+  pval <- data.frame(sim = 1:no.sim,pval_rt = NA,pval_log_rt = NA)
+  
+  
+  for (i in 1:no.sim){
+    if(i %in% c(200,400,600,800)){print(i)}
+    data <- data.frame(subj = subj, cond = cond, rt = NA)
+    
+    for (k in 1:no.subj){
+      mu.subj <- jitter(mu)
+      sigma.subj <- sigma
+      tau.subj <- tau
+      nu.subj <- nu
+      
+      for (j in 1:no.conditions){
+        data[data$subj == k & data$cond == j,]$rt <- c(rlnorm(24, mean=mu.subj, sd=sigma.subj),runif(10,0,15))
+      }
+    }
+    if (length(data[data$rt<0,]$rt) > 0){data[data$rt<0,]$rt <- 0.2}
+    if (length(data[data$rt>20,]$rt) > 0){data[data$rt>20,]$rt <- NA}
+    data_subset <- data
+    data_subset$cond_comb <- 1
+    data_subset[data_subset$cond %in% c(2,3),]$cond_comb <- 2
+    data_subset$log_rt <- log(data_subset$rt)
+    data_subset_test <- summaryBy(rt +log_rt~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.noexcludes[pval.noexcludes$sim == i,]$pval_rt <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    pval.noexcludes[pval.noexcludes$sim == i,]$pval_log_rt <- t.test(log_rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    
+     # Rsemve RTs < 200ms & > 10
+    data_subset <- subset(data_subset, rt > 0.2)
+    data_subset_test <- summaryBy(rt ~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_rt_excl4 <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    
+    data_subset <- subset(data_subset, rt <= 10)
+    
+    data_subset$log_rt <- log(data_subset$rt)
+    data_subset_test <- summaryBy(rt +log_rt~ subj + cond_comb, data = data_subset, keep.names = T)
+    
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_rt_full <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_log_rt <- t.test(log_rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    
+    
+    
+    # Exclude 3sd from 
+    Acc <- summaryBy( rt ~ subj, data = data_subset, keep.names = T)
+    data_subset <- data_subset[data_subset$subj %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$subj,]
+    data_subset_test <- summaryBy(rt ~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_rt_excl1 <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    
+    # Rsemve RTs +/-3sd from each subject's mean 
+    data_subset <- ddply(data_subset, .(subj,cond_comb), function(d){ 
+      include = mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+      d = subset(d, rt > include[1] & rt < include[2])
+    })
+    data_subset_test <- summaryBy(rt ~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_rt_excl2 <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    # [for Expt 1 only] Remove outliers by condition (less than 3sd from condition mean -- note that this is not a symmetric exclusion criterion)
+    data_subset <- ddply(data_subset, .(cond), function(d){ 
+      by_subj_include <- mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+      d = subset(d, rt < by_subj_include[2])
+    })
+    data_subset_test <- summaryBy(rt ~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_rt_excl3 <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    
+   
+  }
+  
+  subj_range[subj_range$subj == l,]$rt.p.noexcl <- length(pval.noexcludes[pval.noexcludes$pval_rt<=0.05,]$pval_rt)/length(pval.noexcludes$pval_rt)
+   subj_range[subj_range$subj == l,]$log_rt.p.noexcl <- length(pval.noexcludes[pval.noexcludes$pval_log_rt<=0.05,]$pval_log_rt)/length(pval.noexcludes$pval_log_rt)
+  subj_range[subj_range$subj == l,]$rt.p.excl1 <- length(pval.sklarvalues[pval.sklarvalues$pval_rt_excl1 <=0.05,]$pval_rt_excl1)/length(pval.sklarvalues$pval_rt_excl1)
+  subj_range[subj_range$subj == l,]$rt.p.excl2 <- length(pval.sklarvalues[pval.sklarvalues$pval_rt_excl2 <=0.05,]$pval_rt_excl2)/length(pval.sklarvalues$pval_rt_excl2)
+  subj_range[subj_range$subj == l,]$rt.p.excl3 <- length(pval.sklarvalues[pval.sklarvalues$pval_rt_excl3<=0.05,]$pval_rt_excl3)/length(pval.sklarvalues$pval_rt_excl3)
+  subj_range[subj_range$subj == l,]$rt.p.excl4 <- length(pval.sklarvalues[pval.sklarvalues$pval_rt_excl4 <=0.05,]$pval_rt_excl4)/length(pval.sklarvalues$pval_rt_excl4)
+  subj_range[subj_range$subj == l,]$rt.p.full <- length(pval.sklarvalues[pval.sklarvalues$pval_rt_full <=0.05,]$pval_rt_full)/length(pval.sklarvalues$pval_rt_full)
+}
+```
+```{r lognorm_unif_mix, echo = TRUE} 
+subj_range3 <- subj_range
+subj_range3
+hist(data_subset$rt)
+```
+
+
+
+#### Mix of gamma and uniform
+```{r sim_data_uniform_gamma_mix, echo=FALSE}
+# To get parameter estimates
+#edin.sem.t <- fitdist(edin.sem$rt, "ST1", method="mle", start = c(mu=0.7,sigma=0.7,nu=5,tau=0.5) )
+mu <- 0.6000
+sigma <- 0.4
+tau <- 5
+nu <- 2.5
+subj_range<- data.frame(subj = c(20,30,70),rt.p.noexcl = NA, log_rt.p.noexcl = NA, rt.p.excl1 = NA,rt.p.excl2 = NA,rt.p.excl3 = NA,rt.p.excl4 = NA,rt.p.full = NA)
+
+for (l in subj_range$subj){
+  print(l)
+  no.sim <- 1000
+  no.subj <- l
+  no.conditions <- 3
+  no.trials <- 34
+  prop <- 0.85 # Proportion of uniform
+  sim = rep(1:no.sim, each = no.subj*no.conditions*no.trials)
+  subj = rep(1:no.subj,each = no.conditions*no.trials)
+  cond = rep(rep(1:no.conditions, each =no.trials), no.subj)
+  
+  data <- data.frame(sim = sim, subj = subj, cond = cond, rt = NA)
+  pval.noexcludes <- data.frame(sim = 1:no.sim,pval_rt = NA,pval_log_rt=NA)
+  pval.sklarvalues  <- data.frame(sim = 1:no.sim,pval_rt_full = NA,pval_rt_excl1 = NA,pval_rt_excl2 = NA,pval_rt_excl3 = NA,pval_rt_excl4 = NA,pval_log_rt=NA)
+  
+  
+  #######
+  # Without Sklar exclusions
+  sim = rep(1:no.sim, each = no.subj*no.conditions*no.trials)
+  subj = rep(1:no.subj,each = no.conditions*no.trials)
+  cond = rep(rep(1:no.conditions, each =no.trials), no.subj)
+  
+  pval <- data.frame(sim = 1:no.sim,pval_rt = NA,pval_log_rt = NA)
+  
+  
+  for (i in 1:no.sim){
+    if(i %in% c(200,400,600,800)){print(i)}
+    data <- data.frame(subj = subj, cond = cond, rt = NA)
+    
+    for (k in 1:no.subj){
+      mu.subj <- jitter(mu)
+      sigma.subj <- sigma
+      tau.subj <- tau
+      nu.subj <- nu
+      
+      for (j in 1:no.conditions){
+        data[data$subj == k & data$cond == j,]$rt <- c(rgamma(24, mu.subj),runif(10,0,15))
+      }
+    }
+    if (length(data[data$rt<0,]$rt) > 0){data[data$rt<0,]$rt <- 0.2}
+    if (length(data[data$rt>20,]$rt) > 0){data[data$rt>20,]$rt <- NA}
+    data_subset <- data
+    data_subset$cond_comb <- 1
+    data_subset[data_subset$cond %in% c(2,3),]$cond_comb <- 2
+    data_subset$log_rt <- log(data_subset$rt)
+    data_subset_test <- summaryBy(rt +log_rt~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.noexcludes[pval.noexcludes$sim == i,]$pval_rt <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    pval.noexcludes[pval.noexcludes$sim == i,]$pval_log_rt <- t.test(log_rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    
+     # Rsemve RTs < 200ms & > 10
+    data_subset <- subset(data_subset, rt > 0.2)
+    data_subset_test <- summaryBy(rt ~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_rt_excl4 <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    
+    data_subset <- subset(data_subset, rt <= 10)
+    
+    data_subset$log_rt <- log(data_subset$rt)
+    data_subset_test <- summaryBy(rt +log_rt~ subj + cond_comb, data = data_subset, keep.names = T)
+    
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_rt_full <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_log_rt <- t.test(log_rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    
+    
+    
+    # Exclude 3sd from 
+    Acc <- summaryBy( rt ~ subj, data = data_subset, keep.names = T)
+    data_subset <- data_subset[data_subset$subj %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$subj,]
+    data_subset_test <- summaryBy(rt ~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_rt_excl1 <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    
+    # Rsemve RTs +/-3sd from each subject's mean 
+    data_subset <- ddply(data_subset, .(subj,cond_comb), function(d){ 
+      include = mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+      d = subset(d, rt > include[1] & rt < include[2])
+    })
+    data_subset_test <- summaryBy(rt ~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_rt_excl2 <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    # [for Expt 1 only] Remove outliers by condition (less than 3sd from condition mean -- note that this is not a symmetric exclusion criterion)
+    data_subset <- ddply(data_subset, .(cond), function(d){ 
+      by_subj_include <- mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+      d = subset(d, rt < by_subj_include[2])
+    })
+    data_subset_test <- summaryBy(rt ~ subj + cond_comb, data = data_subset, keep.names = T)
+    pval.sklarvalues[pval.sklarvalues $sim == i,]$pval_rt_excl3 <- t.test(rt ~ cond_comb, data = data_subset_test, paired = T)$p.value
+    
+   
+  }
+  
+  subj_range[subj_range$subj == l,]$rt.p.noexcl <- length(pval.noexcludes[pval.noexcludes$pval_rt<=0.05,]$pval_rt)/length(pval.noexcludes$pval_rt)
+   subj_range[subj_range$subj == l,]$log_rt.p.noexcl <- length(pval.noexcludes[pval.noexcludes$pval_log_rt<=0.05,]$pval_log_rt)/length(pval.noexcludes$pval_log_rt)
+  subj_range[subj_range$subj == l,]$rt.p.excl1 <- length(pval.sklarvalues[pval.sklarvalues$pval_rt_excl1 <=0.05,]$pval_rt_excl1)/length(pval.sklarvalues$pval_rt_excl1)
+  subj_range[subj_range$subj == l,]$rt.p.excl2 <- length(pval.sklarvalues[pval.sklarvalues$pval_rt_excl2 <=0.05,]$pval_rt_excl2)/length(pval.sklarvalues$pval_rt_excl2)
+  subj_range[subj_range$subj == l,]$rt.p.excl3 <- length(pval.sklarvalues[pval.sklarvalues$pval_rt_excl3<=0.05,]$pval_rt_excl3)/length(pval.sklarvalues$pval_rt_excl3)
+  subj_range[subj_range$subj == l,]$rt.p.excl4 <- length(pval.sklarvalues[pval.sklarvalues$pval_rt_excl4 <=0.05,]$pval_rt_excl4)/length(pval.sklarvalues$pval_rt_excl4)
+  subj_range[subj_range$subj == l,]$rt.p.full <- length(pval.sklarvalues[pval.sklarvalues$pval_rt_full <=0.05,]$pval_rt_full)/length(pval.sklarvalues$pval_rt_full)
+}
+```
+```{r gamma_unif_mix, echo = TRUE} 
+subj_range3 <- subj_range
+subj_range3
+hist(data_subset$rt)
+```

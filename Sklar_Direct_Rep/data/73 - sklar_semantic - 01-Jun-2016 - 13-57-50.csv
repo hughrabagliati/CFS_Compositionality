@@ -1,0 +1,137 @@
+subject_column,AssignedList_column,subject_dob_column,subject_age_column,subject_gender_column,trialnum_column,Stim_column,Type_column,Experiment_column,OrderGroup_column,ReactionTime_column,StimSide_column,StimPosition_column,Response_column,Valid_column,TrialEndSecs_column
+73,1,23/1/95,21,F,1,I painted the building,Sklar_filler,sklar_semantics,emo_sem_emo_sem,0.768456453341059,1,1,1,1,779891.351958058
+73,1,23/1/95,21,F,2,I moved the hat,Sklar_control_A,sklar_semantics,emo_sem_emo_sem,1.27992923639249,2,1,1,1,779893.374849422
+73,1,23/1/95,21,F,3,I turned off the computer,Sklar_control_B,sklar_semantics,emo_sem_emo_sem,0.832787682302296,1,2,2,1,779894.950848432
+73,1,23/1/95,21,F,4,I cut the bread,Sklar_control_B,sklar_semantics,emo_sem_emo_sem,1.15094958676491,2,1,1,1,779896.844373038
+73,1,23/1/95,21,F,5,I fried the shirt,Sklar_violation,sklar_semantics,emo_sem_emo_sem,1.22114709869493,2,1,1,1,779898.808486113
+73,1,23/1/95,21,F,6,I closed the cabinet,Sklar_filler,sklar_semantics,emo_sem_emo_sem,1.05670932668727,2,1,1,1,779900.607937875
+73,1,23/1/95,21,F,7,I wore the way,Sklar_violation,sklar_semantics,emo_sem_emo_sem,0.903987122466788,1,2,2,1,779902.254504507
+73,1,23/1/95,21,F,8,I smelled the pie,Sklar_control_B,sklar_semantics,emo_sem_emo_sem,1.10377942444757,2,2,1,0,779904.101009369
+73,1,23/1/95,21,F,9,I washed the floor,Sklar_control_B,sklar_semantics,emo_sem_emo_sem,2.06820039078593,2,2,2,1,779906.911897993
+73,1,23/1/95,21,F,10,I tasted the vinegar,Sklar_control_A,sklar_semantics,emo_sem_emo_sem,0.92741857888177,1,1,1,1,779908.58197979
+73,1,23/1/95,21,F,11,I shampooed the hair,Sklar_control_B,sklar_semantics,emo_sem_emo_sem,0.798021993599832,1,1,1,1,779910.122681037
+73,1,23/1/95,21,F,12,I warmed up the food,Sklar_filler,sklar_semantics,emo_sem_emo_sem,0.810013059759513,1,2,2,1,779911.675173541
+73,1,23/1/95,21,F,13,I baked the pie,Sklar_filler,sklar_semantics,emo_sem_emo_sem,1.73881426104344,2,2,2,1,779914.156750764
+73,1,23/1/95,21,F,14,I photographed the river,Sklar_control_A,sklar_semantics,emo_sem_emo_sem,0.950313792098314,2,2,2,1,779915.850324632
+73,1,23/1/95,21,F,15,I ironed the clothes,Sklar_control_B,sklar_semantics,emo_sem_emo_sem,1.03310500236694,2,1,1,1,779917.62626572
+73,1,23/1/95,21,F,16,I woke up the child,Sklar_control_B,sklar_semantics,emo_sem_emo_sem,1.12696649250574,2,2,2,1,779919.49626971
+73,1,23/1/95,21,F,17,I turned up the volume,Sklar_control_B,sklar_semantics,emo_sem_emo_sem,2.36212230450474,2,2,1,0,779922.601240928
+73,1,23/1/95,21,F,18,I fixed up the shed,Sklar_control_A,sklar_semantics,emo_sem_emo_sem,1.39757080527488,2,2,2,1,779924.741706511
+73,1,23/1/95,21,F,19,I imagined the border,Sklar_filler,sklar_semantics,emo_sem_emo_sem,1.18615722702816,2,1,1,1,779926.670559989
+73,1,23/1/95,21,F,20,I moved the chair,Sklar_control_A,sklar_semantics,emo_sem_emo_sem,1.05657462438103,2,1,1,1,779928.469969737
+73,1,23/1/95,21,F,21,I looked for the way,Sklar_control_A,sklar_semantics,emo_sem_emo_sem,2.13843542698305,2,2,2,1,779931.351463829
+73,1,23/1/95,21,F,22,I folded the diamond,Sklar_violation,sklar_semantics,emo_sem_emo_sem,0.880044759600423,1,2,2,1,779932.974496053
+73,1,23/1/95,21,F,23,I shaved the head,Sklar_control_B,sklar_semantics,emo_sem_emo_sem,1.03335708787199,1,1,1,1,779934.750414049
+73,1,23/1/95,21,F,24,I spread the glue,Sklar_control_A,sklar_semantics,emo_sem_emo_sem,1.85653023677878,2,1,1,1,779937.349617446
+73,1,23/1/95,21,F,25,I wiped the steam ,Sklar_control_A,sklar_semantics,emo_sem_emo_sem,0.856810545781627,2,2,2,1,779938.94913162
+73,1,23/1/95,21,F,26,I sewed the smoke,Sklar_violation,sklar_semantics,emo_sem_emo_sem,0.750647212262265,1,2,2,1,779940.442786502
+73,1,23/1/95,21,F,27,I played the melody,Sklar_control_A,sklar_semantics,emo_sem_emo_sem,0.821205533808097,1,2,2,1,779942.007030816
+73,1,23/1/95,21,F,28,I locked the ground,Sklar_violation,sklar_semantics,emo_sem_emo_sem,1.75042270845734,2,2,2,1,779944.500359206
+73,1,23/1/95,21,F,29,I sweetened the chocolate milk ,Sklar_filler,sklar_semantics,emo_sem_emo_sem,0.938720739097334,1,1,1,1,779946.182226808
+73,1,23/1/95,21,F,30,I scattered the dice,Sklar_filler,sklar_semantics,emo_sem_emo_sem,0.92740863666404,1,2,2,1,779947.852268194
+73,1,23/1/95,21,F,31,I planted the plant,Sklar_control_B,sklar_semantics,emo_sem_emo_sem,1.1156794060953,2,1,1,1,779949.710529675
+73,1,23/1/95,21,F,32,I threw the bread,Sklar_filler,sklar_semantics,emo_sem_emo_sem,2.56226996378973,2,1,1,1,779953.015389091
+73,1,23/1/95,21,F,33,I broke the hat,Sklar_violation,sklar_semantics,emo_sem_emo_sem,1.2445923461346,2,1,1,1,779955.003017651
+73,1,23/1/95,21,F,34,I drew the map,Sklar_filler,sklar_semantics,emo_sem_emo_sem,0.950799682410434,2,2,2,1,779956.696621026
+73,1,23/1/95,21,F,35,I planted the hammer,Sklar_violation,sklar_semantics,emo_sem_emo_sem,0.821803355240263,1,1,1,1,779958.260920825
+73,1,23/1/95,21,F,36,I found the key,Sklar_control_A,sklar_semantics,emo_sem_emo_sem,1.29164865298662,2,1,1,1,779960.295519418
+73,1,23/1/95,21,F,37,I coloured the paper,Sklar_filler,sklar_semantics,emo_sem_emo_sem,0.879611467476934,1,2,2,1,779961.91851476
+73,1,23/1/95,21,F,38,I shampooed the key,Sklar_violation,sklar_semantics,emo_sem_emo_sem,0.797781774657778,2,1,1,1,779963.459254494
+73,1,23/1/95,21,F,39,I heard the thunder,Sklar_control_A,sklar_semantics,emo_sem_emo_sem,0.715697430539876,1,1,1,1,779964.917607444
+73,1,23/1/95,21,F,40,I scrubbed the thunder,Sklar_violation,sklar_semantics,emo_sem_emo_sem,1.40960324415937,2,1,1,1,779967.069932918
+73,1,23/1/95,21,F,41,I folded the vest,Sklar_control_B,sklar_semantics,emo_sem_emo_sem,1.32692588935606,2,2,2,1,779969.139852687
+73,1,23/1/95,21,F,42,I solved the peas,Sklar_violation,sklar_semantics,emo_sem_emo_sem,0.890721195843071,1,2,2,1,779970.774636721
+73,1,23/1/95,21,F,43,I closed the door,Sklar_control_A,sklar_semantics,emo_sem_emo_sem,0.820933563518338,1,2,2,1,779972.338902202
+73,1,23/1/95,21,F,44,I photographed the moon,Sklar_control_A,sklar_semantics,emo_sem_emo_sem,0.985200391965918,2,1,1,1,779974.067787625
+73,1,23/1/95,21,F,45,I wiped the juice,Sklar_control_A,sklar_semantics,emo_sem_emo_sem,1.656574688619,2,2,2,1,779976.467046698
+73,1,23/1/95,21,F,46,I broke the border,Sklar_control_B,sklar_semantics,emo_sem_emo_sem,0.939187706913799,2,1,1,1,779978.148839572
+73,1,23/1/95,21,F,47,I cut the string,Sklar_control_B,sklar_semantics,emo_sem_emo_sem,0.715311604784802,1,2,2,1,779979.607251535
+73,1,23/1/95,21,F,48,I smelled the melody,Sklar_violation,sklar_semantics,emo_sem_emo_sem,1.25650387362111,2,2,2,1,779981.606595984
+73,1,23/1/95,21,F,49,I fixed the gloves,Sklar_filler,sklar_semantics,emo_sem_emo_sem,0.986314572161064,2,1,1,1,779983.335519893
+73,1,23/1/95,21,F,50,I bought the shoe lace,Sklar_filler,sklar_semantics,emo_sem_emo_sem,1.03297543153167,2,1,1,1,779985.111442379
+73,1,23/1/95,21,F,51,I tied the shoelace,Sklar_control_B,sklar_semantics,emo_sem_emo_sem,1.60921594302636,2,1,1,1,779987.463665351
+73,1,23/1/95,21,F,52,I laundered the refrigerator,Sklar_violation,sklar_semantics,emo_sem_emo_sem,0.809729222906753,1,2,2,1,779989.016112955
+73,1,23/1/95,21,F,53,I turned up the bread,Sklar_violation,sklar_semantics,emo_sem_emo_sem,0.868618801585399,1,2,2,1,779990.627380542
+73,1,23/1/95,21,F,54,I watered the plant,Sklar_filler,sklar_semantics,emo_sem_emo_sem,1.72728278615978,2,2,2,1,779993.097187032
+73,1,23/1/95,21,F,55,I looked for the paint,Sklar_control_A,sklar_semantics,emo_sem_emo_sem,0.892059558886103,1,2,2,1,779994.732040662
+73,1,23/1/95,21,F,56,I cooked the rice,Sklar_control_A,sklar_semantics,emo_sem_emo_sem,0.656823246274143,1,1,1,1,779996.131608589
+73,1,23/1/95,21,F,57,I built the rice,Sklar_violation,sklar_semantics,emo_sem_emo_sem,0.879893059260212,1,1,1,1,779997.754618684
+73,1,23/1/95,21,F,58,I drew the rain,Sklar_control_A,sklar_semantics,emo_sem_emo_sem,1.78562585869804,2,1,1,1,780000.283223669
+73,1,23/1/95,21,F,59,I shaved the glue,Sklar_violation,sklar_semantics,emo_sem_emo_sem,0.762465410400182,1,1,1,1,780001.788665639
+73,1,23/1/95,21,F,60,I tore the juice,Sklar_violation,sklar_semantics,emo_sem_emo_sem,1.39758587919641,2,2,2,1,780003.929189272
+73,1,23/1/95,21,F,61,I interviewed the woman,Sklar_control_B,sklar_semantics,emo_sem_emo_sem,1.06820648454595,2,1,1,1,780005.740408238
+73,1,23/1/95,21,F,62,I crumpled the paper,Sklar_control_B,sklar_semantics,emo_sem_emo_sem,0.927358604385518,2,2,2,1,780007.41048843
+73,1,23/1/95,21,F,63,I drank the chocolate milk,Sklar_control_B,sklar_semantics,emo_sem_emo_sem,0.832893519778736,2,1,1,1,780008.986449274
+73,1,23/1/95,21,F,64,I scrubbed the house,Sklar_control_B,sklar_semantics,emo_sem_emo_sem,0.739137225667946,1,1,1,1,780010.468345613
+73,1,23/1/95,21,F,65,I heated the water,Sklar_control_A,sklar_semantics,emo_sem_emo_sem,2.5856279755244,2,2,2,1,780013.79674585
+73,1,23/1/95,21,F,66,I laundered the scarf,Sklar_control_B,sklar_semantics,emo_sem_emo_sem,1.29179201449733,2,2,2,1,780015.831428793
+73,1,23/1/95,21,F,67,I swallowed the shed,Sklar_violation,sklar_semantics,emo_sem_emo_sem,0.950954910600558,1,2,2,1,780017.524976363
+73,1,23/1/95,21,F,68,I burnt the stew,Sklar_control_B,sklar_semantics,emo_sem_emo_sem,0.833408595528454,1,1,1,1,780019.100975693
+73,1,23/1/95,21,F,69,I tore the map,Sklar_control_B,sklar_semantics,emo_sem_emo_sem,1.04480966564734,1,2,2,1,780020.888675325
+73,1,23/1/95,21,F,70,I met the woman,Sklar_filler,sklar_semantics,emo_sem_emo_sem,0.680162014788948,1,1,1,1,780022.311776056
+73,1,23/1/95,21,F,71,I imagined the well,Sklar_filler,sklar_semantics,emo_sem_emo_sem,1.4914294090122,2,2,2,1,780024.546368363
+73,1,23/1/95,21,F,72,I sold the string,Sklar_filler,sklar_semantics,emo_sem_emo_sem,1.96231223468203,2,2,2,1,780027.251440352
+73,1,23/1/95,21,F,73,I threw the peas,Sklar_control_A,sklar_semantics,emo_sem_emo_sem,0.762514801113866,1,2,2,1,780028.756861797
+73,1,23/1/95,21,F,74,I cooked the tomatoes,Sklar_control_B,sklar_semantics,emo_sem_emo_sem,0.715495056472719,1,1,1,1,780030.215192618
+73,1,23/1/95,21,F,75,I broke the water,Sklar_violation,sklar_semantics,emo_sem_emo_sem,1.12740299187135,2,2,2,1,780032.085238622
+73,1,23/1/95,21,F,76,I ironed the coffee,Sklar_violation,sklar_semantics,emo_sem_emo_sem,0.856737742433324,2,1,1,1,780033.684734194
+73,1,23/1/95,21,F,77,I wore the vest,Sklar_filler,sklar_semantics,emo_sem_emo_sem,1.63286645105109,2,1,1,1,780036.060499591
+73,1,23/1/95,21,F,78,I prepared the stew,Sklar_filler,sklar_semantics,emo_sem_emo_sem,0.927218449884094,1,1,1,1,780037.730612498
+73,1,23/1/95,21,F,79,I sold the diamond,Sklar_control_A,sklar_semantics,emo_sem_emo_sem,0.938859931426123,1,2,2,1,780039.412420125
+73,1,23/1/95,21,F,80,I watered the ground,Sklar_control_A,sklar_semantics,emo_sem_emo_sem,0.856671674177051,1,2,2,1,780041.011901906
+73,1,23/1/95,21,F,81,I swallowed the food,Sklar_control_B,sklar_semantics,emo_sem_emo_sem,1.3389743642183,2,2,2,1,780043.093619988
+73,1,23/1/95,21,F,82,I cooked the tomatoes,Sklar_filler,sklar_semantics,emo_sem_emo_sem,0.773937231395394,1,1,1,1,780044.610784904
+73,1,23/1/95,21,F,83,I gathered the shower,Sklar_violation,sklar_semantics,emo_sem_emo_sem,0.832803397555836,1,1,1,1,780046.186796742
+73,1,23/1/95,21,F,84,I sprinkled the sand,Sklar_control_A,sklar_semantics,emo_sem_emo_sem,0.9270850304747,1,2,2,1,780047.856869558
+73,1,23/1/95,21,F,85,I broke the glass,Sklar_control_B,sklar_semantics,emo_sem_emo_sem,1.82096531474963,2,2,2,1,780050.420789304
+73,1,23/1/95,21,F,86,I heard the sound,Sklar_filler,sklar_semantics,emo_sem_emo_sem,1.25642850459553,2,2,2,1,780052.420157166
+73,1,23/1/95,21,F,87,I sewed the sock,Sklar_control_B,sklar_semantics,emo_sem_emo_sem,1.37378848146182,1,2,2,1,780054.537152484
+73,1,23/1/95,21,F,88,I lit the rain,Sklar_violation,sklar_semantics,emo_sem_emo_sem,0.868443688610569,1,1,1,1,780056.148418788
+73,1,23/1/95,21,F,89,I spilled the moon,Sklar_violation,sklar_semantics,emo_sem_emo_sem,2.1267095960211,2,1,1,1,780059.018134451
+73,1,23/1/95,21,F,90,I smelled the hair,Sklar_filler,sklar_semantics,emo_sem_emo_sem,1.70360020629596,2,1,1,1,780061.46444021
+73,1,23/1/95,21,F,91,I liked the dance,Sklar_control_A,sklar_semantics,emo_sem_emo_sem,1.08014270744752,2,2,1,0,780063.287421568
+73,1,23/1/95,21,F,92,I fixed up the shower,Sklar_control_A,sklar_semantics,emo_sem_emo_sem,1.33888841141015,2,1,1,1,780065.369155045
+73,1,23/1/95,21,F,93,I opened the refrigerator,Sklar_control_A,sklar_semantics,emo_sem_emo_sem,0.739321639412083,2,2,2,1,780066.851265945
+73,1,23/1/95,21,F,94,I found the chasm,Sklar_control_A,sklar_semantics,emo_sem_emo_sem,0.809593879152089,2,1,1,1,780068.403495139
+73,1,23/1/95,21,F,95,I sweetened the juice,Sklar_filler,sklar_semantics,emo_sem_emo_sem,1.65620682307053,2,2,2,1,780070.802800396
+73,1,23/1/95,21,F,96,I drank the chair,Sklar_violation,sklar_semantics,emo_sem_emo_sem,0.891801379621029,2,1,1,1,780072.437555565
+73,1,23/1/95,21,F,97,I changed the sock,Sklar_filler,sklar_semantics,emo_sem_emo_sem,0.974258399917744,2,1,1,1,780074.154678594
+73,1,23/1/95,21,F,98,I washed the dance,Sklar_violation,sklar_semantics,emo_sem_emo_sem,1.26825504144654,2,2,2,1,780076.165822319
+73,1,23/1/95,21,F,99,I turned off the door,Sklar_violation,sklar_semantics,emo_sem_emo_sem,0.938335875514895,1,2,2,1,780077.847677733
+73,1,23/1/95,21,F,100,I cut the wine,Sklar_violation,sklar_semantics,emo_sem_emo_sem,0.950683581875637,1,1,1,1,780079.541236849
+73,1,23/1/95,21,F,101,I changed the computer,Sklar_filler,sklar_semantics,emo_sem_emo_sem,1.17373415164184,2,2,2,1,780081.45829907
+73,1,23/1/95,21,F,102,I wore the shirt,Sklar_control_A,sklar_semantics,emo_sem_emo_sem,0.844823007588275,1,1,1,1,780083.046062076
+73,1,23/1/95,21,F,103,I found the exercise,Sklar_filler,sklar_semantics,emo_sem_emo_sem,1.04491197527386,2,1,1,1,780084.833755935
+73,1,23/1/95,21,F,104,I saw the clouds,Sklar_control_A,sklar_semantics,emo_sem_emo_sem,1.25621394300833,2,1,1,1,780086.833136946
+73,1,23/1/95,21,F,105,I washed the cup,Sklar_filler,sklar_semantics,emo_sem_emo_sem,1.37387090642005,2,2,2,1,780088.950131303
+73,1,23/1/95,21,F,106,I liked the scarf,Sklar_filler,sklar_semantics,emo_sem_emo_sem,1.16250319115352,1,2,2,1,780090.855412529
+73,1,23/1/95,21,F,107,I bought the clothes,Sklar_filler,sklar_semantics,emo_sem_emo_sem,1.04472563718446,1,2,2,1,780092.643101898
+73,1,23/1/95,21,F,108,I cleaned the house,Sklar_filler,sklar_semantics,emo_sem_emo_sem,1.56226354942191,2,2,2,1,780094.948286203
+73,1,23/1/95,21,F,109,I crumpled the river,Sklar_violation,sklar_semantics,emo_sem_emo_sem,0.856680975062773,1,2,2,1,780096.547783058
+73,1,23/1/95,21,F,110,I spilled the juice,Sklar_control_B,sklar_semantics,emo_sem_emo_sem,0.880030006635934,1,1,1,1,780098.170811434
+73,1,23/1/95,21,F,111,I washed the head,Sklar_filler,sklar_semantics,emo_sem_emo_sem,1.70332663250156,2,1,1,1,780100.617136435
+73,1,23/1/95,21,F,112,I burnt the clouds,Sklar_violation,sklar_semantics,emo_sem_emo_sem,0.950727841118351,1,1,1,1,780102.310744942
+73,1,23/1/95,21,F,113,I lifted the squash,Sklar_filler,sklar_semantics,emo_sem_emo_sem,2.86742732813582,2,2,2,1,780105.921394502
+73,1,23/1/95,21,F,114,I met the child,Sklar_filler,sklar_semantics,emo_sem_emo_sem,1.0211145777721,2,2,2,1,780107.685563896
+73,1,23/1/95,21,F,115,I cleaned the floor,Sklar_filler,sklar_semantics,emo_sem_emo_sem,0.903343117446639,2,1,1,1,780109.332093324
+73,1,23/1/95,21,F,116,I made the coffee,Sklar_control_A,sklar_semantics,emo_sem_emo_sem,1.32709587074351,2,1,1,1,780111.40207852
+73,1,23/1/95,21,F,117,I woke up the steam,Sklar_violation,sklar_semantics,emo_sem_emo_sem,1.62031316349749,2,2,2,1,780113.766043359
+73,1,23/1/95,21,F,118,I lifted the hammer,Sklar_control_A,sklar_semantics,emo_sem_emo_sem,1.38568236946594,2,1,1,1,780115.894782789
+73,1,23/1/95,21,F,119,I cut the sand,Sklar_violation,sklar_semantics,emo_sem_emo_sem,1.25662510562688,2,2,2,1,780117.894187534
+73,1,23/1/95,21,F,120,I cooked the stairs,Sklar_violation,sklar_semantics,emo_sem_emo_sem,1.12717367743608,1,1,1,1,780119.764181581
+73,1,23/1/95,21,F,121,I locked the cabinet,Sklar_control_B,sklar_semantics,emo_sem_emo_sem,0.974342107772827,1,2,2,1,780121.481306214
+73,1,23/1/95,21,F,122,I smelled the smoke,Sklar_control_A,sklar_semantics,emo_sem_emo_sem,1.08030980243348,2,2,2,1,780123.304283403
+73,1,23/1/95,21,F,123,I lit the lamp,Sklar_control_B,sklar_semantics,emo_sem_emo_sem,0.856468017096631,1,1,1,1,780124.903770637
+73,1,23/1/95,21,F,124,I saw the light,Sklar_filler,sklar_semantics,emo_sem_emo_sem,0.727496385574341,1,1,1,1,780126.373904582
+73,1,23/1/95,21,F,125,I tasted the wine,Sklar_control_A,sklar_semantics,emo_sem_emo_sem,0.845164574100636,1,1,1,1,780127.961683624
+73,1,23/1/95,21,F,126,I tied the chasm,Sklar_violation,sklar_semantics,emo_sem_emo_sem,0.691963214660063,1,1,1,1,780129.396522693
+73,1,23/1/95,21,F,127,I solved the exercise,Sklar_control_B,sklar_semantics,emo_sem_emo_sem,1.22122920292895,2,2,2,1,780131.360641542
+73,1,23/1/95,21,F,128,I gathered the dice,Sklar_control_B,sklar_semantics,emo_sem_emo_sem,0.797506597242318,2,1,1,1,780132.90133413
+73,1,23/1/95,21,F,129,I fried the squash,Sklar_control_B,sklar_semantics,emo_sem_emo_sem,1.24477355275303,2,1,1,1,780134.888974877
+73,1,23/1/95,21,F,130,I baked the bread,Sklar_control_A,sklar_semantics,emo_sem_emo_sem,1.09210715373047,2,2,2,1,780136.723667955
+73,1,23/1/95,21,F,131,I interviewed the vinegar,Sklar_violation,sklar_semantics,emo_sem_emo_sem,0.809072068193927,1,1,1,1,780138.276150838
+73,1,23/1/95,21,F,132,I built the building,Sklar_control_B,sklar_semantics,emo_sem_emo_sem,1.43176785798278,2,1,1,1,780140.451970309
+73,1,23/1/95,21,F,133,I fixed the stairs,Sklar_control_A,sklar_semantics,emo_sem_emo_sem,0.914744059322402,1,1,1,1,780142.110597603
+73,1,23/1/95,21,F,134,I wore the gloves,Sklar_control_B,sklar_semantics,emo_sem_emo_sem,1.51384514628444,2,2,2,1,780144.368382752
+73,1,23/1/95,21,F,135,I dug the paint,Sklar_violation,sklar_semantics,emo_sem_emo_sem,1.20929779077414,2,2,2,1,780146.320756847
+73,1,23/1/95,21,F,136,I dug the well,Sklar_control_B,sklar_semantics,emo_sem_emo_sem,1.37344242504332,2,2,2,1,780148.437720094

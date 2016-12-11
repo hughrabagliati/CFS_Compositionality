@@ -2,6 +2,13 @@ library(plyr)
 library(lme4)
 library(doBy)
 library(ggplot2)
+library(bootstrap)
+# From Mike Frank
+theta <- function(x,xdata,na.rm=T) {mean(xdata[x],na.rm=na.rm)}
+ci.low <- function(x,na.rm=T) {
+  mean(x,na.rm=na.rm) - quantile(bootstrap(1:length(x),1000,theta,x,na.rm=na.rm)$thetastar,.025,na.rm=na.rm)}
+ci.high <- function(x,na.rm=T) {
+  quantile(bootstrap(1:length(x),1000,theta,x,na.rm=na.rm)$thetastar,.975,na.rm=na.rm) - mean(x,na.rm=na.rm)}
 
 read_data <- function(path_name){
 list.files(path = path_name,full.names = T, pattern = ".csv") -> file_list
@@ -71,7 +78,6 @@ t.test(log.rt ~ Condition, data = sense.pop.sklar.summary, paired = T)
 # Bayes factor -- minimum effect of 0.01, maximum of 0.06, our effect = -0.03519684 and our SE = -0.03/-1.7874=  0.01678416
 
 # lmer (Rabag style)
-
 sense.pop.sklar.raw <- summary(lmer(rt ~ Condition + (1+Condition|SubjNo)+ (1|prime), data = subset(sense.pop.sklar,  Condition %in% c("Sklar_violation", "Sklar_control"))))
 print(sense.pop.sklar.raw)
 print(paste("p value = ", 2*pnorm(-abs(coef(sense.pop.sklar.raw)[,3]))))
@@ -79,13 +85,6 @@ print(paste("p value = ", 2*pnorm(-abs(coef(sense.pop.sklar.raw)[,3]))))
 sense.pop.sklar.log <- summary(lmer(log.rt ~ Condition + (1+Condition|SubjNo)+ (1|prime), data = subset(sense.pop.sklar,  Condition %in% c("Sklar_violation", "Sklar_control"))))
 print(sense.pop.sklar.log)
 print(paste("p value = ", 2*pnorm(-abs(coef(sense.pop.sklar.log)[,3]))))
-
-sense.pop.sklar$Length <- (sense.pop.sklar$Length - mean(sense.pop.sklar$Length))/sd(sense.pop.sklar$Length)
-sense.pop.sklar$Cond <- "Violation"
-sense.pop.sklar[sense.pop.sklar$Condition == "Sklar_control",]$Cond <- "Control"
-sense.pop.sklar$Cond <- as.factor(sense.pop.sklar$Cond)
-contrasts(sense.pop.sklar$Cond)[1] <- -1
-summary(glmer(rt ~ Cond+Length + (1+Cond|SubjNo)+ (1|prime), data = sense.pop.sklar, family = "inverse.gaussian"(link="log")))
 
 
 ##########################################################################################################################
@@ -133,14 +132,6 @@ sense.pop.new.log <- summary(lmer(log.rt ~ Condition + (1+Condition|SubjNo)+ (1|
 print(sense.pop.new.log)
 print(paste("p value = ", 2*pnorm(-abs(coef(sense.pop.new.log)[,3]))))
 
-sense.pop.new$Length <- (sense.pop.new$Length - mean(sense.pop.new$Length))/sd(sense.pop.new$Length)
-sense.pop.new$Cond <- "Violation"
-sense.pop.new[sense.pop.new$Condition == "Sensible",]$Cond <- "Control"
-sense.pop.new$Cond <- as.factor(sense.pop.new$Cond)
-contrasts(sense.pop.new$Cond)[1] <- -1
-summary(glmer(rt ~ Cond+Length + (1+Cond|SubjNo)+ (1|prime), data = sense.pop.new, family = "inverse.gaussian"(link="log")))
-
-
 ###########################################################################################################################
 #
 # Finally -- a quick test if longer stims are perceived faster than shorter, 
@@ -177,14 +168,14 @@ print(paste("p value = ", 2*pnorm(-abs(coef(sense.pop.length.raw)[,3]))))
 # Graphs
 
 sense.sklar.graph <- summaryBy(rt ~ Condition + SubjNo, data = sense.pop.sklar, keep.names = T)
-sense.sklar.graph <- summaryBy(rt ~ Condition, data = sense.sklar.graph, FUN = c(mean,sd))
+sense.sklar.graph <- summaryBy(rt ~ Condition, data = sense.sklar.graph, FUN = c(mean,ci.low,ci.high,sd))
 sense.sklar.graph$SE <- sense.sklar.graph$rt.sd/sqrt(length(unique(sense.pop.sklar$SubjNo)))
-sense.sklar.graph$Experiment <- "Experiment 1a"
+sense.sklar.graph$Experiment <- "Experiment 1a \nIncongruent Phrases"
 
 sense.new.graph <- summaryBy(rt ~ Condition + SubjNo, data = sense.pop.new, keep.names = T)
-sense.new.graph <- summaryBy(rt ~ Condition, data = sense.new.graph, FUN = c(mean,sd))
+sense.new.graph <- summaryBy(rt ~ Condition, data = sense.new.graph, FUN = c(mean,ci.low,ci.high,sd))
 sense.new.graph$SE <- sense.new.graph$rt.sd/sqrt(length(unique(sense.pop.new$SubjNo)))
-sense.new.graph$Experiment <- "Experiment 1b"
+sense.new.graph$Experiment <- "Experiment 1b \nReversible Sentences"
 
 sense.graph <- rbind(sense.sklar.graph,sense.new.graph)
 sense.graph$Cond_Graph <- "Violation"
@@ -192,14 +183,15 @@ sense.graph[sense.graph$Condition %in% c("Sklar_control", "Sensible"),]$Cond_Gra
 sense.graph$Cond_Graph <- ordered(sense.graph$Cond_Graph, levels = c("Violation", "Control")) 
 sense.graph$rt.mean <- sense.graph$rt.mean * 1000
 sense.graph$SE <- sense.graph$SE * 1000
-
+sense.graph$rt.ci.high <- sense.graph$rt.ci.high * 1000
+sense.graph$rt.ci.low <- sense.graph$rt.ci.low * 1000
 dodge <- position_dodge(width=0.9)
 ggplot(sense.graph, aes(Experiment,rt.mean, fill = Cond_Graph)) +
   geom_bar(stat = "identity",  position = dodge) +
   geom_errorbar(aes(ymax = sense.graph$rt.mean +
-                      sense.graph$SE, ymin = sense.graph$rt.mean - sense.graph$SE), width=0.25, position = dodge) +
+                      sense.graph$rt.ci.high, ymin = sense.graph$rt.mean - sense.graph$rt.ci.low), width=0.25, position = dodge) +
   labs(fill = "Sentence Type") + 
   theme(axis.text.x = element_text(colour = "black", size = 12)) +
-  ylab("Reaction Time (ms)") +
+  ylab("Response Time (ms)") +
   xlab("") + 
-  ylim(c(0,2000))
+  ylim(c(0,1750))

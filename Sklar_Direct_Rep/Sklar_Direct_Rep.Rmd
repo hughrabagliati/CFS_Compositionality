@@ -1,0 +1,332 @@
+---
+title: "Sklar Direct Replication"
+author: "Hugh Rabagliati"
+date: "9 June 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(cache=TRUE)
+library(fitdistrplus)
+library(gamlss)
+library(gamlss.dist)
+library(lme4)
+library(ez)
+library(jsonlite)
+library(ggplot2)
+library(gridExtra)
+library(plyr)
+library(dplyr)
+library(doBy)
+library(sn)
+Test_Import = function(path_name,expt){
+  library(jsonlite)
+  
+  list.files(path = path_name,full.names = T, pattern = expt) -> file_list
+  comp = c()
+  for (x in file_list){
+    file_name = x
+    d <- read.csv(file_name, header = T)
+    comp = rbind(comp,d)
+    print(x)
+  }
+  comp$rt <- comp$ReactionTime_column
+  comp$Acc <- comp$Valid_column
+  comp$SubjNo <- comp$subject_column
+  return(comp)
+}
+```
+
+## Sklar's Emotion Experiment
+
+
+```{r sklar.emo, echo = FALSE, include = FALSE}
+sklar.emo <- Test_Import("./data","sklar_emo")
+sklar.emo$Length <- nchar(as.character(sklar.emo$Stim_column))
+sklar.emo$Length <- (sklar.emo$Length - mean(sklar.emo$Length))/sd(sklar.emo$Length)
+#Mark timeouts as incorrect, for exclusion
+sklar.emo[sklar.emo$Acc < 0,]$Acc <- 0
+
+# Remove outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be > (!!, see by trial exclusion below) 3sd from group mean [ie we remove extra-fast participants)
+Acc <- summaryBy(Acc + rt ~ SubjNo, data = sklar.emo, keep.names = T)
+sklar.emo <- sklar.emo[sklar.emo$SubjNo %in% Acc[Acc$Acc > 0.9,]$SubjNo,]
+sklar.emo <- sklar.emo[sklar.emo$SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo,]
+#Remove incorrect trials
+sklar.emo <- sklar.emo[sklar.emo$Acc ==1,]
+# Remove RTs +/-3sd from each subject's mean 
+sklar.emo <- ddply(sklar.emo, .(SubjNo), function(d){ 
+  include = mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+  d = subset(d, rt > include[1] & rt < include[2])
+})
+
+# Remove RTs < 200ms & > 1000ms
+sklar.emo <- subset(sklar.emo, rt > 0.2)
+sklar.emo <- subset(sklar.emo, rt <= 10)
+
+# First standardize the MeanAffectivity score
+sklar.emo$MeanAffectivity_column <- (sklar.emo$MeanAffectivity_column - mean(sklar.emo$MeanAffectivity_column, na.rm = T))/sd(sklar.emo$MeanAffectivity_column, na.rm = T)
+
+
+```
+
+1. Standard Analyses (rt against mean affective rating)
+```{r sklar.emo.analyses, echo=FALSE}
+# Lin Reg (sklar style)
+sklar.emo$log.rt <- log(sklar.emo$rt)
+sklar.emo.sum <- summaryBy(rt + log.rt~ Stim_column + MeanAffectivity_column, data = sklar.emo, keep.names = T)
+summary(lm(rt ~ MeanAffectivity_column, data = sklar.emo.sum))
+summary(lm(log.rt ~ MeanAffectivity_column, data = sklar.emo.sum))
+summary(lmer(rt ~ MeanAffectivity_column + (1+MeanAffectivity_column|SubjNo) + (1|Stim_column), data = sklar.emo))
+summary(lmer(log.rt ~ MeanAffectivity_column + (1+MeanAffectivity_column|SubjNo) + (1|Stim_column), data = sklar.emo))
+```
+
+And a gamma regression
+```{r sklar.emo.Gamma regression}
+sklar.emo.sum.raw.gamma <- summary(glmer(rt ~ MeanAffectivity_column+Length + (1+MeanAffectivity_column|SubjNo)+ (1|Stim_column), data = sklar.emo, family = "Gamma"))
+print(sklar.emo.sum.raw.gamma)
+```
+
+
+1. Additional Analyses (rt against mean affective rating + length)
+```{r sklar.emo.analyses.2, echo=FALSE}
+# Lin Reg (sklar style)
+sklar.emo$log.rt <- log(sklar.emo$rt)
+sklar.emo.sum <- summaryBy(rt + log.rt~ Stim_column + MeanAffectivity_column + Length, data = sklar.emo, keep.names = T)
+summary(lm(rt ~ MeanAffectivity_column+Length, data = sklar.emo.sum))
+summary(lm(log.rt ~ MeanAffectivity_column+Length, data = sklar.emo.sum))
+summary(lmer(rt ~ MeanAffectivity_column + (1+MeanAffectivity_column|SubjNo) + (1|Stim_column), data = sklar.emo))
+```
+
+## Sklar's Sensicality Experiment
+```{r sklar.sensicality, echo = FALSE, include = FALSE}
+sklar.sem <- Test_Import("./data","sklar_sem")
+sklar.sem$Length <- nchar(as.character(sklar.sem$Stim_column))
+sklar.sem$Length <- (sklar.sem$Length - mean(sklar.sem$Length, na.rm = T))/sd(sklar.sem$Length)
+sklar.sem <- sklar.sem[sklar.sem$Type_column != "Sklar_filler",]
+sklar.sem$Condition = "Control"
+sklar.sem[sklar.sem$Type_column == "Sklar_violation",]$Condition <- "Violation"
+
+#Mark timeouts as incorrect, for exclusion
+sklar.sem[sklar.sem$Acc < 0,]$Acc <- 0
+
+# Rsemve outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be > (!!, see by trial exclusion below) 3sd from group mean [ie we rsemve extra-fast participants)
+Acc <- summaryBy(Acc + rt ~ SubjNo, data = sklar.sem, keep.names = T)
+
+sklar.sem <- sklar.sem[sklar.sem$SubjNo %in% Acc[Acc$Acc > 0.9,]$SubjNo,]
+# Also exclude
+
+sklar.sem <- sklar.sem[sklar.sem$SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo,]
+#Rsemve incorrect trials
+sklar.sem <- sklar.sem[sklar.sem$Acc ==1,]
+
+# Rsemve RTs +/-3sd from each subject's mean 
+sklar.sem <- ddply(sklar.sem, .(SubjNo), function(d){ 
+  include = mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+  d = subset(d, rt > include[1] & rt < include[2])
+})
+# [for Expt 1 only] Remove outliers by condition (less than 3sd from condition mean -- note that this is not a symmetric exclusion criterion)
+sklar.sem <- ddply(sklar.sem, .(Condition), function(d){ 
+  by_subj_include <- mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+  d = subset(d, rt < by_subj_include[2])
+})
+# Rsemve RTs < 200ms & > 10
+sklar.sem <- subset(sklar.sem, rt > 0.2)
+sklar.sem <- subset(sklar.sem, rt <= 10)
+
+# Lin Reg (sklar style)
+sklar.sem$log.rt <- log(sklar.sem$rt)
+sklar.sem.sum <- summaryBy(rt + log.rt~ SubjNo + Condition, data = sklar.sem, keep.names = T)
+```
+
+```{r sklar.sem.analyses, echo = FALSE}
+t.test(rt ~ Condition, data = sklar.sem.sum, paired = T)
+t.test(log.rt ~ Condition, data = sklar.sem.sum, paired = T)
+
+# lmer (Rabag style)
+sklar.sem.sum.raw <- summary(lmer(rt ~ Condition + (1+Condition|SubjNo)+ (1|Stim_column), data = sklar.sem))
+print(sklar.sem.sum.raw)
+print(paste("p value = ", 2*pnorm(-abs(coef(sklar.sem.sum.raw)[,3]))))
+
+sklar.sem.sum.log <- summary(lmer(log(rt) ~ Condition + (1+Condition|SubjNo)+ (1|Stim_column), data = sklar.sem))
+print(sklar.sem.sum.log)
+print(paste("p value = ", 2*pnorm(-abs(coef(sklar.sem.sum.log)[,3]))))
+```
+
+And a gamma regression
+```{r sklar.sem.Gamma regression}
+sklar.sem.sum.raw.gamma <- summary(glmer(rt ~ Condition+Length + (1+Condition|SubjNo)+ (1|Stim_column), data = sklar.sem, family = "Gamma"))
+print(sklar.sem.sum.raw.gamma)
+```
+
+
+
+### Now without by condition outlier removal
+```{r sklar.sensicality.bycond, echo = FALSE, include = FALSE}
+sklar.sem <- Test_Import("./data","sklar_sem")
+sklar.sem$Length <- nchar(as.character(sklar.sem$Stim_column))
+sklar.sem <- sklar.sem[sklar.sem$Type_column != "Sklar_filler",]
+sklar.sem$Condition = "Control"
+sklar.sem[sklar.sem$Type_column == "Sklar_violation",]$Condition <- "Violation"
+
+#Mark timeouts as incorrect, for exclusion
+sklar.sem[sklar.sem$Acc < 0,]$Acc <- 0
+
+# Rsemve outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be > (!!, see by trial exclusion below) 3sd from group mean [ie we rsemve extra-fast participants)
+Acc <- summaryBy(Acc + rt ~ SubjNo, data = sklar.sem, keep.names = T)
+
+sklar.sem <- sklar.sem[sklar.sem$SubjNo %in% Acc[Acc$Acc > 0.9,]$SubjNo,]
+# Also exclude
+
+sklar.sem <- sklar.sem[sklar.sem$SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo,]
+#Rsemve incorrect trials
+sklar.sem <- sklar.sem[sklar.sem$Acc ==1,]
+
+# Rsemve RTs +/-3sd from each subject's mean 
+sklar.sem <- ddply(sklar.sem, .(SubjNo), function(d){ 
+  include = mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+  d = subset(d, rt > include[1] & rt < include[2])
+})
+
+# Rsemve RTs < 200ms & > 10
+sklar.sem <- subset(sklar.sem, rt > 0.2)
+sklar.sem <- subset(sklar.sem, rt <= 10)
+
+# Lin Reg (sklar style)
+sklar.sem$log.rt <- log(sklar.sem$rt)
+sklar.sem.sum <- summaryBy(rt + log.rt~ SubjNo + Condition, data = sklar.sem, keep.names = T)
+```
+
+```{r sklar.sem.analyses.bycond, echo = FALSE}
+t.test(rt ~ Condition, data = sklar.sem.sum, paired = T)
+t.test(log.rt ~ Condition, data = sklar.sem.sum, paired = T)
+
+# lmer (Rabag style)
+sklar.sem.sum.raw <- summary(lmer(rt ~ Condition + (1+Condition|SubjNo)+ (1|Stim_column), data = sklar.sem))
+print(sklar.sem.sum.raw)
+print(paste("p value = ", 2*pnorm(-abs(coef(sklar.sem.sum.raw)[,3]))))
+
+sklar.sem.sum.log <- summary(lmer(log(rt) ~ Condition + (1+Condition|SubjNo)+ (1|Stim_column), data = sklar.sem))
+print(sklar.sem.sum.log)
+print(paste("p value = ", 2*pnorm(-abs(coef(sklar.sem.sum.log)[,3]))))
+```
+
+## Edinburgh Emotion Expt
+
+```{r edin.emo.expt, echo = FALSE, include=FALSE}
+#############
+# Edinburgh Emo Expt
+
+edin.emo <- Test_Import("./data","edin_emo")
+edin.emo$Length <- nchar(as.character(edin.emo$Stim_column))
+edin.emo$Length <- (edin.emo$Length - mean(edin.emo$Length, na.rm = T))/sd(edin.emo$Length)
+#Mark timeouts as incorrect, for exclusion
+edin.emo[edin.emo$Acc < 0,]$Acc <- 0
+# Remove outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be > (!!, see by trial exclusion below) 3sd from group mean [ie we remove extra-fast participants)
+Acc <- summaryBy(Acc + rt ~ SubjNo, data = edin.emo, keep.names = T)
+edin.emo <- edin.emo[edin.emo$SubjNo %in% Acc[Acc$Acc > 0.9,]$SubjNo,]
+edin.emo <- edin.emo[edin.emo$SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo,]
+#Remove incorrect trials
+edin.emo <- edin.emo[edin.emo$Acc ==1,]
+# Remove RTs +/-3sd from each subject's mean 
+edin.emo <- ddply(edin.emo, .(SubjNo), function(d){ 
+  include = mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+  d = subset(d, rt > include[1] & rt < include[2])
+})
+
+# Remove RTs < 200ms & > 10s
+edin.emo <- subset(edin.emo, rt > 0.2)
+edin.emo <- subset(edin.emo, rt <= 10)
+
+# First standardize the MeanAffectivity score
+edin.emo$MeanAffectivity_column <- (edin.emo$MeanAffectivity_column - mean(edin.emo$MeanAffectivity_column, na.rm = T))/sd(edin.emo$MeanAffectivity_column, na.rm = T)
+
+```
+```{r edin.emo.expt.analyses, echo = FALSE}
+
+# Lin Reg (edin style)
+edin.emo$log.rt <- log(edin.emo$rt)
+edin.emo.sum <- summaryBy(rt + log.rt~ Stim_column + MeanAffectivity_column, data = edin.emo, keep.names = T)
+summary(lm(rt ~ MeanAffectivity_column, data = edin.emo.sum))
+summary(lm(log.rt ~ MeanAffectivity_column, data = edin.emo.sum))
+
+# Lin Reg (sklar style)
+edin.emo$log.rt <- log(edin.emo$rt)
+edin.emo.sum.factorial <- summaryBy(rt + log.rt ~ SubjNo + Type_column, data = edin.emo, keep.names = T)
+t.test(rt ~ Type_column, data = edin.emo.sum.factorial, paired = T)
+t.test(log.rt ~ Type_column, data = edin.emo.sum.factorial, paired = T)
+
+# lmer (Rabag style)
+edin.emo.sum.raw <- summary(lmer(rt ~ Type_column+Length + (1+Type_column|SubjNo)+ (1|Stim_column), data = edin.emo))
+print(edin.emo.sum.raw)
+print(paste("p value = ", 2*pnorm(-abs(coef(edin.emo.sum.raw)[,3]))))
+
+edin.emo.sum.log <- summary(lmer(log.rt ~ Type_column + (1+Type_column|SubjNo)+ (1|Stim_column), data = edin.emo))
+print(edin.emo.sum.log)
+print(paste("p value = ", 2*pnorm(-abs(coef(edin.emo.sum.log)[,3]))))
+```
+And a gamma regression
+```{r edin.emo.gamme, echo=FALSE}
+edin.emo.sum.raw.gamma <- summary(glmer(rt ~ Type_column+Length + (1+Type_column|SubjNo)+ (1|Stim_column), data = edin.emo, family = "Gamma"))
+print(edin.emo.sum.raw.gamma)
+
+```
+
+## Edinburgh Semantics Experiment
+```{r edin.sem.data, echo=FALSE, include=FALSE}
+# Edin Sem
+edin.sem <- Test_Import("./data","edin_sem")
+edin.sem$Length <- nchar(as.character(edin.sem$Stim_column))
+edin.sem$Length <- (edin.sem$Length - mean(edin.sem$Length))/sd(edin.sem$Length)
+edin.sem$Condition = "Violation"
+edin.sem[edin.sem$Type_column == "Sensible",]$Condition <- "Control"
+
+#Mark timeouts as incorrect, for exclusion
+edin.sem[edin.sem$Acc < 0,]$Acc <- 0
+
+
+# Rsemve outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be > (!!, see by trial exclusion below) 3sd from group mean [ie we rsemve extra-fast participants)
+Acc <- summaryBy(Acc + rt ~ SubjNo, data = edin.sem, keep.names = T)
+edin.sem <- edin.sem[edin.sem$SubjNo %in% Acc[Acc$Acc > 0.9,]$SubjNo,]
+edin.sem <- edin.sem[edin.sem$SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo,]
+#Rsemve incorrect trials
+edin.sem <- edin.sem[edin.sem$Acc ==1,]
+# Rsemve RTs +/-3sd from each subject's mean 
+edin.sem <- ddply(edin.sem, .(SubjNo), function(d){ 
+  include = mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+  d = subset(d, rt > include[1] & rt < include[2])
+})
+# [for Expt 1 only] Remove outliers by condition (less than 3sd from condition mean -- note that this is not a symmetric exclusion criterion)
+edin.sem <- ddply(edin.sem, .(Condition), function(d){ 
+  by_subj_include <- mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+  d = subset(d, rt < by_subj_include[2])
+})
+# Rsemve RTs < 200ms & > 10
+edin.sem <- subset(edin.sem, rt > 0.2)
+edin.sem <- subset(edin.sem, rt <= 10)
+
+```
+
+``` {r edin.sem.analyses, echo = FALSE}
+# Lin Reg (sklar style)
+edin.sem$log.rt <- log(edin.sem$rt)
+edin.sem.sum <- summaryBy(rt + log.rt ~ SubjNo + Condition, data = edin.sem, keep.names = T)
+t.test(rt ~ Condition, data = edin.sem.sum, paired = T)
+t.test(log.rt ~ Condition, data = edin.sem.sum, paired = T)
+
+# lmer (Rabag style)
+edin.sem.sum.raw <- summary(lmer(rt ~ Condition+Length + (1+Condition|SubjNo)+ (1|Stim_column), data = edin.sem))
+print(edin.sem.sum.raw)
+print(paste("p value = ", 2*pnorm(-abs(coef(edin.sem.sum.raw)[,3]))))
+
+edin.sem.sum.log <- summary(lmer(log.rt ~ Condition + (1+Condition|SubjNo)+ (1|Stim_column), data = edin.sem))
+print(edin.sem.sum.log)
+print(paste("p value = ", 2*pnorm(-abs(coef(edin.sem.sum.log)[,3]))))
+
+```
+And a gamma regression
+```{r edin.sem.gamma, echo=FALSE}
+edin.sem.sum.raw.gamma <- summary(glmer(rt ~ Condition+Length + (1+Condition|SubjNo)+ (1|Stim_column), data = edin.sem, family = "Gamma"))
+print(edin.sem.sum.raw.gamma)
+
+```

@@ -14,3 +14,6 @@ This replicated our Experiments 1a, 1b, 2a and 2b, but using the original presen
 
 ## Experiment 4
 This replicated a single-word emotional CFS experiment, by Yang and Yeh (2011, Consciousness and Cognition).
+
+## Simulations
+The file sensicality_sims.r details a series of simulations that we ran, investigating how skewed data (of the type found in breaking continuous flash suppression experiments) can affect parametric statistical analyses such as t-tests.

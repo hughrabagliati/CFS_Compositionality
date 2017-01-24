@@ -1279,7 +1279,7 @@ ggplot(graph, aes(x=MeanAffectivity, y=rt, shape = Contrast)) +
 
 # Experiment 3
 In Experiment 3, we used Sklar's code to replicate Experiments 1 and 2.
-The experiments were run in an order, such that 1a and 2a were fast (counterbalanced) and 1b and 2b were run second. This, we reasoned, would provide the most likely grounds for Sklar's results to replicate.
+The experiments were run in an order, such that 1a and 2a were run first (counterbalanced) and 1b and 2b were run second. This, we reasoned, would provide the most likely grounds for Sklar's results to replicate.
 
 ```{r expt3, echo = FALSE}
 library(lme4)
@@ -1476,6 +1476,316 @@ kable(data.frame(sklar.sem.sum.log$coefficients, "p value"=2*pnorm(-abs(coef(skl
 #print(paste("p value = ", 2*pnorm(-abs(coef(sklar.sem.sum.log)[,3]))))
 ```
 
+
+
+
+
+###  Raw RTs (Semantic experiment first)
+No effect of semantics  on raw RTs
+```{r expt1a_r_raw_sem_first, include = FALSE}
+##########
+# Sklar Sem
+sklar.sem <- Test_Import("./Sklar_Direct_Rep/data","sklar_sem")
+sklar.sem$Length <- nchar(as.character(sklar.sem$Stim_column))
+sklar.sem$Length  <- (sklar.sem$Length  - mean(sklar.sem$Length,na.rm= T))/sd(sklar.sem$Length,na.rm= T)
+sklar.sem <- sklar.sem[sklar.sem$Type_column != "Sklar_filler",]
+sklar.sem$Condition = "Control"
+sklar.sem[sklar.sem$Type_column == "Sklar_violation",]$Condition <- "Violation"
+sklar.sem <- subset(sklar.sem, OrderGroup_column == "sem_emo_sem_emo")
+# <----
+trials.per.subj = max(tapply(sklar.sem$rt, sklar.sem$SubjNo,length)) #length(sklar.sem$rt)/length(unique(sklar.sem$SubjNo))
+timeouts <- summaryBy(rt ~ SubjNo, data = subset(sklar.sem, Acc != -1), FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+# <----
+
+#Mark timeouts as incorrect, for exclusion
+sklar.sem[sklar.sem$Acc < 0,]$Acc <- 0
+
+# <--
+total.n <- length(unique(sklar.sem$SubjNo))
+# <--
+
+# Rsemve outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be > (!!, see by trial exclusion below) 3sd from group mean [ie we rsemve extra-fast participants)
+Acc <- summaryBy(Acc + rt ~ SubjNo, data = sklar.sem, keep.names = T)
+
+sklar.sem <- sklar.sem[sklar.sem$SubjNo %in% Acc[Acc$Acc > 0.9,]$SubjNo,]
+# Also exclude
+
+sklar.sem <- sklar.sem[sklar.sem$SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo,]
+
+#<--
+excl.n <- length(unique(sklar.sem$SubjNo))
+n.trials = length(sklar.sem$rt)
+subj.pre.excl.trials <- summaryBy(rt ~ SubjNo, data = sklar.sem, FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+
+#<--
+
+#Rsemve incorrect trials
+sklar.sem <- sklar.sem[sklar.sem$Acc ==1,]
+
+# Rsemve RTs +/-3sd from each subject's mean 
+sklar.sem <- ddply(sklar.sem, .(SubjNo), function(d){ 
+  include = mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+  d = subset(d, rt > include[1] & rt < include[2])
+})
+# [for Expt 1 only] Remove outliers by condition (less than 3sd from condition mean -- note that this is not a symmetric exclusion criterion)
+sklar.sem <- ddply(sklar.sem, .(Condition), function(d){ 
+  by_subj_include <- mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+  d = subset(d, rt < by_subj_include[2])
+})
+# Rsemve RTs < 200ms & > 10
+sklar.sem <- subset(sklar.sem, rt > 0.2)
+sklar.sem <- subset(sklar.sem, rt <= 10)
+
+n.excl.trials = length(sklar.sem$rt)
+subj.excl.trials <- summaryBy(rt ~ SubjNo, data = sklar.sem, FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+subj.excl.trials$final_trials =  subj.excl.trials$rt - subj.pre.excl.trials$rt 
+
+sklar.sem.graph <- sklar.sem
+
+
+```
+
+```{r expt1a_r_raw_analysis_sem_first}
+
+# excluded subjects
+print(paste("n subj excluded = ",total.n-excl.n))
+# excluded trials
+print(paste("% trials excluded = ",((n.trials - n.excl.trials)/n.trials)*100))
+
+print(paste("median trials excluded per participant = ",median(subj.excl.trials$final_trials), "sd= ", sd(subj.excl.trials$final_trials), "range= ", range(subj.excl.trials$final_trials)))
+print(paste("median timeouts per participant = ",median(timeouts$rt), "sd= ", sd(timeouts$rt), "range= ", range(timeouts$rt)))
+
+sklar.sem$Length <- nchar(as.character(sklar.sem$Stim_column))
+sklar.sem$Length  <- (sklar.sem$Length  - mean(sklar.sem$Length,na.rm= T))/sd(sklar.sem$Length,na.rm= T)
+
+
+sklar.sem.sum <- summaryBy(rt~ SubjNo + Condition, data = sklar.sem, keep.names = T)
+kable(summaryBy(rt ~ Condition, data = sklar.sem.sum, FUN = c(mean,sd)),digits=2)
+
+t.test(rt ~ Condition, data = sklar.sem.sum, paired = T)
+
+
+# lmer (Rabag style)
+sklar.sem.sum.raw <- summary(lmer(rt ~ Condition +Length+ (1+Condition|SubjNo)+ (1|Stim_column), data = sklar.sem))
+kable(data.frame(sklar.sem.sum.raw$coefficients, "p value"=2*pnorm(-abs(coef(sklar.sem.sum.raw)[,3]))), digits=2)
+#print(paste("p value = ", 2*pnorm(-abs(coef(sklar.sem.sum.raw)[,3]))))
+```
+
+### Log RTs  (Semantic experiment first)
+No effect of semantics for log RTs
+```{r expt1a_r_log_sem_first, include = FALSE}
+##########
+# Sklar Sem
+sklar.sem <- Test_Import("./Sklar_Direct_Rep/data","sklar_sem")
+sklar.sem$rt <- sklar.sem$rt * 1000
+sklar.sem$rt <- log(sklar.sem$rt)
+sklar.sem$Length <- nchar(as.character(sklar.sem$Stim_column))
+sklar.sem$Length  <- (sklar.sem$Length  - mean(sklar.sem$Length,na.rm= T))/sd(sklar.sem$Length,na.rm= T)
+sklar.sem <- sklar.sem[sklar.sem$Type_column != "Sklar_filler",]
+sklar.sem$Condition = "Control"
+sklar.sem[sklar.sem$Type_column == "Sklar_violation",]$Condition <- "Violation"
+
+sklar.sem <- subset(sklar.sem, OrderGroup_column == "sem_emo_sem_emo")
+
+#Mark timeouts as incorrect, for exclusion
+sklar.sem[sklar.sem$Acc < 0,]$Acc <- 0
+
+# Rsemve outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be > (!!, see by trial exclusion below) 3sd from group mean [ie we rsemve extra-fast participants)
+Acc <- summaryBy(Acc + rt ~ SubjNo, data = sklar.sem, keep.names = T)
+
+sklar.sem <- sklar.sem[sklar.sem$SubjNo %in% Acc[Acc$Acc > 0.9,]$SubjNo,]
+# Also exclude
+
+sklar.sem <- sklar.sem[sklar.sem$SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo,]
+#Rsemve incorrect trials
+sklar.sem <- sklar.sem[sklar.sem$Acc ==1,]
+
+# Rsemve RTs +/-3sd from each subject's mean 
+sklar.sem <- ddply(sklar.sem, .(SubjNo), function(d){ 
+  include = mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+  d = subset(d, rt > include[1] & rt < include[2])
+})
+# [for Expt 1 only] Remove outliers by condition (less than 3sd from condition mean -- note that this is not a symmetric exclusion criterion)
+sklar.sem <- ddply(sklar.sem, .(Condition), function(d){ 
+  by_subj_include <- mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+  d = subset(d, rt < by_subj_include[2])
+})
+# Rsemve RTs < 200ms & > 10
+sklar.sem <- subset(sklar.sem, rt > log(200))
+sklar.sem <- subset(sklar.sem, rt <= log(10000))
+```
+
+```{r expt1a_r_log_analysis_sem_first}
+sklar.sem$Length <- nchar(as.character(sklar.sem$Stim_column))
+sklar.sem$Length  <- (sklar.sem$Length  - mean(sklar.sem$Length,na.rm= T))/sd(sklar.sem$Length,na.rm= T)
+
+
+sklar.sem.sum <- summaryBy(rt~ SubjNo + Condition, data = sklar.sem, keep.names = T)
+kable(summaryBy(rt ~ Condition, data = sklar.sem.sum, FUN = c(mean,sd)), digits=2)
+
+t.test(rt ~ Condition, data = sklar.sem.sum, paired = T)
+
+
+# lmer (Rabag style)
+sklar.sem.sum.log <- summary(lmer(rt ~ Condition +Length+ (1+Condition|SubjNo)+ (1|Stim_column), data = sklar.sem))
+kable(data.frame(sklar.sem.sum.log$coefficients, "p value"=2*pnorm(-abs(coef(sklar.sem.sum.log)[,3]))), digits=2)
+#print(paste("p value = ", 2*pnorm(-abs(coef(sklar.sem.sum.log)[,3]))))
+```
+
+
+###  Raw RTs (Emotional experiment first)
+No effect of semantics  on raw RTs
+```{r expt1a_r_raw_emo_first, include = FALSE}
+##########
+# Sklar Sem
+sklar.sem <- Test_Import("./Sklar_Direct_Rep/data","sklar_sem")
+sklar.sem$Length <- nchar(as.character(sklar.sem$Stim_column))
+sklar.sem$Length  <- (sklar.sem$Length  - mean(sklar.sem$Length,na.rm= T))/sd(sklar.sem$Length,na.rm= T)
+sklar.sem <- sklar.sem[sklar.sem$Type_column != "Sklar_filler",]
+sklar.sem$Condition = "Control"
+sklar.sem[sklar.sem$Type_column == "Sklar_violation",]$Condition <- "Violation"
+
+# Put Emo first
+sklar.sem <- subset(sklar.sem, OrderGroup_column != "sem_emo_sem_emo")
+# <----
+trials.per.subj = max(tapply(sklar.sem$rt, sklar.sem$SubjNo,length)) #length(sklar.sem$rt)/length(unique(sklar.sem$SubjNo))
+timeouts <- summaryBy(rt ~ SubjNo, data = subset(sklar.sem, Acc != -1), FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+# <----
+
+#Mark timeouts as incorrect, for exclusion
+sklar.sem[sklar.sem$Acc < 0,]$Acc <- 0
+
+# <--
+total.n <- length(unique(sklar.sem$SubjNo))
+# <--
+
+# Rsemve outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be > (!!, see by trial exclusion below) 3sd from group mean [ie we rsemve extra-fast participants)
+Acc <- summaryBy(Acc + rt ~ SubjNo, data = sklar.sem, keep.names = T)
+
+sklar.sem <- sklar.sem[sklar.sem$SubjNo %in% Acc[Acc$Acc > 0.9,]$SubjNo,]
+# Also exclude
+
+sklar.sem <- sklar.sem[sklar.sem$SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo,]
+
+#<--
+excl.n <- length(unique(sklar.sem$SubjNo))
+n.trials = length(sklar.sem$rt)
+subj.pre.excl.trials <- summaryBy(rt ~ SubjNo, data = sklar.sem, FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+
+#<--
+
+#Rsemve incorrect trials
+sklar.sem <- sklar.sem[sklar.sem$Acc ==1,]
+
+# Rsemve RTs +/-3sd from each subject's mean 
+sklar.sem <- ddply(sklar.sem, .(SubjNo), function(d){ 
+  include = mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+  d = subset(d, rt > include[1] & rt < include[2])
+})
+# [for Expt 1 only] Remove outliers by condition (less than 3sd from condition mean -- note that this is not a symmetric exclusion criterion)
+sklar.sem <- ddply(sklar.sem, .(Condition), function(d){ 
+  by_subj_include <- mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+  d = subset(d, rt < by_subj_include[2])
+})
+# Rsemve RTs < 200ms & > 10
+sklar.sem <- subset(sklar.sem, rt > 0.2)
+sklar.sem <- subset(sklar.sem, rt <= 10)
+
+n.excl.trials = length(sklar.sem$rt)
+subj.excl.trials <- summaryBy(rt ~ SubjNo, data = sklar.sem, FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+subj.excl.trials$final_trials =  subj.excl.trials$rt - subj.pre.excl.trials$rt 
+
+sklar.sem.graph <- sklar.sem
+
+
+```
+
+```{r expt1a_r_raw_analysis_emo_first}
+
+# excluded subjects
+print(paste("n subj excluded = ",total.n-excl.n))
+# excluded trials
+print(paste("% trials excluded = ",((n.trials - n.excl.trials)/n.trials)*100))
+
+print(paste("median trials excluded per participant = ",median(subj.excl.trials$final_trials), "sd= ", sd(subj.excl.trials$final_trials), "range= ", range(subj.excl.trials$final_trials)))
+print(paste("median timeouts per participant = ",median(timeouts$rt), "sd= ", sd(timeouts$rt), "range= ", range(timeouts$rt)))
+
+sklar.sem$Length <- nchar(as.character(sklar.sem$Stim_column))
+sklar.sem$Length  <- (sklar.sem$Length  - mean(sklar.sem$Length,na.rm= T))/sd(sklar.sem$Length,na.rm= T)
+
+
+sklar.sem.sum <- summaryBy(rt~ SubjNo + Condition, data = sklar.sem, keep.names = T)
+kable(summaryBy(rt ~ Condition, data = sklar.sem.sum, FUN = c(mean,sd)),digits=2)
+
+t.test(rt ~ Condition, data = sklar.sem.sum, paired = T)
+
+
+# lmer (Rabag style)
+sklar.sem.sum.raw <- summary(lmer(rt ~ Condition +Length+ (1+Condition|SubjNo)+ (1|Stim_column), data = sklar.sem))
+kable(data.frame(sklar.sem.sum.raw$coefficients, "p value"=2*pnorm(-abs(coef(sklar.sem.sum.raw)[,3]))), digits=2)
+#print(paste("p value = ", 2*pnorm(-abs(coef(sklar.sem.sum.raw)[,3]))))
+```
+
+### Log RTs  (Emotional experiment first)
+No effect of semantics for log RTs
+```{r expt1a_r_log_emo_first, include = FALSE}
+##########
+# Sklar Sem
+sklar.sem <- Test_Import("./Sklar_Direct_Rep/data","sklar_sem")
+sklar.sem$rt <- sklar.sem$rt * 1000
+sklar.sem$rt <- log(sklar.sem$rt)
+sklar.sem$Length <- nchar(as.character(sklar.sem$Stim_column))
+sklar.sem$Length  <- (sklar.sem$Length  - mean(sklar.sem$Length,na.rm= T))/sd(sklar.sem$Length,na.rm= T)
+sklar.sem <- sklar.sem[sklar.sem$Type_column != "Sklar_filler",]
+sklar.sem$Condition = "Control"
+sklar.sem[sklar.sem$Type_column == "Sklar_violation",]$Condition <- "Violation"
+
+sklar.sem <- subset(sklar.sem, OrderGroup_column != "sem_emo_sem_emo")
+
+#Mark timeouts as incorrect, for exclusion
+sklar.sem[sklar.sem$Acc < 0,]$Acc <- 0
+
+# Rsemve outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be > (!!, see by trial exclusion below) 3sd from group mean [ie we rsemve extra-fast participants)
+Acc <- summaryBy(Acc + rt ~ SubjNo, data = sklar.sem, keep.names = T)
+
+sklar.sem <- sklar.sem[sklar.sem$SubjNo %in% Acc[Acc$Acc > 0.9,]$SubjNo,]
+# Also exclude
+
+sklar.sem <- sklar.sem[sklar.sem$SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo,]
+#Rsemve incorrect trials
+sklar.sem <- sklar.sem[sklar.sem$Acc ==1,]
+
+# Rsemve RTs +/-3sd from each subject's mean 
+sklar.sem <- ddply(sklar.sem, .(SubjNo), function(d){ 
+  include = mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+  d = subset(d, rt > include[1] & rt < include[2])
+})
+# [for Expt 1 only] Remove outliers by condition (less than 3sd from condition mean -- note that this is not a symmetric exclusion criterion)
+sklar.sem <- ddply(sklar.sem, .(Condition), function(d){ 
+  by_subj_include <- mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+  d = subset(d, rt < by_subj_include[2])
+})
+# Rsemve RTs < 200ms & > 10
+sklar.sem <- subset(sklar.sem, rt > log(200))
+sklar.sem <- subset(sklar.sem, rt <= log(10000))
+```
+
+```{r expt1a_r_log_analysis_emo_first}
+sklar.sem$Length <- nchar(as.character(sklar.sem$Stim_column))
+sklar.sem$Length  <- (sklar.sem$Length  - mean(sklar.sem$Length,na.rm= T))/sd(sklar.sem$Length,na.rm= T)
+
+
+sklar.sem.sum <- summaryBy(rt~ SubjNo + Condition, data = sklar.sem, keep.names = T)
+kable(summaryBy(rt ~ Condition, data = sklar.sem.sum, FUN = c(mean,sd)), digits=2)
+
+t.test(rt ~ Condition, data = sklar.sem.sum, paired = T)
+
+
+# lmer (Rabag style)
+sklar.sem.sum.log <- summary(lmer(rt ~ Condition +Length+ (1+Condition|SubjNo)+ (1|Stim_column), data = sklar.sem))
+kable(data.frame(sklar.sem.sum.log$coefficients, "p value"=2*pnorm(-abs(coef(sklar.sem.sum.log)[,3]))), digits=2)
+#print(paste("p value = ", 2*pnorm(-abs(coef(sklar.sem.sum.log)[,3]))))
+```
 
 
 ## Experiment 3b (Replication of Experiment 1b)
@@ -1770,6 +2080,278 @@ emo.sklar.lmer.log <- summary(lmer(rt ~ MeanAffectivity_column+Length + (1+MeanA
 kable(data.frame(emo.sklar.lmer.log$coefficients, "p value"= 2*pnorm(-abs(coef(emo.sklar.lmer.log)[,3]))), digits=2)
 #print(paste("p value = ", 2*pnorm(-abs(coef(emo.sklar.lmer.log)[2,3]))))
 ```
+
+
+### Raw RTs (semantic first)
+Emotional semantics does not affect raw RTs
+```{r expt2a_r_raw_sem_first, include = FALSE}
+
+##########
+# Sklar Emo
+sklar.emo <- Test_Import("./Sklar_Direct_Rep/data","sklar_emo")
+sklar.emo$Length <- nchar(as.character(sklar.emo$Stim_column))
+sklar.emo <- subset(sklar.emo, OrderGroup_column != "emo_sem_emo_sem")
+
+# <----
+trials.per.subj = max(tapply(sklar.emo$rt, sklar.emo$SubjNo,length)) #length(sklar.emo$rt)/length(unique(sklar.emo$SubjNo))
+timeouts <- summaryBy(rt ~ SubjNo, data = subset(sklar.emo, Acc != -1), FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+# <----
+
+#Mark timeouts as incorrect, for exclusion
+sklar.emo[sklar.emo$Acc < 0,]$Acc <- 0
+
+# <--
+total.n <- length(unique(sklar.emo$SubjNo))
+# <--
+
+# Remove outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be > (!!, see by trial exclusion below) 3sd from group mean [ie we remove extra-fast participants)
+Acc <- summaryBy(Acc + rt ~ SubjNo, data = sklar.emo, keep.names = T)
+sklar.emo <- sklar.emo[sklar.emo$SubjNo %in% Acc[Acc$Acc > 0.9,]$SubjNo,]
+sklar.emo <- sklar.emo[sklar.emo$SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo,]
+
+#<--
+excl.n <- length(unique(sklar.emo$SubjNo))
+n.trials = length(sklar.emo$rt)
+subj.pre.excl.trials <- summaryBy(rt ~ SubjNo, data = sklar.emo, FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+
+#<--
+
+#Remove incorrect trials
+sklar.emo <- sklar.emo[sklar.emo$Acc ==1,]
+# Remove RTs +/-3sd from each subject's mean 
+sklar.emo <- ddply(sklar.emo, .(SubjNo), function(d){ 
+  include = mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+  d = subset(d, rt > include[1] & rt < include[2])
+})
+
+# Remove RTs < 200ms & > 1000ms
+sklar.emo <- subset(sklar.emo, rt > 0.2)
+sklar.emo <- subset(sklar.emo, rt <= 10)
+
+# First standardize the MeanAffectivity score
+sklar.emo$MeanAffectivity_column <- (sklar.emo$MeanAffectivity_column - mean(sklar.emo$MeanAffectivity_column, na.rm = T))/sd(sklar.emo$MeanAffectivity_column, na.rm = T)
+
+n.excl.trials = length(sklar.emo$rt)
+subj.excl.trials <- summaryBy(rt ~ SubjNo, data = sklar.emo, FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+subj.excl.trials$final_trials =  subj.excl.trials$rt - subj.pre.excl.trials$rt 
+
+```
+
+```{r expt2a_r_raw_analysis_sem_first}
+
+
+# excluded subjects
+print(paste("n subj excluded = ",total.n-excl.n))
+# excluded trials
+print(paste("% trials excluded = ",((n.trials - n.excl.trials)/n.trials)*100))
+
+print(paste("median trials excluded per participant = ",median(subj.excl.trials$rt), "sd= ", sd(subj.excl.trials$final_trials), "range= ", range(subj.excl.trials$final_trials)))
+print(paste("median timeouts per participant = ",median(timeouts$rt), "sd= ", sd(timeouts$rt), "range= ", range(timeouts$rt)))
+
+
+sklar.emo$Length <- nchar(as.character(sklar.emo$Stim_column))
+sklar.emo$Length <- (sklar.emo$Length - mean(sklar.emo$Length))/sd(sklar.emo$Length)
+
+
+sklar.emo.sum <- summaryBy(rt ~ Stim_column + MeanAffectivity_column, data = sklar.emo, keep.names = T)
+sklar.emo.sum.graph <- sklar.emo.sum
+print("Linear model")
+kable(summary(lm(rt ~ MeanAffectivity_column, data = sklar.emo.sum))$coefficients, digits=2)
+
+
+print("Mixed model")
+emo.sklar.lmer.raw <- summary(lmer(rt ~ MeanAffectivity_column +Length+ (1+MeanAffectivity_column|SubjNo)+ (1|Stim_column), data = sklar.emo))
+kable(data.frame(emo.sklar.lmer.raw$coefficients, "p value"=2*pnorm(-abs(coef(emo.sklar.lmer.raw)[,3]))), digits =2)
+#print(paste("p value = ", 2*pnorm(-abs(coef(emo.sklar.lmer.raw)[2,3]))))
+
+```
+
+### Log RTs (Semantic first)
+Emotional semantics does not affect log RTs
+```{r expt2a_r_log_sem_first, include = FALSE}
+##########
+# Sklar Emo
+sklar.emo <- Test_Import("./Sklar_Direct_Rep/data","sklar_emo")
+sklar.emo$Length <- nchar(as.character(sklar.emo$Stim_column))
+sklar.emo$Length <- (sklar.emo$Length - mean(sklar.emo$Length))/sd(sklar.emo$Length)
+sklar.emo$rt <- log(sklar.emo$rt)
+#Mark timeouts as incorrect, for exclusion
+sklar.emo[sklar.emo$Acc < 0,]$Acc <- 0
+sklar.emo <- subset(sklar.emo, OrderGroup_column != "emo_sem_emo_sem")
+
+# Remove outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be > (!!, see by trial exclusion below) 3sd from group mean [ie we remove extra-fast participants)
+Acc <- summaryBy(Acc + rt ~ SubjNo, data = sklar.emo, keep.names = T)
+sklar.emo <- sklar.emo[sklar.emo$SubjNo %in% Acc[Acc$Acc > 0.9,]$SubjNo,]
+sklar.emo <- sklar.emo[sklar.emo$SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo,]
+#Remove incorrect trials
+sklar.emo <- sklar.emo[sklar.emo$Acc ==1,]
+# Remove RTs +/-3sd from each subject's mean 
+sklar.emo <- ddply(sklar.emo, .(SubjNo), function(d){ 
+  include = mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+  d = subset(d, rt > include[1] & rt < include[2])
+})
+
+# Remove RTs < 200ms & > 1000ms
+sklar.emo <- subset(sklar.emo, rt > log(0.2))
+sklar.emo <- subset(sklar.emo, rt <= log(10))
+
+# First standardize the MeanAffectivity score
+sklar.emo$MeanAffectivity_column <- (sklar.emo$MeanAffectivity_column - mean(sklar.emo$MeanAffectivity_column, na.rm = T))/sd(sklar.emo$MeanAffectivity_column, na.rm = T)
+
+```
+
+```{r expt2a_r_log_analysis_sem_first}
+sklar.emo$Length <- nchar(as.character(sklar.emo$Stim_column))
+sklar.emo$Length <- (sklar.emo$Length - mean(sklar.emo$Length))/sd(sklar.emo$Length)
+
+
+sklar.emo.sum <- summaryBy(rt ~ Stim_column + MeanAffectivity_column, data = sklar.emo, keep.names = T)
+print("Linear model")
+kable(summary(lm(rt ~ MeanAffectivity_column, data = sklar.emo.sum))$coefficients, digits =2)
+
+
+
+print("Mixed model")
+emo.sklar.lmer.log <- summary(lmer(rt ~ MeanAffectivity_column+Length + (1+MeanAffectivity_column|SubjNo)+ (1|Stim_column), data = sklar.emo))
+kable(data.frame(emo.sklar.lmer.log$coefficients, "p value"= 2*pnorm(-abs(coef(emo.sklar.lmer.log)[,3]))), digits=2)
+#print(paste("p value = ", 2*pnorm(-abs(coef(emo.sklar.lmer.log)[2,3]))))
+```
+
+### Raw RTs (Emotional first)
+Emotional semantics does not affect raw RTs
+```{r expt2a_r_raw_emo_first, include = FALSE}
+
+##########
+# Sklar Emo
+sklar.emo <- Test_Import("./Sklar_Direct_Rep/data","sklar_emo")
+sklar.emo$Length <- nchar(as.character(sklar.emo$Stim_column))
+sklar.emo <- subset(sklar.emo, OrderGroup_column == "emo_sem_emo_sem")
+
+# <----
+trials.per.subj = max(tapply(sklar.emo$rt, sklar.emo$SubjNo,length)) #length(sklar.emo$rt)/length(unique(sklar.emo$SubjNo))
+timeouts <- summaryBy(rt ~ SubjNo, data = subset(sklar.emo, Acc != -1), FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+# <----
+
+#Mark timeouts as incorrect, for exclusion
+sklar.emo[sklar.emo$Acc < 0,]$Acc <- 0
+
+# <--
+total.n <- length(unique(sklar.emo$SubjNo))
+# <--
+
+# Remove outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be > (!!, see by trial exclusion below) 3sd from group mean [ie we remove extra-fast participants)
+Acc <- summaryBy(Acc + rt ~ SubjNo, data = sklar.emo, keep.names = T)
+sklar.emo <- sklar.emo[sklar.emo$SubjNo %in% Acc[Acc$Acc > 0.9,]$SubjNo,]
+sklar.emo <- sklar.emo[sklar.emo$SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo,]
+
+#<--
+excl.n <- length(unique(sklar.emo$SubjNo))
+n.trials = length(sklar.emo$rt)
+subj.pre.excl.trials <- summaryBy(rt ~ SubjNo, data = sklar.emo, FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+
+#<--
+
+#Remove incorrect trials
+sklar.emo <- sklar.emo[sklar.emo$Acc ==1,]
+# Remove RTs +/-3sd from each subject's mean 
+sklar.emo <- ddply(sklar.emo, .(SubjNo), function(d){ 
+  include = mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+  d = subset(d, rt > include[1] & rt < include[2])
+})
+
+# Remove RTs < 200ms & > 1000ms
+sklar.emo <- subset(sklar.emo, rt > 0.2)
+sklar.emo <- subset(sklar.emo, rt <= 10)
+
+# First standardize the MeanAffectivity score
+sklar.emo$MeanAffectivity_column <- (sklar.emo$MeanAffectivity_column - mean(sklar.emo$MeanAffectivity_column, na.rm = T))/sd(sklar.emo$MeanAffectivity_column, na.rm = T)
+
+n.excl.trials = length(sklar.emo$rt)
+subj.excl.trials <- summaryBy(rt ~ SubjNo, data = sklar.emo, FUN = function(x){trials.per.subj - length(x)}, keep.names =T)
+subj.excl.trials$final_trials =  subj.excl.trials$rt - subj.pre.excl.trials$rt 
+
+```
+
+```{r expt2a_r_raw_analysis_emo_first}
+
+
+# excluded subjects
+print(paste("n subj excluded = ",total.n-excl.n))
+# excluded trials
+print(paste("% trials excluded = ",((n.trials - n.excl.trials)/n.trials)*100))
+
+print(paste("median trials excluded per participant = ",median(subj.excl.trials$rt), "sd= ", sd(subj.excl.trials$final_trials), "range= ", range(subj.excl.trials$final_trials)))
+print(paste("median timeouts per participant = ",median(timeouts$rt), "sd= ", sd(timeouts$rt), "range= ", range(timeouts$rt)))
+
+
+sklar.emo$Length <- nchar(as.character(sklar.emo$Stim_column))
+sklar.emo$Length <- (sklar.emo$Length - mean(sklar.emo$Length))/sd(sklar.emo$Length)
+
+
+sklar.emo.sum <- summaryBy(rt ~ Stim_column + MeanAffectivity_column, data = sklar.emo, keep.names = T)
+sklar.emo.sum.graph <- sklar.emo.sum
+print("Linear model")
+kable(summary(lm(rt ~ MeanAffectivity_column, data = sklar.emo.sum))$coefficients, digits=2)
+
+
+print("Mixed model")
+emo.sklar.lmer.raw <- summary(lmer(rt ~ MeanAffectivity_column +Length+ (1+MeanAffectivity_column|SubjNo)+ (1|Stim_column), data = sklar.emo))
+kable(data.frame(emo.sklar.lmer.raw$coefficients, "p value"=2*pnorm(-abs(coef(emo.sklar.lmer.raw)[,3]))), digits =2)
+#print(paste("p value = ", 2*pnorm(-abs(coef(emo.sklar.lmer.raw)[2,3]))))
+
+```
+
+### Log RTs (Emotional first)
+Emotional semantics does not affect log RTs
+```{r expt2a_r_log_emo_first, include = FALSE}
+##########
+# Sklar Emo
+sklar.emo <- Test_Import("./Sklar_Direct_Rep/data","sklar_emo")
+sklar.emo$Length <- nchar(as.character(sklar.emo$Stim_column))
+sklar.emo$Length <- (sklar.emo$Length - mean(sklar.emo$Length))/sd(sklar.emo$Length)
+sklar.emo$rt <- log(sklar.emo$rt)
+#Mark timeouts as incorrect, for exclusion
+sklar.emo[sklar.emo$Acc < 0,]$Acc <- 0
+sklar.emo <- subset(sklar.emo, OrderGroup_column == "emo_sem_emo_sem")
+
+# Remove outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be > (!!, see by trial exclusion below) 3sd from group mean [ie we remove extra-fast participants)
+Acc <- summaryBy(Acc + rt ~ SubjNo, data = sklar.emo, keep.names = T)
+sklar.emo <- sklar.emo[sklar.emo$SubjNo %in% Acc[Acc$Acc > 0.9,]$SubjNo,]
+sklar.emo <- sklar.emo[sklar.emo$SubjNo %in% Acc[Acc$rt < (mean(Acc$rt) + (3*sd(Acc$rt))),]$SubjNo,]
+#Remove incorrect trials
+sklar.emo <- sklar.emo[sklar.emo$Acc ==1,]
+# Remove RTs +/-3sd from each subject's mean 
+sklar.emo <- ddply(sklar.emo, .(SubjNo), function(d){ 
+  include = mean(d$rt, na.rm = T) + 3*c(-1,1)*sd(d$rt,na.rm = T)
+  d = subset(d, rt > include[1] & rt < include[2])
+})
+
+# Remove RTs < 200ms & > 1000ms
+sklar.emo <- subset(sklar.emo, rt > log(0.2))
+sklar.emo <- subset(sklar.emo, rt <= log(10))
+
+# First standardize the MeanAffectivity score
+sklar.emo$MeanAffectivity_column <- (sklar.emo$MeanAffectivity_column - mean(sklar.emo$MeanAffectivity_column, na.rm = T))/sd(sklar.emo$MeanAffectivity_column, na.rm = T)
+
+```
+
+```{r expt2a_r_log_analysis_emo_first}
+sklar.emo$Length <- nchar(as.character(sklar.emo$Stim_column))
+sklar.emo$Length <- (sklar.emo$Length - mean(sklar.emo$Length))/sd(sklar.emo$Length)
+
+
+sklar.emo.sum <- summaryBy(rt ~ Stim_column + MeanAffectivity_column, data = sklar.emo, keep.names = T)
+print("Linear model")
+kable(summary(lm(rt ~ MeanAffectivity_column, data = sklar.emo.sum))$coefficients, digits =2)
+
+
+
+print("Mixed model")
+emo.sklar.lmer.log <- summary(lmer(rt ~ MeanAffectivity_column+Length + (1+MeanAffectivity_column|SubjNo)+ (1|Stim_column), data = sklar.emo))
+kable(data.frame(emo.sklar.lmer.log$coefficients, "p value"= 2*pnorm(-abs(coef(emo.sklar.lmer.log)[,3]))), digits=2)
+#print(paste("p value = ", 2*pnorm(-abs(coef(emo.sklar.lmer.log)[2,3]))))
+```
+
 
 ## Experiment 3d (Replication of Experiment 2b)
 ### Raw RTs

@@ -85,11 +85,12 @@ for (i in 1:5000){
 
 
 
-pvals.skew <- rep(NA,10000)
-pvals.skew.excl <- rep(NA,10000)
-pvals.skew.log <- rep(NA,10000)
-pvals.skew.excl.log <- rep(NA,10000)
+pvals.skew <- rep(NA,1)
+pvals.skew.excl <- rep(NA,1)
+pvals.skew.log <- rep(NA,1)
+pvals.skew.excl.log <- rep(NA,1)
 
+for (j in 1:1000){
 a.skew = data.frame(subj = rep(1:30, each = 60), cond = rep(rep(c(1,2), each = 30),30))
 a.skew <- a.skew %>% group_by(subj) %>% 
    # dplyr::mutate(rt = ifelse(cond >1, rst(50,jitter(0.7),jitter(1.5),jitter(5),jitter(2.5)),rst(50,jitter(0.7),jitter(1.5),jitter(5),jitter(2.5))))
@@ -100,16 +101,17 @@ a.skew.log = data.frame(subj = rep(1:30, each = 60), cond = rep(rep(c(1,2), each
 a.skew.log <- a.skew.log %>% group_by(subj) %>% 
   #dplyr::mutate(rt = ifelse(cond >1, rst(50,jitter(0.7),jitter(1.5),jitter(5),jitter(2.5)),rst(50,jitter(0.7),jitter(1.5),jitter(5),jitter(2.5))))
   dplyr::mutate(rt = ifelse(cond >1, rexp(50,jitter(0.3)),rexp(50,jitter(0.3))))
-  a.skew.log <- data.frame(a.skew.log)
+a.skew.log <- data.frame(a.skew.log)
 a.skew.log$rt <- log(a.skew.log$rt)
 
-for (i in 1:10000){
-  pvals.skew[i] <- shuffle_cond_sim(a.skew, shuffle = TRUE)
-  pvals.skew.excl[i] <- shuffle_cond_sim(a.skew, shuffle = TRUE,exclude = TRUE)
-  pvals.skew.log[i] <- shuffle_cond_sim(a.skew.log, shuffle = TRUE)
-  pvals.skew.excl.log[i] <- shuffle_cond_sim(a.skew.log, shuffle = TRUE,exclude = TRUE)
-  }
 
+for (i in 1:500){
+  pvals.skew <- c(pvals.skew,shuffle_cond_sim(a.skew, shuffle = TRUE))
+  pvals.skew.excl <- c(pvals.skew.excl,shuffle_cond_sim(a.skew, shuffle = TRUE,exclude = TRUE))
+  pvals.skew.log <- c(pvals.skew.log,shuffle_cond_sim(a.skew.log, shuffle = TRUE))
+  pvals.skew.excl.log <- c(pvals.skew.excl.log,shuffle_cond_sim(a.skew.log, shuffle = TRUE,exclude = TRUE))
+}
+}
 #shuffle.data <- data.frame(expt = "Normal Distr. Simulations", facet = "untransformed data", cond = "Do not exclude by condition", pvals = pvals.norm)
 #shuffle.data <- rbind(shuffle.data, data.frame(expt = "Normal Distr. Simulations", facet = "untransformed data", cond = "Exclude by condition", pvals = pvals.norm.excl))
 
@@ -555,15 +557,51 @@ for (i in 1:5000){
 }
 
 
-shuffle.data <- rbind(shuffle.data, data.frame(expt = "c. Experiment 1a", facet = "untransformed data",cond = "Do not exclude by condition", pvals = pvals.sklar.noexcl))
-shuffle.data <- rbind(shuffle.data, data.frame(expt = "c. Experiment 1a", facet = "untransformed data",cond = "Exclude by condition", pvals = pvals.sklar))
-shuffle.data <- rbind(shuffle.data, data.frame(expt = "d. Experiment 1a", facet = "log transformed data",cond = "Exclude by condition", pvals = pvals.sklar.log))
-shuffle.data <- rbind(shuffle.data, data.frame(expt = "d. Experiment 1a", facet = "log transformed data",cond = "Do not exclude by condition", pvals = pvals.sklar.log.excl))
-shuffle.data <- rbind(shuffle.data, data.frame(expt = "e. Expt 3a (Expt 1a Replication)", facet = "untransformed data",cond = "Exclude by condition", pvals = expt2.pvals.sklar))
-shuffle.data <- rbind(shuffle.data, data.frame(expt = "e. Expt 3a (Expt 1a Replication)", facet = "untransformed data",cond = "Do not exclude by condition", pvals = expt2.pvals.sklar.excl))
-shuffle.data <- rbind(shuffle.data, data.frame(expt = "e. Expt 3a (Expt 1a Replication)", facet = "log transformed data",cond = "Exclude by condition", pvals = expt2.pvals.sklar.log))
-shuffle.data <- rbind(shuffle.data, data.frame(expt = "e. Expt 3a (Expt 1a Replication)", facet = "log transformed data",cond = "Do not exclude by condition", pvals = expt2.pvals.sklar.excl.log))
+shuffle.data <- rbind(shuffle.data, data.frame(expt = "c. Study 1", facet = "untransformed data",
+                                               cond = "Do not exclude by condition", pvals = pvals.sklar.noexcl))
+shuffle.data <- rbind(shuffle.data, data.frame(expt = "c. Study 1", facet = "untransformed data",
+                                               cond = "Exclude by condition", pvals = pvals.sklar))
+shuffle.data <- rbind(shuffle.data, data.frame(expt = "d. Study 1", facet = "log transformed data",
+                                               cond = "Exclude by condition", pvals = pvals.sklar.log))
+shuffle.data <- rbind(shuffle.data, data.frame(expt = "d. Study 1", facet = "log transformed data",
+                                               cond = "Do not exclude by condition", pvals = pvals.sklar.log.excl))
+shuffle.data <- rbind(shuffle.data, data.frame(expt = "e. Study 6", facet = "untransformed data",
+                                               cond = "Exclude by condition", pvals = expt2.pvals.sklar))
+shuffle.data <- rbind(shuffle.data, data.frame(expt = "e. Study 6", facet = "untransformed data",
+                                               cond = "Do not exclude by condition", pvals = expt2.pvals.sklar.excl))
+shuffle.data <- rbind(shuffle.data, data.frame(expt = "f. Study 6", facet = "log transformed data",
+                                               cond = "Exclude by condition", pvals = expt2.pvals.sklar.log))
+shuffle.data <- rbind(shuffle.data, data.frame(expt = "f. Study 6", facet = "log transformed data",
+                                               cond = "Do not exclude by condition", pvals = expt2.pvals.sklar.excl.log))
 
 shuffle.data$cond <- ordered(shuffle.data$cond, levels = c("Exclude by condition","Do not exclude by condition"))
 
-ggplot(shuffle.data,aes(x=pvals,..density.., lty = cond))+ facet_wrap(expt~facet, ncol = 2)+geom_freqpoly(alpha = 1, lwd = 1.5)+xlab("p values")+theme(legend.position=c(0.26,0.95),legend.background = element_rect(fill=alpha('white', 0)),legend.title=element_blank(),legend.key = element_rect(colour = NA))+xlim(c(0,1))
+ggplot(shuffle.data,aes(x=pvals,..density.., lty = cond))+ facet_wrap(expt~facet, ncol = 2)+
+  geom_freqpoly(alpha = 1, lwd = 1.5)+xlab("p values")+
+  theme(legend.position=c(0.26,0.95),legend.background = element_rect(fill=alpha('white', 0)),legend.title=element_blank(),legend.key = element_rect(colour = NA))+
+  xlim(c(0,1))
+
+# Comparison against a uniform distribution
+ks.test(subset(shuffle.data, expt == "a. Exponential Simulations" & facet == "untransformed data" & cond == "Exclude by condition")$pvals, "punif",0,1)
+ks.test(subset(shuffle.data, expt == "a. Exponential Simulations" & facet == "untransformed data" & cond != "Exclude by condition")$pvals, "punif",0,1)
+ks.test(subset(shuffle.data, expt == "b. Exponential Simulations" & facet != "untransformed data" & cond == "Exclude by condition")$pvals, "punif",0,1)
+ks.test(subset(shuffle.data, expt == "b. Exponential Simulations" & facet != "untransformed data" & cond != "Exclude by condition")$pvals, "punif",0,1)
+
+# Comparison between distribitions
+ks.test(subset(shuffle.data, expt == "a. Exponential Simulations" & facet == "untransformed data" & cond == "Exclude by condition")$pvals, 
+        subset(shuffle.data, expt == "a. Exponential Simulations" & facet == "untransformed data" & cond != "Exclude by condition")$pvals)
+ks.test(subset(shuffle.data, expt == "b. Exponential Simulations" & facet != "untransformed data" & cond == "Exclude by condition")$pvals, 
+        subset(shuffle.data, expt == "b. Exponential Simulations" & facet != "untransformed data" & cond != "Exclude by condition")$pvals)
+
+# For Study 1
+ks.test(subset(shuffle.data, expt == "c. Study 1" & facet == "untransformed data" & cond == "Exclude by condition")$pvals, 
+      subset(shuffle.data, expt == "c. Study 1" & facet == "untransformed data" & cond != "Exclude by condition")$pvals)
+ks.test(subset(shuffle.data, expt == "d. Study 1" & facet == "log transformed data" & cond == "Exclude by condition")$pvals, 
+        subset(shuffle.data, expt == "d. Study 1" & facet == "log transformed data" & cond != "Exclude by condition")$pvals)
+
+# For Study 6
+ks.test(subset(shuffle.data, expt == "e. Study 6" & facet == "untransformed data" & cond == "Exclude by condition")$pvals, 
+        subset(shuffle.data, expt == "e. Study 6" & facet == "untransformed data" & cond != "Exclude by condition")$pvals)
+ks.test(subset(shuffle.data, expt == "f. Study 6" & facet == "log transformed data" & cond == "Exclude by condition")$pvals, 
+        subset(shuffle.data, expt == "f. Study 6" & facet == "log transformed data" & cond != "Exclude by condition")$pvals)
+

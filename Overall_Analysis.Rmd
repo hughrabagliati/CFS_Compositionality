@@ -81,7 +81,7 @@ library(plyr)
 library(lme4)
 library(doBy)
 library(ggplot2)
-
+library(moments)
 read_data <- function(path_name){
 list.files(path = path_name,full.names = T, pattern = ".csv") -> file_list
 comp = c()
@@ -139,6 +139,7 @@ sense.pop.sklar <- subset(sense.pop.sklar, rt != "None")
 sense.pop.sklar$rt <- as.numeric(as.character(sense.pop.sklar$rt))
 
 
+skewness(sense.pop.sklar$rt,na.rm = T)
 
 # <--
 total.n <- length(unique(sense.pop.sklar$SubjNo))
@@ -211,7 +212,8 @@ kable(summaryBy(rt*1000 + perceptual.rating~ Condition, data = sense.pop.sklar.s
 t.test(rt ~ Condition, data = sense.pop.sklar.summary, paired = T)
 t.test(perceptual.rating ~ Condition, data = sense.pop.sklar.summary, paired = T)
 es <- t.test(rt ~ Condition, data = sense.pop.sklar.summary, paired = T)
-es.t.test.raw <- data.frame(t = es$statistic,n1 = es$parameter,n2 = es$parameter)
+es.t.test.raw <- data.frame(t = es$statistic,n1 = es$parameter,n2 = es$parameter,
+                            r = cor.test(subset(sense.pop.sklar.summary, Condition == "Sklar_control")$rt,subset(sense.pop.sklar.summary, Condition == "Sklar_violation")$rt)$estimate)
 
 
 # Bayes factor -- minimum effect of 0.01, maximum of 0.06, our effect = -0.03519684 and our SE = -0.03/-1.7874=  0.01678416
@@ -243,6 +245,10 @@ sense.pop.sklar <- subset(sense.pop.sklar, rt != "None")
 sense.pop.sklar$rt <- as.numeric(as.character(sense.pop.sklar$rt))
 sense.pop.sklar$rt <- sense.pop.sklar$rt *1000
 sense.pop.sklar$rt <- log(sense.pop.sklar$rt)
+
+skewness(sense.pop.sklar$rt,na.rm = T)
+
+
 # Remove outlier subjects by Accuracy and RT (mean acc must be > 0.9, mean rt must be < 3sd above group mean)
 Acc <- summaryBy(match. + rt ~ SubjNo, data = subset(sense.pop.sklar), keep.names = T)
 sense.pop.sklar <- subset(sense.pop.sklar, SubjNo %in% Acc[Acc$match. > 0.9,]$SubjNo)
@@ -281,7 +287,8 @@ kable(summaryBy(rt ~ Condition, data = sense.pop.sklar.summary, FUN = c(mean,sd)
 t.test(rt ~ Condition, data = sense.pop.sklar.summary, paired = T)
 
 es <- t.test(rt ~ Condition, data = sense.pop.sklar.summary, paired = T)
-es.t.test.log <- data.frame(t = es$statistic,n1 = es$parameter,n2 = es$parameter)
+es.t.test.log <- data.frame(t = es$statistic,n1 = es$parameter,n2 = es$parameter,
+                            r = cor.test(subset(sense.pop.sklar.summary, Condition == "Sklar_control")$rt,subset(sense.pop.sklar.summary, Condition == "Sklar_violation")$rt)$estimate)
 
 # Bayes factor -- minimum effect of 0.01, maximum of 0.06, our effect = -0.03519684 and our SE = -0.03/-1.7874=  0.01678416
 # Bayes factor -- minimum effect of 0.01, maximum of 0.06, our effect = -0.03519684 and our SE = -0.03/-1.7874=  0.01678416
@@ -392,7 +399,8 @@ t.test(perceptual.rating ~ Condition, data = sense.pop.new.summary, paired = T)
 
 es <- t.test(rt ~ Condition, data = sense.pop.new.summary, paired = T)
 
-es.t.test.raw <- rbind(es.t.test.raw, data.frame(t = es$statistic,n1 = es$parameter,n2 = es$parameter))
+es.t.test.raw <- rbind(es.t.test.raw, data.frame(t = es$statistic,n1 = es$parameter,n2 = es$parameter,
+                            r = cor.test(subset(sense.pop.new.summary, Condition == "Non-sensible")$rt,subset(sense.pop.new.summary, Condition == "Sensible")$rt)$estimate))
 
 # Bayes factor -- minimum effect of 0.01, maximum of 0.06, our effect = -0.0002327283 and our SE = -0.03/-0.02217=  0.01049744
 
@@ -459,7 +467,8 @@ t.test(rt ~ Condition, data = sense.pop.new.summary, paired = T)
 
 es <- t.test(rt ~ Condition, data = sense.pop.new.summary, paired = T)
 
-es.t.test.log <- rbind(es.t.test.log, data.frame(t = es$statistic,n1 = es$parameter,n2 = es$parameter))
+es.t.test.log <- rbind(es.t.test.log, data.frame(t = es$statistic,n1 = es$parameter,n2 = es$parameter,
+                            r = cor.test(subset(sense.pop.new.summary, Condition == "Non-sensible")$rt,subset(sense.pop.new.summary, Condition == "Sensible")$rt)$estimate))
 # Bayes factor -- minimum effect of 0.01, maximum of 0.06, our effect = -0.0002327283 and our SE = -0.03/-0.02217=  0.01049744
 
 
@@ -557,12 +566,12 @@ kable(data.frame(sense.pop.length.log$coefficients, "p value"=2*pnorm(-abs(coef(
 sense.sklar.graph <- summaryBy(rt ~ Condition + SubjNo, data = sense.pop.sklar.graph, keep.names = T)
 sense.sklar.graph <- summaryBy(rt ~ Condition, data = sense.sklar.graph, FUN = c(mean,ci.low,ci.high,sd))
 sense.sklar.graph$SE <- sense.sklar.graph$rt.sd/sqrt(length(unique(sense.pop.sklar$SubjNo)))
-sense.sklar.graph$Experiment <- "Experiment 1a \nIncongruent Phrases"
+sense.sklar.graph$Experiment <- "Study 1 \nIncongruent Phrases"
 
 sense.new.graph <- summaryBy(rt ~ Condition + SubjNo, data = sense.pop.new.graph, keep.names = T)
 sense.new.graph <- summaryBy(rt ~ Condition, data = sense.new.graph, FUN = c(mean,ci.low,ci.high,sd))
 sense.new.graph$SE <- sense.new.graph$rt.sd/sqrt(length(unique(sense.pop.new$SubjNo)))
-sense.new.graph$Experiment <- "Experiment 1b \nReversible Sentences"
+sense.new.graph$Experiment <- "Study 2 \nReversible Sentences"
 
 sense.graph <- rbind(sense.sklar.graph,sense.new.graph)
 sense.graph$Cond_Graph <- "Violation"
@@ -682,7 +691,10 @@ print("Affective Valence against Rating Scale")
 kable(summary(lm(perceptual.rating ~ MeanAffectivity, data = emo.pop.sklar.sum))$coefficients,digits=2)
 
 es <- lm(rt~MeanAffectivity, data = emo.pop.sklar.sum)
-es.t.test.raw <- rbind(es.t.test.raw, data.frame(t = summary(es)$coefficients[2,3],n1 = summary(es)$df[2],n2 = summary(es)$df[2]))
+es.t.test.raw <- rbind(es.t.test.raw, data.frame(t = summary(es)$coefficients[2,3],n1 = summary(es)$df[2],
+                                                 n2 = summary(es)$df[2],
+                                                 r = 0))
+# note that r = 0 here because it is not a within subjects test
 
 
 # lmer (rabag style)
@@ -742,7 +754,9 @@ print("Valence against RT")
 kable(summary(lm(rt ~ MeanAffectivity, data = emo.pop.sklar.sum))$coefficients, digits =2)
 
 es <- lm(rt~MeanAffectivity, data = emo.pop.sklar.sum)
-es.t.test.log <- rbind(es.t.test.log, data.frame(t = summary(es)$coefficients[2,3],n1 = summary(es)$df[2],n2 = summary(es)$df[2]))
+es.t.test.log <- rbind(es.t.test.log, data.frame(t = summary(es)$coefficients[2,3],n1 = summary(es)$df[2],
+                                                 n2 = summary(es)$df[2],
+                                                 r = 0))
 
 
 # lmer (rabag style)
@@ -847,8 +861,10 @@ print("Valence against Rating Scale")
 kable(summary(lm(perceptual.rating~ MeanAffectivity, data = emo.pop.new.sum))$coefficients,digits=2)
 
 es <- lm(rt~MeanAffectivity, data = emo.pop.new.sum)
-es.t.test.raw <- rbind(es.t.test.raw, data.frame(t = summary(es)$coefficients[2,3],n1 = summary(es)$df[2],n2 = summary(es)$df[2]))
-
+es.t.test.raw <- rbind(es.t.test.raw, data.frame(t = summary(es)$coefficients[2,3],n1 = summary(es)$df[2],
+                                                 n2 = summary(es)$df[2],
+                                                 r = 0))
+ # Note that r = 0 here because this is not a within subjects test
 
 
 print("Valence against RT in mixed model")
@@ -909,7 +925,9 @@ print("Valence against RT")
 kable(summary(lm(rt ~ MeanAffectivity, data = emo.pop.new.sum))$coefficients, digits =2)
 
 es <- lm(rt~MeanAffectivity, data = emo.pop.new.sum)
-es.t.test.log <- rbind(es.t.test.log, data.frame(t = summary(es)$coefficients[2,3],n1 = summary(es)$df[2],n2 = summary(es)$df[2]))
+es.t.test.log <- rbind(es.t.test.log, data.frame(t = summary(es)$coefficients[2,3],n1 = summary(es)$df[2],
+                                                 n2 = summary(es)$df[2],
+                                                 r = 0))
 
 
 
@@ -1254,17 +1272,17 @@ kable(data.frame(emo.pop.lang.log$coefficients, "pvalue"=2*pnorm(-abs(coef(emo.p
 ``` {r emo_graphs_exp2, echo = FALSE}
 
 emo.pop.hebr.sum <- summaryBy(rt +perceptual.rating~ prime + MeanAffectivity + Contrast, data = emo.pop.hebr.graph, keep.names = T)
-emo.pop.hebr.sum$Experiment <- "Experiment 2c \nHebrew Phrases"
+emo.pop.hebr.sum$Experiment <- "Study 5 \nHebrew Phrases"
 
-emo.pop.sklar.sum.graph$Experiment <- "Experiment 2a \nTwo Word Phrases"
+emo.pop.sklar.sum.graph$Experiment <- "Study 3 \nTwo Word Phrases"
 emo.pop.sklar.sum.graph$Contrast <- 50
-emo.pop.new.sum.graph$Experiment <- "Experiment 2b \nReversible Sentences"
+emo.pop.new.sum.graph$Experiment <- "Study 4 \nReversible Sentences"
 emo.pop.new.sum.graph$Contrast <- 50
 
 graph <- rbind(emo.pop.sklar.sum.graph,emo.pop.new.sum.graph,emo.pop.hebr.sum)
 
 graph <- na.omit(graph)
-graph$Experiment <- ordered(graph$Experiment, levels = c("Experiment 2a \nTwo Word Phrases", "Experiment 2b \nReversible Sentences", "Experiment 2c \nHebrew Phrases"))
+graph$Experiment <- ordered(graph$Experiment, levels = c("Study 3 \nTwo Word Phrases", "Study 4 \nReversible Sentences", "Study 5 \nHebrew Phrases"))
 graph$Contrast <- ordered(graph$Contrast, levels = c("50","80"), labels = c("50%","80%"))
 
 
@@ -1407,7 +1425,8 @@ kable(summaryBy(rt ~ Condition, data = sklar.sem.sum, FUN = c(mean,sd)),digits=2
 t.test(rt ~ Condition, data = sklar.sem.sum, paired = T)
 
 es <- t.test(rt ~ Condition, data = sklar.sem.sum, paired = T)
-es.t.test.raw <- rbind(es.t.test.raw,data.frame(t = es$statistic,n1 = es$parameter,n2 = es$parameter))
+es.t.test.raw <- rbind(es.t.test.raw,data.frame(t = es$statistic,n1 = es$parameter,n2 = es$parameter,
+                                                r = cor.test(subset(sklar.sem.sum, Condition == "Control")$rt,subset(sklar.sem.sum, Condition == "Violation")$rt)$estimate))
 
 # lmer (Rabag style)
 sklar.sem.sum.raw <- summary(lmer(rt ~ Condition +Length+ (1+Condition|SubjNo)+ (1|Stim_column), data = sklar.sem))
@@ -1468,7 +1487,8 @@ kable(summaryBy(rt ~ Condition, data = sklar.sem.sum, FUN = c(mean,sd)), digits=
 t.test(rt ~ Condition, data = sklar.sem.sum, paired = T)
 
 es <- t.test(rt ~ Condition, data = sklar.sem.sum, paired = T)
-es.t.test.log <- rbind(es.t.test.log,data.frame(t = es$statistic,n1 = es$parameter,n2 = es$parameter))
+es.t.test.log <- rbind(es.t.test.log,data.frame(t = es$statistic,n1 = es$parameter,n2 = es$parameter,
+                                                r = cor.test(subset(sklar.sem.sum, Condition == "Control")$rt,subset(sklar.sem.sum, Condition == "Violation")$rt)$estimate))
 
 # lmer (Rabag style)
 sklar.sem.sum.log <- summary(lmer(rt ~ Condition +Length+ (1+Condition|SubjNo)+ (1|Stim_column), data = sklar.sem))
@@ -1872,7 +1892,8 @@ t.test(rt ~ Condition, data = edin.sem.sum, paired = T)
 
 
 es <- t.test(rt ~ Condition, data = edin.sem.sum, paired = T)
-es.t.test.raw <- rbind(es.t.test.raw,data.frame(t = es$statistic,n1 = es$parameter,n2 = es$parameter))
+es.t.test.raw <- rbind(es.t.test.raw,data.frame(t = es$statistic,n1 = es$parameter,n2 = es$parameter,
+                                                r = cor.test(subset(edin.sem.sum, Condition == "Control")$rt,subset(edin.sem.sum, Condition == "Violation")$rt)$estimate))
 
 # lmer (Rabag style)
 edin.sem.sum.raw <- summary(lmer(rt ~ Condition +Length+ (1+Condition|SubjNo)+ (1|Stim_column), data = edin.sem))
@@ -1932,7 +1953,8 @@ kable(summaryBy(rt ~ Condition, data = edin.sem.sum, FUN = c(mean,sd)), digits=2
 t.test(rt ~ Condition, data = edin.sem.sum, paired = T)
 
 es <- t.test(rt ~ Condition, data = edin.sem.sum, paired = T)
-es.t.test.log <- rbind(es.t.test.log,data.frame(t = es$statistic,n1 = es$parameter,n2 = es$parameter))
+es.t.test.log <- rbind(es.t.test.log,data.frame(t = es$statistic,n1 = es$parameter,n2 = es$parameter,
+                                                r = cor.test(subset(edin.sem.sum, Condition == "Control")$rt,subset(edin.sem.sum, Condition == "Violation")$rt)$estimate))
 
 
 # lmer (Rabag style)
@@ -2019,8 +2041,11 @@ print("Linear model")
 kable(summary(lm(rt ~ MeanAffectivity_column, data = sklar.emo.sum))$coefficients, digits=2)
 
 
+
 es <- lm(rt~MeanAffectivity_column, data = sklar.emo.sum)
-es.t.test.raw <- rbind(es.t.test.raw, data.frame(t = summary(es)$coefficients[2,3],n1 = summary(es)$df[2],n2 = summary(es)$df[2]))
+es.t.test.raw <- rbind(es.t.test.raw, data.frame(t = summary(es)$coefficients[2,3],n1 = summary(es)$df[2],
+                                                 n2 = summary(es)$df[2], r = 0))
+# r = 0 because this is not a within subjects effect
 
 print("Mixed model")
 emo.sklar.lmer.raw <- summary(lmer(rt ~ MeanAffectivity_column +Length+ (1+MeanAffectivity_column|SubjNo)+ (1|Stim_column), data = sklar.emo))
@@ -2072,7 +2097,7 @@ print("Linear model")
 kable(summary(lm(rt ~ MeanAffectivity_column, data = sklar.emo.sum))$coefficients, digits =2)
 
 es <- lm(rt~MeanAffectivity_column, data = sklar.emo.sum)
-es.t.test.log <- rbind(es.t.test.log, data.frame(t = summary(es)$coefficients[2,3],n1 = summary(es)$df[2],n2 = summary(es)$df[2]))
+es.t.test.log <- rbind(es.t.test.log, data.frame(t = summary(es)$coefficients[2,3],n1 = summary(es)$df[2],n2 = summary(es)$df[2], r = 0))
 
 
 print("Mixed model")
@@ -2440,8 +2465,9 @@ print("Linear model")
 kable(summary(lm(rt ~ MeanAffectivity_column, data = edin.emo.sum))$coefficients, digits =2)
 
 es <- lm(rt~MeanAffectivity_column, data = edin.emo.sum)
-es.t.test.raw <- rbind(es.t.test.raw, data.frame(t = summary(es)$coefficients[2,3],n1 = summary(es)$df[2],n2 = summary(es)$df[2]))
-
+es.t.test.raw <- rbind(es.t.test.raw, data.frame(t = summary(es)$coefficients[2,3],n1 = summary(es)$df[2],
+                                                 n2 = summary(es)$df[2], r = 0))
+# r = 0 because this is not a within subject effect
 
 # lmer (Rabag style)
 print("Mixed model")
@@ -2505,7 +2531,7 @@ print("Linear model")
 kable(summary(lm(rt ~ MeanAffectivity_column, data = edin.emo.sum))$coefficients, digits=2)
 
 es <- lm(rt~MeanAffectivity_column, data = edin.emo.sum)
-es.t.test.log <- rbind(es.t.test.log, data.frame(t = summary(es)$coefficients[2,3],n1 = summary(es)$df[2],n2 = summary(es)$df[2]))
+es.t.test.log <- rbind(es.t.test.log, data.frame(t = summary(es)$coefficients[2,3],n1 = summary(es)$df[2],n2 = summary(es)$df[2], r = 0))
 
 print("Mixed model")
 # lmer (Rabag style)
@@ -2526,13 +2552,13 @@ ci.high <- function(x,na.rm=T) {
   quantile(bootstrap(1:length(x),1000,theta,x,na.rm=na.rm)$thetastar,.975,na.rm=na.rm) - mean(x,na.rm=na.rm)}
 
 
-sklar.emo.sum.graph$Experiment <- "Experiment 3c\n(Expt. 2a Replication)\nTwo Word Phrases"
-edin.emo.sum.graph$Experiment <- "Experiment 3d\n(Expt. 2b Replication)\nReversible Sentences"
+sklar.emo.sum.graph$Experiment <- "Study 8\n(Study 3 Replication)\nTwo Word Phrases"
+edin.emo.sum.graph$Experiment <- "Study 9\n(Study 4 Replication)\nReversible Sentences"
 
 graph <- rbind(sklar.emo.sum.graph,edin.emo.sum.graph)
 
 graph <- na.omit(graph)
-graph$Experiment <- ordered(graph$Experiment, levels = c("Experiment 3c\n(Expt. 2a Replication)\nTwo Word Phrases", "Experiment 3d\n(Expt. 2b Replication)\nReversible Sentences"))
+graph$Experiment <- ordered(graph$Experiment, levels = c("Study 8\n(Study 3 Replication)\nTwo Word Phrases", "Study 9\n(Study 4 Replication)\nReversible Sentences"))
 
 graph$rt <- graph$rt * 1000
 
@@ -2546,12 +2572,12 @@ emo.graph <- ggplot(graph, aes(x=MeanAffectivity_column, y=rt)) +
 sense.sklar.graph <- summaryBy(rt ~ Condition + SubjNo, data = sklar.sem.graph, keep.names = T)
 sense.sklar.graph <- summaryBy(rt ~ Condition, data = sense.sklar.graph, FUN = c(mean,ci.low,ci.high,sd))
 sense.sklar.graph$SE <- sense.sklar.graph$rt.sd/sqrt(length(unique(sklar.sem$SubjNo)))
-sense.sklar.graph$Experiment <- "Experiment 3a\n(Expt. 1a Replication)\nIncongruent Phrases"
+sense.sklar.graph$Experiment <- "Study 6\n(Study 1 Replication)\nIncongruent Phrases"
 
 sense.new.graph <- summaryBy(rt ~ Condition + SubjNo, data = edin.sem.graph, keep.names = T)
 sense.new.graph <- summaryBy(rt ~ Condition, data = sense.new.graph, FUN = c(mean,ci.low,ci.high,sd))
 sense.new.graph$SE <- sense.new.graph$rt.sd/sqrt(length(unique(edin.sem$SubjNo)))
-sense.new.graph$Experiment <- "Experiment 3b\n(Expt. 1b Replication)\nReversible Sentences"
+sense.new.graph$Experiment <- "Study 7\n(Study 2 Replication)\nReversible Sentences"
 
 sense.graph <- rbind(sense.sklar.graph,sense.new.graph)
 sense.graph$Cond_Graph <- "Violation"
@@ -2649,6 +2675,24 @@ kable(summaryBy(rt*1000 ~ prime_semantics, data = words.sum, FUN = c(mean,sd)), 
 word.lmer <- summary(lmer(rt~prime_semantics*length + (1+prime_semantics*length|SubjNo)+(1|word), data = sense.pop))
 kable(data.frame(word.lmer$coefficients, "p values" = 2*pnorm(-abs(coef(word.lmer)[,3]))), digits =2)
 #print(paste("p value = ", 2*pnorm(-abs(coef(word.lmer)[,3]))))
+
+
+# Run t tests for meta-analysis
+
+es <- t.test(rt ~ prime_semantics, data = subset(words.sum, length == "Long"), paired = T)
+# multiply es$t by -1, because in this experiment 
+# the factors levels are reversed from prior studies (because we use negative/neutral rather than 
+# negative controls)
+es$statistic <- es$statistic * -1
+es.t.test.raw <- rbind(es.t.test.raw,data.frame(t = es$statistic,n1 = es$parameter,n2 = es$parameter,
+                                                r = cor.test(subset(words.sum, length == "Long" & prime_semantics == "negative")$rt,subset(words.sum, length == "Long" & prime_semantics == "neutral")$rt)$estimate))
+
+es <- t.test(rt ~ prime_semantics, data = subset(words.sum, length == "Short"), paired = T)
+
+es$statistic <- es$statistic * -1
+es.t.test.raw <- rbind(es.t.test.raw,data.frame(t = es$statistic,n1 = es$parameter,n2 = es$parameter,
+                                                r = cor.test(subset(words.sum, length == "Short" & prime_semantics == "negative")$rt,subset(words.sum, length == "Short" & prime_semantics == "neutral")$rt)$estimate))
+
 ```
 
 ## Log RTs
@@ -2685,6 +2729,21 @@ print("RTs against length by semantics")
 kable(summaryBy(rt*1000 ~ prime_semantics, data = words.sum, FUN = c(mean,sd)), digits=2)
 
 
+
+es <- t.test(rt ~ prime_semantics, data = subset(words.sum, length == "Long"), paired = T)
+# multiply es$t-statistic by -1, because in this experiment 
+# the factors levels are reversed from prior studies (because we use negative/neutral rather than 
+# negative controls)
+es$statistic <- es$statistic * -1
+es.t.test.log <- rbind(es.t.test.log,data.frame(t = es$statistic,n1 = es$parameter,n2 = es$parameter,
+                                                r = cor.test(subset(words.sum, length == "Long" & prime_semantics == "negative")$rt,subset(words.sum, length == "Long" & prime_semantics == "neutral")$rt)$estimate))
+
+es <- t.test(rt ~ prime_semantics, data = subset(words.sum, length == "Short"), paired = T)
+es$statistic <- es$statistic * -1
+es.t.test.log <- rbind(es.t.test.log,data.frame(t = es$statistic,n1 = es$parameter,n2 = es$parameter,
+                                                r = cor.test(subset(words.sum, length == "Short" & prime_semantics == "negative")$rt,subset(words.sum, length == "Short" & prime_semantics == "neutral")$rt)$estimate))
+
+
 word.lmer <- summary(lmer(rt~prime_semantics*length + (1+prime_semantics*length|SubjNo)+(1|word), data = sense.pop))
 kable(data.frame(word.lmer$coefficients, "p values" = 2*pnorm(-abs(coef(word.lmer)[,3]))), digits =2)
 #print(paste("p value = ", 2*pnorm(-abs(coef(word.lmer)[,3]))))
@@ -2710,50 +2769,105 @@ ggplot(sense.graph, aes(length,rt.mean, fill = prime_semantics)) +
 
 # Meta analysis
 ```{r effect_sizes}
-
+library(BayesFactor)
 
 
 print("Raw effect sizes")
-# Add t.tests from our Experiment 4 (n=2),  Sklar Experiments (n =4), yang yeh experiments (n=2)
-es.t.test.raw <- rbind(es.t.test.raw, data.frame(t = c(1.48,0.95,2.63,2.92,2.523,2.229,-4.48,-4.28), n1 = c(25,25,31,21,45,45,11,11), n2 = c(25,25,31,21,45,45,11,11)))
+# Add t.tests from Sklar Experiments (n =4), yang yeh experiments (n=2)
+# Because I am uncertain about d from partial eta squared (there's some debate about this)
+# we first transform F to t (t = sqrt(F))
+# and then calculate as with all the others, assuming a correlation of about 0.95
+# For Expt 1, F = 20.09, t = -4.48 (make -ve to account for directionality)
+# For Expt 2, F = 18.35, t = -4.28
+es.t.test.raw <- rbind(es.t.test.raw, data.frame(t = c(2.63,2.92,2.523,2.229,-4.48,-4.28), n1 = c(31,21,45,45,11,11), n2 = c(31,21,45,45,11,11), r = c(0.975,0.975,0,0,0.975,0.975)))
+es.t.test.raw
 raw.es <- tes(es.t.test.raw[,1],es.t.test.raw[,2],es.t.test.raw[,3], verbose = FALSE)
-raw.es$exp <- c("Experiment 1a", "Experiment 1b","Experiment 2a", "Experiment 2b","Experiment 3a","Experiment 3b","Experiment 3c","Experiment 3d","Experiment 4a","Experiment 4b", "Sklar et al. Expt. 1","Sklar et al. Expt. 2", "Sklar et al. Expt. 4a","Sklar et al. Expt. 4b", "Yang & Yeh Expt. 1","Yang & Yeh Expt. 2")
+raw.es$exp <- c("Study 1", "Study 2","Study 3", "Study 4","Study 6","Study 7","Study 8","Study 9","Study 10a","Study 10b", "Sklar et al. Expt. 1","Sklar et al. Expt. 2", "Sklar et al. Expt. 4a","Sklar et al. Expt. 4b", "Yang & Yeh Expt. 1","Yang & Yeh Expt. 2")
 raw.es$lab <- c(rep("Ed",10),rep("Israel",4),rep("Taiwan",2))
 raw.es$session <- c("1","1","2","2","3","3","3","3","4","4","5","6","7","8","9","10")
 raw.es$procedure <- c("1","2","3","4","1","3","2","4","5","5","1","1","3","3","5","5")
+raw.es$r <- es.t.test.raw$r
+raw.es$t <- es.t.test.raw$t
 
-#kable(raw.es)
-ran.ef.raw <- rma(d,var.d,random = ~ 1|lab,data = raw.es)
+# Recalculate d using correlations between conditions for within subjects comparisons
+#  (i.e., Experiments 1a and 1b, Experiments 3a and 3b, and the two conditions of Experiment 4, plus
+# Estimate the correlations for the Sklar and Yang & Yeh data)
+
+raw.es$d <- raw.es$t * sqrt(2*(1-raw.es$r)/raw.es$n.1)
+raw.es$d.se <- sqrt((2 * (1 - raw.es$r)/raw.es$n.1) + 
+                      (raw.es$d^2)/(2 * raw.es$n.1))
+
+#raw.es
+# we originally ran a random effects meta analysis on unadjusted t's, 
+# but then realised that over-estimated effect size! Now, we adjust for
+# correlations so need to use a different metaregression structure
+#ran.ef.raw <- rma(d,var.d,random = ~ 1|lab,data = raw.es)
+ran.ef.raw <- rma.mv(d,V= (d.se)^2, random = ~ 1|lab,data = raw.es)
 ran.ef.raw
 forest(ran.ef.raw,
        slab = raw.es$exp,
-       mlab = "All Experiments",
+       mlab = "All Studies",
        xlab = "Cohen's d", psize = 1.5)
 par(font = 2)
-text(-6, 17.55, "Experiments (raw data)")
-text(5, 17.55, "Cohen's d [95% CI]")
+text(-1.9, 17.55, "All studies (raw data)")
+text(2.2, 17.55, "Cohen's d [95% CI]")
 par(font = 1)
 funnel(ran.ef.raw)
 
+```
+
+We then calculated a Bayes factor for this regression, comparing a null hypothesis to a hypothesis within which the true effect of unconscious semantics was uniformly distributed somewhere between -1 and 1, i.e., a very non-informative theory which could account for the wide variety in effect sizes found in this literature. The calculator at 
+[Zoltan Dienes' site](http://www.lifesci.sussex.ac.uk/home/Zoltan_Dienes/inference/Bayes.htm) produced a Bayes factor of 0.24, suggesting that the data is approximately four times more likely under the null hypothesis than the non-informative theory.
+
+We also used Richard Morey's method for calculating meta-analytic BayesFactors
+
+```{r bayes_factor_morey_method}
+summary(meta.ttestBF(t = raw.es$t,n1=raw.es$n.1,n2=raw.es$n.2,nullInterval = c(0,1)))
+summary(meta.ttestBF(t = raw.es$t,n1=raw.es$n.1,n2=raw.es$n.2))
+
+```
+
+```{r log_effect_sizes}
+
 print("log effect sizes")
 
-es.t.test.log <- rbind(es.t.test.log, data.frame(t = c(1.23,1.21), n1 = c(25,25), n2 = c(25,25)))
-es.t.test.log
+#No longer need to add Expt 4 manually
+#es.t.test.log <- rbind(es.t.test.log, data.frame(t = c(1.23,1.21), n1 = c(25,25), n2 = c(25,25)))
+#es.t.test.log
 log.es <- tes(es.t.test.log[,1],es.t.test.log[,2],es.t.test.log[,3], verbose = FALSE)
-log.es$exp <- c("Experiment 1a", "Experiment 1b","Experiment 2a", "Experiment 2b","Experiment 3a","Experiment 3b","Experiment 3c","Experiment 3d","Experiment 4a","Experiment 4b")
+log.es$exp <- c("Study 1", "Study 2","Study 3", "Study 4","Study 6","Study 7","Study 8","Study 9","Study 10a","Study 10b")
 log.es$lab <- c(rep("Ed",10))#,rep("Israel",4))
 log.es$procedure <- c("1","2","3","4","1","3","2","4","5","5")
 #kable(log.es)
-ran.ef.log <- rma(d,var.d,random = ~ 1|procedure, data = log.es)
+log.es$r <- es.t.test.log$r
+log.es$t <- es.t.test.log$t
+
+log.es$d <- log.es$t * sqrt(2*(1-log.es$r)/log.es$n.1)
+log.es$d.se <- sqrt((2 * (1 - log.es$r)/log.es$n.1) + 
+                      (log.es$d^2)/(2 * log.es$n.1))
+#log.es
+# Old style analysis before accounting for correlations
+#ran.ef.log <- rma(d,var.d,random = ~ 1|procedure, data = log.es)
+ran.ef.log <- rma.mv(d,V= (d.se)^2, random = ~ 1|procedure,data = log.es)
 ran.ef.log
 forest(ran.ef.log,
        slab = log.es$exp,
-       mlab = "All Experiments",
+       mlab = "All Studies",
        xlab = "Cohen's d", psize = 1.5)
 par(font = 2)
-text(-1.4, 11.6, "Experiments (log transformed data)")
-text(2.1, 11.6, "Cohen's d [95% CI]")
+text(-1.07, 11.6, "Edinburgh Studies (log transformed data)")
+text(1.6, 11.6, "Cohen's d [95% CI]")
 funnel(ran.ef.log)
+```
+
+
+We then calculated a Bayes factor for this regression, comparing a null hypothesis to a hypothesis within which the true effect of unconscious semantics was uniformly distributed somewhere between -1 and 1, i.e., a very non-informative theory which could account for the wide variety in effect sizes found in this literature. The calculator at 
+[Zoltan Dienes' site](http://www.lifesci.sussex.ac.uk/home/Zoltan_Dienes/inference/Bayes.htm) produced a Bayes factor of 0.02, suggesting that the data is approximately 50 times more likely under the null hypothesis than the non-informative theory.
+
+We also used Richard Morey's method for calculating meta-analytic BayesFactors
+
+```{r bayes_factor_morey_method_low}
+summary(meta.ttestBF(t = log.es$t,n1=log.es$n.1,n2=log.es$n.2,nullInterval = c(0,1)))
 ```
 
 # Summary

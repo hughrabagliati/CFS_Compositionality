@@ -693,8 +693,8 @@ kable(summary(lm(perceptual.rating ~ MeanAffectivity, data = emo.pop.sklar.sum))
 es <- lm(rt~MeanAffectivity, data = emo.pop.sklar.sum)
 es.t.test.raw <- rbind(es.t.test.raw, data.frame(t = summary(es)$coefficients[2,3],n1 = summary(es)$df[2],
                                                  n2 = summary(es)$df[2],
-                                                 r = 0))
-# note that r = 0 here because it is not a within subjects test
+                                                 r = 0.5))
+# note that r = 0.5 here because it is not a within subjects test
 
 
 # lmer (rabag style)
@@ -756,7 +756,7 @@ kable(summary(lm(rt ~ MeanAffectivity, data = emo.pop.sklar.sum))$coefficients, 
 es <- lm(rt~MeanAffectivity, data = emo.pop.sklar.sum)
 es.t.test.log <- rbind(es.t.test.log, data.frame(t = summary(es)$coefficients[2,3],n1 = summary(es)$df[2],
                                                  n2 = summary(es)$df[2],
-                                                 r = 0))
+                                                 r = 0.5))
 
 
 # lmer (rabag style)
@@ -863,8 +863,8 @@ kable(summary(lm(perceptual.rating~ MeanAffectivity, data = emo.pop.new.sum))$co
 es <- lm(rt~MeanAffectivity, data = emo.pop.new.sum)
 es.t.test.raw <- rbind(es.t.test.raw, data.frame(t = summary(es)$coefficients[2,3],n1 = summary(es)$df[2],
                                                  n2 = summary(es)$df[2],
-                                                 r = 0))
- # Note that r = 0 here because this is not a within subjects test
+                                                 r = 0.5))
+ # Note that r = 0.5 here because this is not a within subjects test
 
 
 print("Valence against RT in mixed model")
@@ -927,7 +927,7 @@ kable(summary(lm(rt ~ MeanAffectivity, data = emo.pop.new.sum))$coefficients, di
 es <- lm(rt~MeanAffectivity, data = emo.pop.new.sum)
 es.t.test.log <- rbind(es.t.test.log, data.frame(t = summary(es)$coefficients[2,3],n1 = summary(es)$df[2],
                                                  n2 = summary(es)$df[2],
-                                                 r = 0))
+                                                 r = 0.5))
 
 
 
@@ -2044,8 +2044,8 @@ kable(summary(lm(rt ~ MeanAffectivity_column, data = sklar.emo.sum))$coefficient
 
 es <- lm(rt~MeanAffectivity_column, data = sklar.emo.sum)
 es.t.test.raw <- rbind(es.t.test.raw, data.frame(t = summary(es)$coefficients[2,3],n1 = summary(es)$df[2],
-                                                 n2 = summary(es)$df[2], r = 0))
-# r = 0 because this is not a within subjects effect
+                                                 n2 = summary(es)$df[2], r = 0.5))
+# r = 0.5 because this is not a within subjects effect
 
 print("Mixed model")
 emo.sklar.lmer.raw <- summary(lmer(rt ~ MeanAffectivity_column +Length+ (1+MeanAffectivity_column|SubjNo)+ (1|Stim_column), data = sklar.emo))
@@ -2097,7 +2097,7 @@ print("Linear model")
 kable(summary(lm(rt ~ MeanAffectivity_column, data = sklar.emo.sum))$coefficients, digits =2)
 
 es <- lm(rt~MeanAffectivity_column, data = sklar.emo.sum)
-es.t.test.log <- rbind(es.t.test.log, data.frame(t = summary(es)$coefficients[2,3],n1 = summary(es)$df[2],n2 = summary(es)$df[2], r = 0))
+es.t.test.log <- rbind(es.t.test.log, data.frame(t = summary(es)$coefficients[2,3],n1 = summary(es)$df[2],n2 = summary(es)$df[2], r = 0.5))
 
 
 print("Mixed model")
@@ -2466,8 +2466,8 @@ kable(summary(lm(rt ~ MeanAffectivity_column, data = edin.emo.sum))$coefficients
 
 es <- lm(rt~MeanAffectivity_column, data = edin.emo.sum)
 es.t.test.raw <- rbind(es.t.test.raw, data.frame(t = summary(es)$coefficients[2,3],n1 = summary(es)$df[2],
-                                                 n2 = summary(es)$df[2], r = 0))
-# r = 0 because this is not a within subject effect
+                                                 n2 = summary(es)$df[2], r = 0.5))
+# r = 0.5 because this is not a within subject effect
 
 # lmer (Rabag style)
 print("Mixed model")
@@ -2531,7 +2531,7 @@ print("Linear model")
 kable(summary(lm(rt ~ MeanAffectivity_column, data = edin.emo.sum))$coefficients, digits=2)
 
 es <- lm(rt~MeanAffectivity_column, data = edin.emo.sum)
-es.t.test.log <- rbind(es.t.test.log, data.frame(t = summary(es)$coefficients[2,3],n1 = summary(es)$df[2],n2 = summary(es)$df[2], r = 0))
+es.t.test.log <- rbind(es.t.test.log, data.frame(t = summary(es)$coefficients[2,3],n1 = summary(es)$df[2],n2 = summary(es)$df[2], r = 0.5))
 
 print("Mixed model")
 # lmer (Rabag style)
@@ -2779,7 +2779,7 @@ print("Raw effect sizes")
 # and then calculate as with all the others, assuming a correlation of about 0.95
 # For Expt 1, F = 20.09, t = -4.48 (make -ve to account for directionality)
 # For Expt 2, F = 18.35, t = -4.28
-es.t.test.raw <- rbind(es.t.test.raw, data.frame(t = c(2.63,2.92,2.523,2.229,-4.48,-4.28), n1 = c(31,21,45,45,11,11), n2 = c(31,21,45,45,11,11), r = c(0.975,0.975,0,0,0.975,0.975)))
+es.t.test.raw <- rbind(es.t.test.raw, data.frame(t = c(2.63,2.92,2.523,2.229,-4.48,-4.28), n1 = c(31,21,45,45,11,11), n2 = c(31,21,45,45,11,11), r = c(0.975,0.975,0.5,0.5,0.975,0.975)))
 es.t.test.raw
 raw.es <- tes(es.t.test.raw[,1],es.t.test.raw[,2],es.t.test.raw[,3], verbose = FALSE)
 raw.es$exp <- c("Study 1", "Study 2","Study 3", "Study 4","Study 6","Study 7","Study 8","Study 9","Study 10a","Study 10b", "Sklar et al. Expt. 1","Sklar et al. Expt. 2", "Sklar et al. Expt. 4a","Sklar et al. Expt. 4b", "Yang & Yeh Expt. 1","Yang & Yeh Expt. 2")
@@ -2819,11 +2819,14 @@ funnel(ran.ef.raw)
 We then calculated a Bayes factor for this regression, comparing a null hypothesis to a hypothesis within which the true effect of unconscious semantics was uniformly distributed somewhere between -1 and 1, i.e., a very non-informative theory which could account for the wide variety in effect sizes found in this literature. The calculator at 
 [Zoltan Dienes' site](http://www.lifesci.sussex.ac.uk/home/Zoltan_Dienes/inference/Bayes.htm) produced a Bayes factor of 0.24, suggesting that the data is approximately four times more likely under the null hypothesis than the non-informative theory.
 
-We also used Richard Morey's method for calculating meta-analytic BayesFactors
+We also used Richard Morey's method for calculating meta-analytic BayesFactors. This function takes t scores and computes effect sizes from them, to produce a meta-analytic Bayes factor. But it assumes that the t scores are from between-subjects t tests, so we first use our effect size estimates to generate the t scores that would have been expected from our effect sizes if our tests had been between-subjects.
 
 ```{r bayes_factor_morey_method}
-summary(meta.ttestBF(t = raw.es$t,n1=raw.es$n.1,n2=raw.es$n.2,nullInterval = c(0,1)))
-summary(meta.ttestBF(t = raw.es$t,n1=raw.es$n.1,n2=raw.es$n.2))
+
+raw.es$t_adjusted = raw.es$d * sqrt(raw.es$n.1) 
+raw.es
+summary(meta.ttestBF(t = raw.es$t_adjusted,n1=raw.es$n.1,n2=raw.es$n.2,nullInterval = c(-1,1)))
+summary(meta.ttestBF(t = raw.es$t_adjusted,n1=raw.es$n.1,n2=raw.es$n.2))
 
 ```
 
@@ -2867,7 +2870,10 @@ We then calculated a Bayes factor for this regression, comparing a null hypothes
 We also used Richard Morey's method for calculating meta-analytic BayesFactors
 
 ```{r bayes_factor_morey_method_low}
-summary(meta.ttestBF(t = log.es$t,n1=log.es$n.1,n2=log.es$n.2,nullInterval = c(0,1)))
+log.es$t_adjusted = log.es$d * sqrt(log.es$n.1) 
+log.es
+
+summary(meta.ttestBF(t = log.es$t_adjusted,n1=log.es$n.1,n2=log.es$n.2,nullInterval = c(-1,1)))
 ```
 
 # Summary

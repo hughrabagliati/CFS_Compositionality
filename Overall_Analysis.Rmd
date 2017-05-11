@@ -566,7 +566,7 @@ kable(data.frame(sense.pop.length.log$coefficients, "p value"=2*pnorm(-abs(coef(
 sense.sklar.graph <- summaryBy(rt ~ Condition + SubjNo, data = sense.pop.sklar.graph, keep.names = T)
 sense.sklar.graph <- summaryBy(rt ~ Condition, data = sense.sklar.graph, FUN = c(mean,ci.low,ci.high,sd))
 sense.sklar.graph$SE <- sense.sklar.graph$rt.sd/sqrt(length(unique(sense.pop.sklar$SubjNo)))
-sense.sklar.graph$Experiment <- "Study 1 \nIncongruent Phrases"
+sense.sklar.graph$Experiment <- "Study 1 \nIncongruent Sentences"
 
 sense.new.graph <- summaryBy(rt ~ Condition + SubjNo, data = sense.pop.new.graph, keep.names = T)
 sense.new.graph <- summaryBy(rt ~ Condition, data = sense.new.graph, FUN = c(mean,ci.low,ci.high,sd))
@@ -2572,7 +2572,7 @@ emo.graph <- ggplot(graph, aes(x=MeanAffectivity_column, y=rt)) +
 sense.sklar.graph <- summaryBy(rt ~ Condition + SubjNo, data = sklar.sem.graph, keep.names = T)
 sense.sklar.graph <- summaryBy(rt ~ Condition, data = sense.sklar.graph, FUN = c(mean,ci.low,ci.high,sd))
 sense.sklar.graph$SE <- sense.sklar.graph$rt.sd/sqrt(length(unique(sklar.sem$SubjNo)))
-sense.sklar.graph$Experiment <- "Study 6\n(Study 1 Replication)\nIncongruent Phrases"
+sense.sklar.graph$Experiment <- "Study 6\n(Study 1 Replication)\nIncongruent Sentences"
 
 sense.new.graph <- summaryBy(rt ~ Condition + SubjNo, data = edin.sem.graph, keep.names = T)
 sense.new.graph <- summaryBy(rt ~ Condition, data = sense.new.graph, FUN = c(mean,ci.low,ci.high,sd))

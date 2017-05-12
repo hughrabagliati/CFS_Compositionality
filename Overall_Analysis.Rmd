@@ -1904,6 +1904,9 @@ kable(data.frame(edin.sem.sum.raw$coefficients, "p value"=2*pnorm(-abs(coef(edin
 
 ### Log RTs
 Semantics does not affect log RTs
+
+
+
 ```{r expt1b_r_log, include = FALSE}
 
 ##########

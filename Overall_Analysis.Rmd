@@ -2829,6 +2829,7 @@ We then calculated a Bayes factor for this regression, comparing a null hypothes
 
 We also used Richard Morey's method for calculating meta-analytic BayesFactors. This function takes t scores and computes effect sizes from them, to produce a meta-analytic Bayes factor. But it assumes that the t scores are from between-subjects t tests, so we first use our effect size estimates to generate the t scores that would have been expected from our effect sizes if our tests had been between-subjects.
 
+
 ```{r bayes_factor_morey_method}
 
 raw.es$t_adjusted = raw.es$d * sqrt(raw.es$n.1) 
@@ -2837,6 +2838,7 @@ summary(meta.ttestBF(t = raw.es$t_adjusted,n1=raw.es$n.1,n2=raw.es$n.2,nullInter
 summary(meta.ttestBF(t = raw.es$t_adjusted,n1=raw.es$n.1,n2=raw.es$n.2))
 
 ```
+
 
 ```{r log_effect_sizes}
 

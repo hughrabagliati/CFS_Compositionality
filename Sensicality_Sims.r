@@ -578,7 +578,7 @@ shuffle.data$cond <- ordered(shuffle.data$cond, levels = c("Exclude by condition
 
 ggplot(shuffle.data,aes(x=pvals,..density.., lty = cond))+ facet_wrap(expt~facet, ncol = 2)+
   geom_freqpoly(alpha = 1, lwd = 1.5)+xlab("p values")+
-  theme(legend.position=c(0.26,0.95),legend.background = element_rect(fill=alpha('white', 0)),legend.title=element_blank(),legend.key = element_rect(colour = NA))+
+  theme(legend.position=c(0.32,0.95),legend.background = element_rect(fill=alpha('white', 0)),legend.title=element_blank(),legend.key = element_rect(colour = NA))+
   xlim(c(0,1))
 
 # Comparison against a uniform distribution
